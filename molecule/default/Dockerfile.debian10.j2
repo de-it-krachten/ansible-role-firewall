@@ -1,0 +1,7 @@
+{% if item.registry is defined %}
+FROM {{ item.registry.url }}/{{ item.image }}
+{% else %}
+FROM {{ item.image }}
+{% endif %}
+
+RUN apt-get update && apt-get install -y {{ item.packages | join(' ') }} && apt-get clean

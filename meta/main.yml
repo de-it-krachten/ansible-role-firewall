@@ -1,0 +1,19 @@
+---
+galaxy_info:
+  role_name: firewall
+  namespace: de_it_krachten
+  description: ansible-role-firewall
+  author: Mark van Huijstee
+  company: De IT Krachten BV
+  license: MIT
+  min_ansible_version: 2.9
+  platforms:
+    - name: EL
+      versions:
+        - 7
+        - 8
+    - name: Ubuntu
+      versions:
+        - 18.04
+        - 20.04
+dependencies: []

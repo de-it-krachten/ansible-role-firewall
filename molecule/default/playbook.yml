@@ -1,0 +1,15 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+
+    - name: Update APT cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 1
+      become: yes
+      when: ansible_os_family == 'Debian'
+
+    - name: "Include ansible-role-firewall"
+      include_role:
+        name: "ansible-role-firewall"

@@ -1,0 +1,6 @@
+---
+
+include:
+  - project: 'Automation/ci-templates'
+    ref: master
+    file: '/gitlab/gitlab-ci.yml'
