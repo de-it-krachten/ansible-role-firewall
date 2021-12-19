@@ -1,4 +1,5 @@
 ---
+
 dependency:
   name: galaxy
 driver:
@@ -8,66 +9,19 @@ lint: |
   yamllint .
   ansible-lint
 platforms:
-  - name: firewall-centos7
-    image: "geerlingguy/docker-centos7-ansible:latest"
-    dockerfile: Dockerfile.centos7.j2
+  - name: firewall-${MOLECULE_DISTRO:-centos8}
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-centos8}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    privileged: true 
+    privileged: true
     pre_build_image: true
-    packages: ['python', 'sudo', 'yum-plugin-ovl', 'bash']
-  - name: firewall-centos8
-    image: "geerlingguy/docker-centos8-ansible:latest"
-    dockerfile: Dockerfile.centos8.j2
-    command: ${MOLECULE_DOCKER_COMMAND:-""}
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    privileged: true 
-    pre_build_image: true
-    packages: ['bash']
-  - name: firewall-ubuntu1804
-    image: "geerlingguy/docker-ubuntu1804-ansible:latest"
-    dockerfile: Dockerfile.ubuntu1804.j2
-    command: ${MOLECULE_DOCKER_COMMAND:-""}
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    privileged: true 
-    pre_build_image: true
-    packages: ['python3', 'sudo', 'bash', 'ca-certificates', 'iproute2', 'python3-apt', 'aptitude']
-  - name: firewall-ubuntu2004
-    image: "geerlingguy/docker-ubuntu2004-ansible:latest"
-    dockerfile: Dockerfile.ubuntu2004.j2
-    command: ${MOLECULE_DOCKER_COMMAND:-""}
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    privileged: true 
-    pre_build_image: true
-    packages: ['python3', 'sudo', 'bash', 'ca-certificates', 'iproute2', 'python3-apt', 'aptitude']
-  - name: firewall-debian10
-    image: "geerlingguy/docker-debian10-ansible:latest"
-    dockerfile: Dockerfile.debian10.j2
-    command: ${MOLECULE_DOCKER_COMMAND:-""}
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    privileged: true 
-    pre_build_image: true
-    packages: ['python3', 'sudo', 'bash', 'ca-certificates', 'iproute2', 'python3-apt', 'aptitude']
-  - name: firewall-debian11
-    image: "geerlingguy/docker-debian11-ansible:latest"
-    dockerfile: Dockerfile.debian11.j2
-    command: ${MOLECULE_DOCKER_COMMAND:-""}
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    privileged: true 
-    pre_build_image: true
-    packages: ['python3', 'sudo', 'bash', 'ca-certificates', 'iproute2', 'python3-apt', 'aptitude']
 provisioner:
   name: ansible
   lint:
     name: ansible-lint
   playbooks:
-    converge: ${MOLECULE_PLAYBOOK:-playbook.yml}
+    converge: ${MOLECULE_PLAYBOOK:-converge.yml}
   inventory:
     host_vars:
       firewall-centos8:
@@ -75,6 +29,4 @@ provisioner:
 scenario:
   name: default
 verifier:
-  name: testinfra
-  lint:
-    name: flake8
+  name: ansible

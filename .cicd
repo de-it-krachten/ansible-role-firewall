@@ -1,0 +1,107 @@
+---
+
+# Generic
+role: ansible-role-firewall
+role_short: firewall
+role_description: |
+  Role to open firewall ports for incoming traffic.
+  Supports firewalld, ufw and iptables
+
+# Supported platform
+platforms:
+  - name: CentOS 7
+    image: centos7
+  - name: CentOS 8
+    image: centos8
+  - name: Debian 10 (Buster)
+    image: debian10
+  - name: Debian 11 (Bullseye)
+    image: debian11
+  - name: Ubuntu 18.04 LTS
+    image: ubuntu1804
+  - name: Ubuntu 20.04 LTS
+    image: ubuntu2014
+
+# Ansible galaxy
+galaxy:
+  role_name: firewall
+  namespace: de_it_krachten
+  description: firewall
+  author: Mark van Huijstee
+  company: De IT Krachten BV
+  license: MIT
+  min_ansible_version: 2.9
+  platforms:
+    - name: EL
+      versions:
+        - 7
+        - 8
+    - name: Debian
+      versions:
+        - buster
+        - bullseye
+    - name: Ubuntu
+      versions:
+        - 18.04
+        - 20.04
+
+# Github
+github:
+  active: true
+  self_hosted: false
+  owner: de-it-krachten
+  repo: ansible-role-firewall
+
+# Gitlab
+gitlab:
+  active: false
+
+# molecule
+molecule:
+  active: true
+  platforms:
+    - centos7
+    - centos8
+    - debian10
+    - debian11
+    - ubuntu1804
+    - ubuntu2004
+  converge:
+    playbooks: []
+    vars:
+      firewall_ports:
+        - port: 22
+          proto: tcp
+        - port: 53
+          proto: udp 
+
+# templates
+ci_templates:
+  - src:  galaxy/templates/meta-main.yml
+    dest: meta/main.yml
+  - src:  yamllint/templates/yamllint
+    dest: .yamllint
+  - src:  github/templates/ci.yml
+    dest: .github/workflows/ci.yml
+    when: github_runner_cloud
+  - src:  github/templates/ci-self-hosted.yml
+    dest: .github/workflows/ci.yml
+    when: github_runner_self_hosted
+  - src:  gitlab/templates/gitlab-ci.yml
+    dest: .gitlab-ci.yml
+    when: gitlab_active
+  - src:  molecule/templates/prepare.yml
+    dest: molecule/default/prepare.yml
+    when: molecule_active
+  - src:  molecule/templates/molecule.yml
+    dest: molecule/default/molecule.yml
+    when: molecule_active
+  - src:  molecule/templates/converge.yml
+    dest: molecule/default/converge.yml
+    when: molecule_active
+#  - src:  molecule/templates/requirements.tmpl
+#    dest: molecule/default/requirements.tmpl
+#    when: molecule_active
+  - src:  git/templates/gitignore
+    dest: .gitignore
+    force: false
