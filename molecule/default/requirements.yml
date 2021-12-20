@@ -1,3 +1,15 @@
 ---
 
-- geerlingguy.repo-epel
+roles:
+  - name: firewalld
+    src: https://github.com/de-it-krachten/ansible-role-firewalld.git
+    version: main
+    scm: git
+  - name: iptables
+    src: https://github.com/de-it-krachten/ansible-role-iptables.git
+    version: main
+    scm: git
+  - name: ufw
+    src: https://github.com/de-it-krachten/ansible-role-ufw.git
+    version: main
+    scm: git

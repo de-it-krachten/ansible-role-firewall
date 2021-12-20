@@ -9,12 +9,6 @@
       - "Unsupported firewall '{{ firewall_running }}' found"
   when: firewall_type in firewall_type_unsupported
 
-- name: Show not-found message
-  debug:
-    msg:
-      - "Unable to identify the firewall running"
-      - "Most likely, there is no firewall active"
-
 - name: Include the appropiate tasks
   include_tasks: "{{ firewall_type }}.yml"
   when: firewall_type != 'unknown' and firewall_type not in firewall_type_unsupported

@@ -40,6 +40,7 @@
 
       when: ansible_os_family == 'Debian'
 
+
     - block:
 
         - name: Configure YUM to use proxy
@@ -69,3 +70,18 @@
             update_cache: yes
 
       when: ansible_os_family == 'RedHat' and (ansible_distribution_major_version|int) >= 8
+
+    - name: Install iptables
+      include_role:
+        name: iptables
+      when: inventory_hostname in [ 'firewall-debian10', 'firewall-ubuntu1804', 'firewall-centos7' ]
+
+    - name: Install ufw
+      include_role:
+        name: iptables
+      when: inventory_hostname in [ 'firewall-debian11', 'firewall-ubuntu2004' ]
+
+    - name: Install firewalld
+      include_role:
+        name: iptables
+      when: inventory_hostname in [ 'firewall-centos8' ]
