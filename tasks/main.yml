@@ -2,6 +2,7 @@
 
 - name: Identity firewall
   include_tasks: identify.yml
+  when: firewall_type is undefined
 
 - name: Show unsupported message
   debug:

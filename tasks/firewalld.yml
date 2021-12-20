@@ -2,10 +2,12 @@
 
 - name: Open firewalld firewall ports
   firewalld:
-    port: "{{ (item.port+'/'+item.proto) if item.port is defined else omit }}"
-    service: "{{ item.service if item.service is defined else omit }}"
+    port: "{{ (fw.port+'/'+fw.proto) if fw.port is defined else omit }}"
+    service: "{{ fw.service if fw.service is defined else omit }}"
     immediate: yes
     permanent: yes
     zone: public
     state: enabled
   loop: "{{ firewall_ports }}"
+  loop_control:
+    loop_var: fw
