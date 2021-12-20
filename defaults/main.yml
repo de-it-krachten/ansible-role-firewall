@@ -3,6 +3,6 @@
 # List of posts to open
 firewall_ports: []
 
-# List of unssported firewalls
+# List of unsupported firewalls
 firewall_type_unsupported:
   - nftables
