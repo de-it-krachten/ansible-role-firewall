@@ -3,8 +3,10 @@
 - name: Open UFW firewall ports
   ufw:
     rule: allow
-    port: "{{ (item.port|regex_replace('-',':')) if item.port is defined else omit }}"
-    proto: "{{ item.proto if item.proto is defined else omit }}"
-    name: "{{ item.service if item.service is defined else omit }}"
+    port: "{{ (fw.port|regex_replace('-',':')) if fw.port is defined else omit }}"
+    proto: "{{ fw.proto if fw.proto is defined else omit }}"
+    name: "{{ fw.service if fw.service is defined else omit }}"
     state: enabled
   loop: "{{ firewall_ports }}"
+  loop_control:
+    loop_var: fw

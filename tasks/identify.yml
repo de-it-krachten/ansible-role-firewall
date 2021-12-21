@@ -1,42 +1,38 @@
 ---
 
-- block:
+- name: Populate service facts
+  service_facts:
 
-    - name: Populate service facts
-      service_facts:
+- name: Identifiy firewall active (ufw)
+  set_fact:
+    firewall_running: ufw
+  when:
+    - ansible_facts.services['ufw.service'] is defined
+    - ansible_facts.services['ufw.service']['state'] == 'running'
+    - firewall_running is undefined
 
-    - name: Identifiy firewall active (ufw)
-      set_fact:
-        firewall_running: ufw
-      when:
-        - ansible_facts.services['ufw.service'] is defined
-        - ansible_facts.services['ufw.service']['state'] == 'running'
-        - firewall_running is undefined
+- name: Identifiy firewall active (nftables)
+  set_fact:
+    firewall_running: nftables
+  when:
+    - ansible_facts.services['nftables.service'] is defined
+    - ansible_facts.services['nftables.service']['state'] == 'running'
+    - firewall_running is undefined
 
-    - name: Identifiy firewall active (nftables)
-      set_fact:
-        firewall_running: nftables
-      when:
-        - ansible_facts.services['nftables.service'] is defined
-        - ansible_facts.services['nftables.service']['state'] == 'running'
-        - firewall_running is undefined
+- name: Identifiy firewall active (firewalld)
+  set_fact:
+    firewall_running: firewalld
+  when:
+    - ansible_facts.services['firewalld.service'] is defined
+    - ansible_facts.services['firewalld.service']['state'] == 'running'
+    - firewall_running is undefined
 
-    - name: Identifiy firewall active (firewalld)
-      set_fact:
-        firewall_running: firewalld
-      when:
-        - ansible_facts.services['firewalld.service'] is defined
-        - ansible_facts.services['firewalld.service']['state'] == 'running'
-        - firewall_running is undefined
+- name: Assuming iptables (as it does not have a service)
+  set_fact:
+    firewall_running: iptables
+  when:
+    - firewall_running is undefined
 
-    - name: Assuming iptables (as it does not have a service)
-      set_fact:
-        firewall_running: iptables
-      when:
-        - firewall_running is undefined
-
-    - name: Set firewall found
-      set_fact:
-        firewall_type: "{{ firewall_running }}"
-
-  when: firewall_type is undefined
+- name: Set firewall found
+  set_fact:
+    firewall_type: "{{ firewall_running }}"
