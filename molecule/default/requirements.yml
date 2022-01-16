@@ -1,6 +1,11 @@
 ---
 
 roles:
+  # Public roles
+  - robertdebock.epel
+  - robertdebock.powertools
+
+  # Public roles but by us
   - name: firewalld
     src: https://github.com/de-it-krachten/ansible-role-firewalld.git
     version: main
