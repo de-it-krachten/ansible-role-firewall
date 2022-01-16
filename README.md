@@ -42,7 +42,7 @@ Example Playbook
 - name: sample playbook for role 'firewall'
   hosts: all
   vars:
-    firewall_ports: [{'port': 22, 'proto': 'tcp'}, {'port': 53, 'proto': 'udp'}]
+    firewall_ports: [{'port': '22', 'proto': 'tcp'}, {'port': '53', 'proto': 'udp'}]
   tasks:
     - name: Include role 'firewall'
       include_role:
