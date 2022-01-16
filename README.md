@@ -14,6 +14,8 @@ Supported platforms
 
 - CentOS 7
 - CentOS 8
+- RockyLinux 8
+- AlmaLinux 8
 - Debian 10 (Buster)
 - Debian 11 (Bullseye)
 - Ubuntu 18.04 LTS
@@ -37,16 +39,12 @@ Example Playbook
 ----------------
 
 <pre><code>
-- name: Converge
+- name: sample playbook for role 'firewall'
   hosts: all
   vars:
-    firewall_ports:
-      - port: 22
-        proto: tcp
-      - port: 53
-        proto: udp
+    firewall_ports: [{'port': 22, 'proto': 'tcp'}, {'port': 53, 'proto': 'udp'}]
   tasks:
-    - name: Include role 'ansible-role-firewall'
+    - name: Include role 'firewall'
       include_role:
-        name: ansible-role-firewall
+        name: firewall
 </pre></code>
