@@ -2,6 +2,8 @@ generic:
   role_description: |
     Role to open firewall ports for incoming traffic.
     Supports firewalld, ufw and iptables
+github:
+  fail_fast: false
 molecule:
   prepare:
     vars:
