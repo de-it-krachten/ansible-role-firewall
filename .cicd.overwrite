@@ -3,6 +3,9 @@ generic:
     Role to open firewall ports for incoming traffic.
     Supports firewalld, ufw and iptables
 molecule:
+  prepare:
+    vars:
+      prepare_firewall: true
   converge:
     vars:
       firewall_ports:
