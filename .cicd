@@ -123,6 +123,10 @@ ci_templates:
 #    src: molecule/templates/requirements.tmpl
 #    dest: molecule/default/requirements.tmpl
 #    when: molecule_active
+  requirements.yml:
+    src: molecule/templates/requirements.yml
+    dest: molecule/default/requirements.yml
+    when: molecule_active
   gitignore:
     src: git/templates/gitignore
     dest: .gitignore
