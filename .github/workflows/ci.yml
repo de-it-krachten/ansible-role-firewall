@@ -28,6 +28,10 @@ jobs:
         with:
           python-version: '3.x'
 
+      - name: Show runner info
+        run: |
+          hostname -f
+
       - name: Install test dependencies.
         run: pip3 install ansible ansible-lint yamllint jmespath
 
@@ -37,16 +41,18 @@ jobs:
           yamllint .
           ansible-lint
 
-
   molecule:
     name: Molecule
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         include:
           - distro: centos7
             playbook: converge.yml
           - distro: centos8
+            playbook: converge.yml
+          - distro: rockylinux8
             playbook: converge.yml
           - distro: debian10
             playbook: converge.yml
@@ -68,8 +74,16 @@ jobs:
         with:
           python-version: '3.x'
 
+      - name: Show runner info
+        run: |
+          hostname -f
+
       - name: Install test dependencies.
         run: pip3 install ansible ansible-lint molecule[docker] docker yamllint jmespath
+
+      - name: Set-up github runner
+        run: |
+          sudo modprobe ip6table_filter
 
       - name: Run Molecule tests.
         run: molecule test

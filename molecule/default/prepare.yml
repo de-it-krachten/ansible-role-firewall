@@ -4,8 +4,10 @@
   hosts: all
   become: yes
   vars:
-    proxy_use: false
-    proxy_url: "http://127.0.0.1:3128"
+    proxy_use: "{{ lookup('env', 'proxy_use') | default(False, True) | bool }}"
+    proxy_url: "{{ lookup('env', 'proxy_url') | default('http://127.0.0.1:3128', True) }}"
+    molecule_distro: "{{ lookup('env', 'MOLECULE_DISTRO') }}"
+    prepare_firewall: True
   tasks:
 
     - block:
@@ -20,17 +22,18 @@
             owner: root
             group: root
             mode: "0644"
-          when: proxy_use|bool
+          when: proxy_use is defined and proxy_use|bool
 
         - name: Update APT cache
           apt:
             update_cache: yes
             cache_valid_time: 1
 
-        - name: Install requirements
+        - name: Install default packages
           package:
             name:
               - gnupg
+              - ssh
             state: present
 
         - name: Update APT cache
@@ -40,7 +43,6 @@
 
       when: ansible_os_family == 'Debian'
 
-
     - block:
 
         - name: Configure YUM to use proxy
@@ -48,11 +50,24 @@
             path: /etc/yum.conf
             line: "proxy={{ proxy_url }}"
             regexp: "^proxy=.*$"
-          when: proxy_use|bool
+          when: proxy_use is defined and proxy_use|bool
 
         - name: Update YUM cache  # noqa command-instead-of-module
           command: yum makecache
           changed_when: false
+
+        - name: Install default packages
+          package:
+            name:
+              - openssh-server
+              - openssh-clients
+              - iproute
+            state: present
+
+        - name: Activate epel repository
+          include_role:
+            name: robertdebock.epel
+          when: activate_epel is defined and activate_epel|bool
 
       when: ansible_os_family == 'RedHat' and (ansible_distribution_major_version|int) < 8
 
@@ -63,25 +78,56 @@
             path: /etc/dnf/dnf.conf
             line: "proxy={{ proxy_url }}"
             regexp: "^proxy=.*$"
-          when: proxy_use|bool
+          when: proxy_use is defined and proxy_use|bool
 
         - name: Update DNF cache
           dnf:
             update_cache: yes
 
+        - name: Install default packages
+          package:
+            name:
+              - openssh-server
+              - openssh-clients
+              - iproute
+            state: present
+
+        - name: Activate epel repository
+          include_role:
+            name: robertdebock.epel
+          when: activate_epel is defined and activate_epel|bool
+
+        - name: Activate powertools repository
+          include_role:
+            name: robertdebock.powertools
+          when: activate_powertools is defined and activate_powertools|bool
+
       when: ansible_os_family == 'RedHat' and (ansible_distribution_major_version|int) >= 8
 
-    - name: Install iptables
-      include_role:
-        name: iptables
-      when: inventory_hostname in [ 'firewall-debian10', 'firewall-ubuntu1804', 'firewall-centos7' ]
 
-    - name: Install ufw
-      include_role:
-        name: iptables
-      when: inventory_hostname in [ 'firewall-debian11', 'firewall-ubuntu2004' ]
+    - block:
 
-    - name: Install firewalld
-      include_role:
-        name: iptables
-      when: inventory_hostname in [ 'firewall-centos8' ]
+        - name: Install iptables
+          include_role:
+            name: iptables
+          when: molecule_distro in [ 'debian10', 'ubuntu1804', 'centos7' ]
+
+        - name: Install ufw
+          include_role:
+            name: ufw
+          when: molecule_distro in [ 'debian11', 'ubuntu2004' ]
+
+        - name: Install firewalld
+          include_role:
+            name: firewalld
+          when: molecule_distro in [ 'centos8', 'oraclelinux8', 'rockylinux8', 'almalinux8' ]
+
+      when: prepare_firewall is defined and prepare_firewall|bool
+
+    - block:
+
+        - name: Register all nodes in /etc/hosts
+          include_role:
+            name: hosts
+
+      when: register_hosts is defined and register_hosts|bool
