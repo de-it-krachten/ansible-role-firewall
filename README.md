@@ -13,7 +13,6 @@ Platforms
 Supported platforms
 
 - CentOS 7
-- CentOS 8
 - RockyLinux 8
 - AlmaLinux 8
 - Debian 10 (Buster)

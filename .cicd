@@ -11,8 +11,8 @@ generic:
 platforms:
   - name: CentOS 7
     image: centos7
-  - name: CentOS 8
-    image: centos8
+#  - name: CentOS 8
+#    image: centos8
   - name: RockyLinux 8
     image: rockylinux8
   - name: AlmaLinux 8
@@ -54,6 +54,7 @@ github:
   active: true
   self_hosted: false
   fail_fast: true
+  parallel: true
   owner: de-it-krachten
   repo: ansible-role-firewall
 
@@ -66,7 +67,7 @@ molecule:
   active: true
   platforms:
     - centos7
-    - centos8
+#    - centos8
     - rockylinux8
     - debian10
     - debian11
