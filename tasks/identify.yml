@@ -1,30 +1,45 @@
 ---
 
-- name: Populate service facts
-  service_facts:
+#- name: Populate service facts
+#  service_facts:
+
+- name: Get ufw information
+  service:
+    name: ufw
+  register: _ufw
 
 - name: Identifiy firewall active (ufw)
   set_fact:
     firewall_running: ufw
   when:
-    - ansible_facts.services['ufw.service'] is defined
-    - ansible_facts.services['ufw.service']['state'] == 'running'
+    - _ufw['status']['ActiveState'] is defined
+    - _ufw['status']['ActiveState'] == 'active'
     - firewall_running is undefined
+
+- name: Get nftables information
+  service:
+    name: nftables
+  register: _nftables
 
 - name: Identifiy firewall active (nftables)
   set_fact:
     firewall_running: nftables
   when:
-    - ansible_facts.services['nftables.service'] is defined
-    - ansible_facts.services['nftables.service']['state'] == 'running'
+    - _nftables['status']['ActiveState'] is defined
+    - _nftables['status']['ActiveState'] == 'active'
     - firewall_running is undefined
+
+- name: Get firewalld information
+  service:
+    name: firewalld
+  register: _firewalld
 
 - name: Identifiy firewall active (firewalld)
   set_fact:
     firewall_running: firewalld
   when:
-    - ansible_facts.services['firewalld.service'] is defined
-    - ansible_facts.services['firewalld.service']['state'] == 'running'
+    - _firewalld['status']['ActiveState'] is defined
+    - _firewalld['status']['ActiveState'] == 'active'
     - firewall_running is undefined
 
 - name: Assuming iptables (as it does not have a service)
