@@ -120,7 +120,7 @@
         - name: Install firewalld
           include_role:
             name: firewalld
-          when: molecule_distro in [ 'centos8', 'oraclelinux8', 'rockylinux8', 'almalinux8' ]
+          when: molecule_distro in [ 'fedora34', 'fedora35', 'fedora36', 'centos8', 'oraclelinux8', 'rockylinux8', 'almalinux8' ]
 
       when: prepare_firewall is defined and prepare_firewall|bool
 
