@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/de-it-krachten/ansible-role-firewall/compare/v1.0.2...v1.0.3) (2022-04-02)
+
+
+### Bug Fixes
+
+* no longer assume iptables if no other fw found ([8d6ec01](https://github.com/de-it-krachten/ansible-role-firewall/commit/8d6ec019433a8352b2a536c9e4d5895e10484547))
+
 ## [1.0.2](https://github.com/de-it-krachten/ansible-role-firewall/compare/v1.0.1...v1.0.2) (2022-03-06)
 
 
