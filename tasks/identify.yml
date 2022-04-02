@@ -42,12 +42,21 @@
     - _firewalld['status']['ActiveState'] == 'active'
     - firewall_running is undefined
 
-- name: Assuming iptables (as it does not have a service)
-  set_fact:
-    firewall_running: iptables
+- block:
+
+    - name: Try searching for iptables
+      stat:
+        path: /usr/sbin/iptables
+      register: _iptables
+
+    - name: Assuming iptables (as it does not have a service)
+      set_fact:
+        firewall_running: iptables
+      when: _iptables.stat.exists
+
   when:
     - firewall_running is undefined
 
 - name: Set firewall found
   set_fact:
-    firewall_type: "{{ firewall_running }}"
+    firewall_type: "{{ firewall_running | default('unknown') }}"
