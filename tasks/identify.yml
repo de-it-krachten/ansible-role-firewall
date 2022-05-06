@@ -44,15 +44,15 @@
 
 - block:
 
-    - name: Try searching for iptables
-      stat:
-        path: /usr/sbin/iptables
+    - name: Search for iptables binary
+      command: which iptables
+      changed_when: false
       register: _iptables
 
-    - name: Assuming iptables (as it does not have a service)
+    - name: Assume iptables when binary is found
       set_fact:
         firewall_running: iptables
-      when: _iptables.stat.exists
+      when: _iptables.stdout|length > 0
 
   when:
     - firewall_running is undefined
