@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/de-it-krachten/ansible-role-firewall/compare/v1.0.3...v1.0.4) (2022-05-06)
+
+
+### Bug Fixes
+
+* extend iptables executable search paths ([86dd8ef](https://github.com/de-it-krachten/ansible-role-firewall/commit/86dd8ef83c0ce8219dc4ba473aea25e2a1dc98b1))
+
 ## [1.0.3](https://github.com/de-it-krachten/ansible-role-firewall/compare/v1.0.2...v1.0.3) (2022-04-02)
 
 
