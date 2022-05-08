@@ -47,6 +47,7 @@
     - name: Search for iptables binary
       command: which iptables
       changed_when: false
+      failed_when: false
       register: _iptables
 
     - name: Assume iptables when binary is found
