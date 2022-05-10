@@ -1,3 +1,15 @@
+# [1.1.0](https://github.com/de-it-krachten/ansible-role-firewall/compare/v1.0.5...v1.1.0) (2022-05-10)
+
+
+### Bug Fixes
+
+* remove obsolete roles from meta/requirements.yml ([07e7116](https://github.com/de-it-krachten/ansible-role-firewall/commit/07e7116b3b52436d488c80086642e892a6d17297))
+
+
+### Features
+
+* add support for Ubuntu 22.04 ([b10e711](https://github.com/de-it-krachten/ansible-role-firewall/commit/b10e7113f13b764137c672c66f06a0085c2f4e36))
+
 ## [1.0.5](https://github.com/de-it-krachten/ansible-role-firewall/compare/v1.0.4...v1.0.5) (2022-05-08)
 
 
