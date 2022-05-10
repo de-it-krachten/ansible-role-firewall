@@ -6,9 +6,47 @@
   vars:
     proxy_use: "{{ lookup('env', 'proxy_use') | default(False, True) | bool }}"
     proxy_url: "{{ lookup('env', 'proxy_url') | default('http://127.0.0.1:3128', True) }}"
-    molecule_distro: "{{ lookup('env', 'MOLECULE_DISTRO') }}"
+    # molecule_distro: "{{ lookup('env', 'MOLECULE_DISTRO') }}"
     prepare_firewall: True
   tasks:
+
+    - name: Define molecule distro (Ubuntu)
+      set_fact:
+        molecule_distro: "{{ (ansible_distribution|lower) + (ansible_distribution_version|regex_replace('\\.')) }}"
+      when: ansible_distribution == 'Ubuntu'
+
+    - name: Define molecule distro (Rest)
+      set_fact:
+        molecule_distro: "{{ (ansible_distribution|lower) + ansible_distribution_major_version }}"
+      when: ansible_distribution != 'Ubuntu'
+
+    - block:
+
+        - name: Install python3
+          package:
+            name: python3
+            state: present
+
+        - name: install systemctl.py
+          get_url:
+            url: https://raw.githubusercontent.com/gdraheim/docker-systemctl-replacement/master/files/docker/systemctl3.py
+            dest: /usr/bin/systemctl
+            mode: "0755"
+
+        - name: ensure run directory for ansible check_systemd
+          file:
+            name: /run/systemd/system/
+            state: directory
+            mode: "0755"
+
+        - name: check some service
+          service:
+            name: dbus
+            state: stopped
+          failed_when: false
+
+      when: systemctl_alternative|bool
+
 
     - block:
 
@@ -32,6 +70,7 @@
         - name: Install default packages
           package:
             name:
+              - netbase
               - gnupg
               - ssh
             state: present
@@ -115,7 +154,7 @@
         - name: Install ufw
           include_role:
             name: ufw
-          when: molecule_distro in [ 'debian11', 'ubuntu2004' ]
+          when: molecule_distro in [ 'debian11', 'ubuntu2004', 'ubuntu2204' ]
 
         - name: Install firewalld
           include_role:
