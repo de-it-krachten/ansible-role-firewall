@@ -7,6 +7,7 @@
     proxy_use: "{{ lookup('env', 'proxy_use') | default(False, True) | bool }}"
     proxy_url: "{{ lookup('env', 'proxy_url') | default('http://127.0.0.1:3128', True) }}"
     # molecule_distro: "{{ lookup('env', 'MOLECULE_DISTRO') }}"
+    systemctl_alternative: False
     prepare_firewall: True
   tasks:
 
