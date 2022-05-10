@@ -9,14 +9,15 @@ lint: |
   yamllint .
   ansible-lint
 platforms:
-  - name: firewall-${MOLECULE_DISTRO:-centos8}
-    # image: "${namespace:-'geerlingguy'}/${image:-'docker-rockylinux-ansible'}:${tag:-'latest'}"
-    image: "geerlingguy/docker-${MOLECULE_DISTRO:-centos8}-ansible:latest"
+{% for platform in MOLECULE_DISTROS %}
+  - name: firewall-{{ platform }}
+    image: "geerlingguy/docker-{{ platform }}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
     privileged: true
     pre_build_image: true
+{% endfor %}
 provisioner:
   name: ansible
   env:
@@ -27,7 +28,7 @@ provisioner:
     converge: ${MOLECULE_PLAYBOOK:-converge.yml}
   inventory:
     host_vars:
-      firewall-centos8:
+      firewall-rockylinux8:
         ansible_python_interpreter: /usr/libexec/platform-python
 scenario:
   name: default

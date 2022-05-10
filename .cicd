@@ -30,6 +30,8 @@ platforms:
     image: ubuntu1804
   - name: Ubuntu 20.04 LTS
     image: ubuntu2004
+  - name: Ubuntu 22.04 LTS
+    image: ubuntu2204
 
 # Ansible galaxy
 galaxy:
@@ -53,6 +55,7 @@ galaxy:
       versions:
         - 18.04
         - 20.04
+        - 22.04
 
 # Github
 github:
@@ -79,12 +82,14 @@ molecule:
     - debian11
     - ubuntu1804
     - ubuntu2004
+    - ubuntu2204
   converge:
     playbooks: []
     vars: {}
   prepare:
     playbooks: []
-    vars: {}
+    vars:
+      systemctl_alternative: false
 
 # templates
 ci_templates:
@@ -118,13 +123,17 @@ ci_templates:
     src: molecule/templates/prepare.yml
     dest: molecule/default/prepare.yml
     when: molecule_active
-  molecule.yml:
-    src: molecule/templates/molecule.yml
-    dest: molecule/default/molecule.yml
+  molecule.yml.j2:
+    src: molecule/templates/molecule.yml.j2
+    dest: molecule/default/molecule.yml.j2
     when: molecule_active
   converge.yml:
     src: molecule/templates/converge.yml
     dest: molecule/default/converge.yml
+    when: molecule_active
+  verify.yml:
+    src: molecule/templates/verify.yml
+    dest: molecule/default/verify.yml
     when: molecule_active
 #  requirements.tmpl:
 #    src: molecule/templates/requirements.tmpl

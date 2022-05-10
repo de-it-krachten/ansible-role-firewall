@@ -43,7 +43,7 @@ jobs:
         run: sudo apparmor_parser -R /etc/apparmor.d/usr.sbin.mysqld
 
       - name: Install test dependencies.
-        run: pip3 install ansible ansible-lint==5.4.0 yamllint jmespath
+        run: pip3 install ansible ansible-lint==5.4.0 yamllint jmespath e2j2 yq
 
       - name: Lint code.
         run: |
@@ -70,6 +70,8 @@ jobs:
             playbook: converge.yml
           - distro: ubuntu2004
             playbook: converge.yml
+          - distro: ubuntu2204
+            playbook: converge.yml
 
     steps:
       - name: Check out the codebase.
@@ -93,11 +95,21 @@ jobs:
         run: sudo apparmor_parser -R /etc/apparmor.d/usr.sbin.mysqld
 
       - name: Install test dependencies.
-        run: pip3 install ansible ansible-lint==5.4.0 molecule[docker] docker yamllint jmespath
+        run: pip3 install ansible ansible-lint==5.4.0 molecule[docker] docker yamllint jmespath e2j2 yq
 
       - name: Set-up github runner
         run: |
           sudo modprobe ip6table_filter
+
+      - name: Create molecule.yml from template
+        run: |
+          if [[ -f molecule/default/molecule.yml.j2 ]]
+          then
+            export MOLECULE_DISTROS="json:[\"$MOLECULE_DISTRO\"]"
+            e2j2 -f molecule/default/molecule.yml.j2 || exit 1
+          fi
+        env:
+          MOLECULE_DISTRO: ${{ matrix.distro }}
 
       - name: Run Molecule tests.
         run: molecule test
