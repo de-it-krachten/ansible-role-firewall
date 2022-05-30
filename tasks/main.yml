@@ -6,8 +6,7 @@
 
 - name: Show unsupported message
   debug:
-    msg:
-      - "Unsupported firewall '{{ firewall_running }}' found"
+    msg: "Unsupported firewall '{{ firewall_running }}' found"
   when: firewall_type in firewall_type_unsupported
 
 - name: Include the appropiate tasks

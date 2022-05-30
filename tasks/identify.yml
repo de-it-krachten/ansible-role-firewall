@@ -50,10 +50,18 @@
       failed_when: false
       register: _iptables
 
-    - name: Assume iptables when binary is found
+    - name: Make sure iptables functions
+      command: iptables -L
+      changed_when: false
+      register: _iptables_list
+      when: _iptables.stdout|length > 0
+
+    - name: Assume iptables when binary is found and functioning
       set_fact:
         firewall_running: iptables
-      when: _iptables.stdout|length > 0
+      when:
+        - _iptables.stdout|length > 0
+        - _iptables_list.rc == 0
 
   when:
     - firewall_running is undefined
