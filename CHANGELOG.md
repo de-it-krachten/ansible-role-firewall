@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/de-it-krachten/ansible-role-firewall/compare/v1.1.0...v1.1.1) (2022-05-30)
+
+
+### Bug Fixes
+
+* implement check on functioning of iptables ([5d92962](https://github.com/de-it-krachten/ansible-role-firewall/commit/5d9296237fbe0d74339ea236a21902bfa0b83751))
+
 # [1.1.0](https://github.com/de-it-krachten/ansible-role-firewall/compare/v1.0.5...v1.1.0) (2022-05-10)
 
 
