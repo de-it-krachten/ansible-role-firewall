@@ -4,9 +4,8 @@
   hosts: all
   become: yes
   vars:
-    proxy_use: "{{ lookup('env', 'proxy_use') | default(False, True) | bool }}"
-    proxy_url: "{{ lookup('env', 'proxy_url') | default('http://127.0.0.1:3128', True) }}"
-    # molecule_distro: "{{ lookup('env', 'MOLECULE_DISTRO') }}"
+    proxy_url: "{{ lookup('env', 'HTTPS_PROXY') | default('') }}"
+    proxy_use: "{{ True if ( proxy_url is defined and proxy_url|length > 0 ) else False }}"
     systemctl_alternative: False
     prepare_firewall: True
   tasks:
@@ -21,33 +20,14 @@
         molecule_distro: "{{ (ansible_distribution|lower) + ansible_distribution_major_version }}"
       when: ansible_distribution != 'Ubuntu'
 
-    - block:
-
-        - name: Install python3
-          package:
-            name: python3
-            state: present
-
-        - name: install systemctl.py
-          get_url:
-            url: https://raw.githubusercontent.com/gdraheim/docker-systemctl-replacement/master/files/docker/systemctl3.py
-            dest: /usr/bin/systemctl
-            mode: "0755"
-
-        - name: ensure run directory for ansible check_systemd
-          file:
-            name: /run/systemd/system/
-            state: directory
-            mode: "0755"
-
-        - name: check some service
-          service:
-            name: dbus
-            state: stopped
-          failed_when: false
-
-      when: systemctl_alternative|bool
-
+    - name: Show settings
+      debug:
+        msg:
+          molecule_distro: "{{ molecule_distro }}"
+          proxy_use: "{{ proxy_use }}"
+          proxy_url: "{{ proxy_url }}"
+          prepare_firewall: "{{ prepare_firewall | default(False) }}"
+          update_all: "{{ update_all | default(False) }}"
 
     - block:
 
@@ -66,7 +46,13 @@
         - name: Update APT cache
           apt:
             update_cache: yes
-            cache_valid_time: 1
+            cache_valid_time: 0
+
+        - name: Upgrade APT packages
+          apt:
+            force_apt_get: yes
+            upgrade: yes
+          when: update_all is defined and update_all|bool
 
         - name: Install default packages
           package:
@@ -75,11 +61,6 @@
               - gnupg
               - ssh
             state: present
-
-        - name: Update APT cache
-          apt:
-            update_cache: yes
-            cache_valid_time: 1
 
       when: ansible_os_family == 'Debian'
 
@@ -95,6 +76,14 @@
         - name: Update YUM cache  # noqa command-instead-of-module
           command: yum makecache
           changed_when: false
+          args:
+            warn: false
+
+        - name: Upgrade YUM packages  # noqa package-latest
+          yum:
+            name: '*'
+            state: latest
+          when: update_all is defined and update_all|bool
 
         - name: Install default packages
           package:
@@ -113,6 +102,34 @@
 
     - block:
 
+        # Switch to CentOS 8 vault mirrors
+        - name: Get all repo files
+          find:
+            paths: /etc/yum.repos.d
+            patterns: 'CentOS-Linux-*'
+          register: _repo
+          when: ansible_distribution == 'CentOS'
+
+        - name: Update repo files to point to CentOS vault mirror (1)
+          replace:
+            path: "{{ item.path }}"
+            regexp: "^mirrorlist"
+            replace: "#mirrorlist"
+          loop: "{{ _repo.files }}"
+          loop_control:
+            label: "{{ item.path }}"
+          when: ansible_distribution == 'CentOS'
+
+        - name: Update repo files to point to CentOS vault mirror (2)
+          replace:
+            path: "{{ item.path }}"
+            regexp: "^#baseurl=http://mirror.centos.org"
+            replace: "baseurl=http://vault.epel.cloud"
+          loop: "{{ _repo.files }}"
+          loop_control:
+            label: "{{ item.path }}"
+          when: ansible_distribution == 'CentOS'
+
         - name: Configure DNF to use proxy
           lineinfile:
             path: /etc/dnf/dnf.conf
@@ -123,6 +140,12 @@
         - name: Update DNF cache
           dnf:
             update_cache: yes
+
+        - name: Upgrade DNF packages  # noqa package-latest
+          dnf:
+            name: '*'
+            state: latest
+          when: update_all is defined and update_all|bool
 
         - name: Install default packages
           package:
