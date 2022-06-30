@@ -15,8 +15,8 @@ platforms:
     ci: false
   - name: CentOS 7
     image: centos7
-#  - name: CentOS 8
-#    image: centos8
+  - name: CentOS 8
+    image: centos8
   - name: RockyLinux 8
     image: rockylinux8
   - name: AlmaLinux 8
@@ -32,6 +32,16 @@ platforms:
     image: ubuntu2004
   - name: Ubuntu 22.04 LTS
     image: ubuntu2204
+  - name: Fedora 35
+    image: fedora35
+  - name: Fedora 36
+    image: fedora36
+
+# standard platform we do not support
+platforms_skip: []
+
+# Non-standard platform we do support
+platforms_add: []
 
 # Ansible galaxy
 galaxy:
@@ -56,6 +66,9 @@ galaxy:
         - 18.04
         - 20.04
         - 22.04
+    - name: Fedora
+      versions:
+        - all
 
 # Github
 github:
@@ -74,15 +87,28 @@ gitlab:
 molecule:
   active: true
   platforms:
-    - centos7
-#    - centos8
-    - rockylinux8
-#    - almalinux8
-    - debian10
-    - debian11
-    - ubuntu1804
-    - ubuntu2004
-    - ubuntu2204
+    - name: centos7
+      image: "geerlingguy/docker-centos7-ansible:latest"
+    - name: centos8
+      image: "geerlingguy/docker-centos8-ansible:latest"
+    - name: rockylinux8
+      image: "geerlingguy/docker-rockylinux8-ansible:latest"
+    - name: debian10
+      image: "geerlingguy/docker-debian10-ansible:latest"
+    - name: debian11
+      image: "geerlingguy/docker-debian11-ansible:latest"
+    - name: ubuntu1804
+      image: "geerlingguy/docker-ubuntu1804-ansible:latest"
+    - name: ubuntu2004
+      image: "geerlingguy/docker-ubuntu2004-ansible:latest"
+    - name: ubuntu2204
+      image: "geerlingguy/docker-ubuntu2204-ansible:latest"
+    - name: fedora35
+      image: "geerlingguy/docker-fedora35-ansible:latest"
+    - name: fedora36
+      image: "geerlingguy/docker-fedora36-ansible:latest"
+  platforms_skip: []
+  platforms_add: []
   converge:
     playbooks: []
     vars: {}
@@ -127,6 +153,10 @@ ci_templates:
     src: molecule/templates/molecule.yml.j2
     dest: molecule/default/molecule.yml.j2
     when: molecule_active
+  molecule-test.yml:
+    src: molecule/templates/molecule-test.yml
+    dest: molecule/default/molecule-test.yml
+    when: molecule_active
   converge.yml:
     src: molecule/templates/converge.yml
     dest: molecule/default/converge.yml
@@ -147,3 +177,12 @@ ci_templates:
     src: git/templates/gitignore
     dest: .gitignore
     force: false
+  ansible-lint:
+    src: molecule/templates/ansible-lint
+    dest: .ansible-lint
+    force: no
+    when: molecule_active
+  molecule-platforms.yml:
+    src: molecule/templates/molecule-platforms.yml
+    dest: .molecule-platforms.yml
+    force: true
