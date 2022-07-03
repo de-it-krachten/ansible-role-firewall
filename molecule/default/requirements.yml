@@ -1,11 +1,10 @@
 ---
 
 roles:
-  # Public roles
-  - robertdebock.epel
-  - robertdebock.powertools
-
-  # Public roles but by us
+  - name: epel
+    src: https://github.com/de-it-krachten/ansible-role-epel.git
+    version: main
+    scm: git
   - name: firewall
     src: https://github.com/de-it-krachten/ansible-role-firewall.git
     version: main

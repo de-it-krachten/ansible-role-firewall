@@ -16,6 +16,7 @@ defaults:
   run:
     working-directory: "de-it-krachten/ansible-role-firewall"
 
+
 jobs:
 
   lint:
@@ -55,24 +56,59 @@ jobs:
   molecule:
     name: Molecule
     runs-on: ubuntu-latest
+    # continue-on-error: ${{ matrix.continue_on_error }}
     strategy:
       fail-fast: false
       matrix:
         include:
           - distro: centos7
             playbook: converge.yml
+            # continue_on_error: false
+            # failfast: true
           - distro: rockylinux8
             playbook: converge.yml
+            # continue_on_error: false
+            # failfast: true
+          - distro: oraclelinux8
+            playbook: converge.yml
+            # continue_on_error: false
+            # failfast: true
+          - distro: almalinux8
+            playbook: converge.yml
+            # continue_on_error: false
+            # failfast: true
+          - distro: almalinux9
+            playbook: converge.yml
+            # continue_on_error: false
+            # failfast: true
           - distro: debian10
             playbook: converge.yml
+            # continue_on_error: false
+            # failfast: true
           - distro: debian11
             playbook: converge.yml
+            # continue_on_error: false
+            # failfast: true
           - distro: ubuntu1804
             playbook: converge.yml
+            # continue_on_error: false
+            # failfast: true
           - distro: ubuntu2004
             playbook: converge.yml
+            # continue_on_error: false
+            # failfast: true
           - distro: ubuntu2204
             playbook: converge.yml
+            # continue_on_error: false
+            # failfast: true
+          - distro: fedora35
+            playbook: converge.yml
+            # continue_on_error: false
+            # failfast: true
+          - distro: fedora36
+            playbook: converge.yml
+            # continue_on_error: false
+            # failfast: true
 
     steps:
       - name: Check out the codebase.
@@ -103,20 +139,25 @@ jobs:
         run: |
           sudo modprobe ip6table_filter
 
-      - name: Create molecule.yml from template
+      - name: Retrieve wrapper molecule scripts
         run: |
-          if [[ -f molecule/default/molecule.yml.j2 ]]
-          then
-            export MOLECULE_DISTROS="json:[\"$MOLECULE_DISTRO\"]"
-            e2j2 -f molecule/default/molecule.yml.j2 || exit 1
-          fi
-        env:
-          MOLECULE_DISTRO: ${{ matrix.distro }}
+          set -e
+          sudo apt install curl
+          sudo curl -s -o /usr/local/bin/ansible-galaxy.sh \
+            https://raw.githubusercontent.com/de-it-krachten/ansible-role-molecule/dev/files/ansible-galaxy.sh
+          sudo curl -s -o /usr/local/bin/ansible-requirements-clean.sh \
+            https://raw.githubusercontent.com/de-it-krachten/ansible-role-molecule/dev/files/ansible-requirements-clean.sh
+          sudo curl -s -o /usr/local/bin/molecule-test.sh \
+            https://raw.githubusercontent.com/de-it-krachten/ansible-role-molecule/dev/files/molecule-test.sh
+          sudo chmod 755 /usr/local/bin/ansible-galaxy.sh
+          sudo chmod 755 /usr/local/bin/ansible-requirements-clean.sh
+          sudo chmod 755 /usr/local/bin/molecule-test.sh
 
       - name: Run Molecule tests.
-        run: molecule test
+        run: molecule-test.sh
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
           MOLECULE_DISTRO: ${{ matrix.distro }}
           MOLECULE_PLAYBOOK: ${{ matrix.playbook }}
+
