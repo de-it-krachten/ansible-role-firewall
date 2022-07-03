@@ -9,29 +9,145 @@ generic:
 
 # Supported platforms
 platforms:
-  - name: Red Hat Enterprise Linux 7
+  rhel7:
+    name: Red Hat Enterprise Linux 7
     ci: false
-  - name: Red Hat Enterprise Linux 8
+    supported: true
+    image: "dropveter/rhel7-ansible"
+    galaxy:
+      name: EL
+      version: 7
+  rhel8:
+    name: Red Hat Enterprise Linux 8
     ci: false
-  - name: CentOS 7
-    image: centos7
-#  - name: CentOS 8
-#    image: centos8
-  - name: RockyLinux 8
-    image: rockylinux8
-  - name: AlmaLinux 8
-    image: almalinux8
+    supported: true
+    image: "dropveter/rhel8-ansible"
+    galaxy:
+      name: EL
+      version: 8
+  rhel9:
+    name: Red Hat Enterprise Linux 9
     ci: false
-  - name: Debian 10 (Buster)
-    image: debian10
-  - name: Debian 11 (Bullseye)
-    image: debian11
-  - name: Ubuntu 18.04 LTS
-    image: ubuntu1804
-  - name: Ubuntu 20.04 LTS
-    image: ubuntu2004
-  - name: Ubuntu 22.04 LTS
-    image: ubuntu2204
+    supported: true
+    image: "dropveter/rhel9-ansible"
+    galaxy:
+      name: EL
+      version: 9
+  centos7:
+    name: CentOS 7
+    ci: true
+    supported: true
+    image: "geerlingguy/docker-centos7-ansible:latest"
+    galaxy:
+      name: EL
+      version: 7
+  centos8:
+    name: CentOS 8
+    ci: true
+    supported: true
+    image: "geerlingguy/docker-centos8-ansible:latest"
+    galaxy:
+      name: EL
+      version: 8
+  rockylinux8:
+    name: RockyLinux 8
+    ci: true
+    supported: true
+    image: "geerlingguy/docker-rockylinux8-ansible:latest"
+    galaxy:
+      name: EL
+      version: 8
+  oraclelinux8:
+    name: OracleLinux 8
+    ci: true
+    supported: true
+    image: "dropveter/oraclelinux8-ansible"
+    galaxy:
+      name: EL
+      version: 8
+  almalinux8:
+    name: AlmaLinux 8
+    ci: true
+    supported: true
+    image: "dropveter/almalinux8-ansible"
+    galaxy:
+      name: EL
+      version: 8
+  almalinux9:
+    name: AlmaLinux 9
+    ci: true
+    supported: true
+    image: "dropveter/almalinux9-ansible"
+    galaxy:
+      name: EL
+      version: 9
+  debian10:
+    name: Debian 10 (Buster)
+    ci: true
+    supported: true
+    image: "geerlingguy/docker-debian10-ansible:latest"
+    galaxy:
+      name: Debian
+      version: buster
+  debian11:
+    name: Debian 11 (Bullseye)
+    ci: true
+    supported: true
+    image: "geerlingguy/docker-debian11-ansible:latest"
+    galaxy:
+      name: Debian
+      version: bullseye
+  ubuntu1804:
+    name: Ubuntu 18.04 LTS
+    ci: true
+    supported: true
+    image: "geerlingguy/docker-ubuntu1804-ansible:latest"
+    galaxy:
+      name: Ubuntu
+      version: 18.04
+  ubuntu2004:
+    name: Ubuntu 20.04 LTS
+    ci: true
+    supported: true
+    image: "geerlingguy/docker-ubuntu2004-ansible:latest"
+    galaxy:
+      name: Ubuntu
+      version: 20.04
+  ubuntu2204:
+    name: Ubuntu 22.04 LTS
+    ci: true
+    supported: true
+    image: "geerlingguy/docker-ubuntu2204-ansible:latest"
+    galaxy:
+      name: Ubuntu
+      version: 22.04
+  fedora35:
+    name: Fedora 35
+    ci: true
+    supported: true
+    image: "geerlingguy/docker-fedora35-ansible:latest"
+    galaxy:
+      name: Fedora
+      version: all
+  fedora36:
+    name: Fedora 36
+    ci: true
+    supported: true
+    image: "geerlingguy/docker-fedora36-ansible:latest"
+    galaxy:
+      name: Fedora
+      version: all
+  alpine:
+    name: Alpine 3
+    ci: false
+    supported: false
+    image: "robertdebock/alpine:latest"
+    galaxy:
+      name: Alpine
+      version: all
+
+# List of platform deviations
+platforms_overwrite: {}
 
 # Ansible galaxy
 galaxy:
@@ -56,12 +172,15 @@ galaxy:
         - 18.04
         - 20.04
         - 22.04
+    - name: Fedora
+      versions:
+        - all
 
 # Github
 github:
   active: true
   self_hosted: false
-  fail_fast: true
+  fail_fast: false
   parallel: true
   owner: de-it-krachten
   repo: ansible-role-firewall
@@ -73,16 +192,6 @@ gitlab:
 # molecule
 molecule:
   active: true
-  platforms:
-    - centos7
-#    - centos8
-    - rockylinux8
-#    - almalinux8
-    - debian10
-    - debian11
-    - ubuntu1804
-    - ubuntu2004
-    - ubuntu2204
   converge:
     playbooks: []
     vars: {}
@@ -127,6 +236,10 @@ ci_templates:
     src: molecule/templates/molecule.yml.j2
     dest: molecule/default/molecule.yml.j2
     when: molecule_active
+  molecule-test.yml:
+    src: molecule/templates/molecule-test.yml
+    dest: molecule/default/molecule-test.yml
+    when: molecule_active
   converge.yml:
     src: molecule/templates/converge.yml
     dest: molecule/default/converge.yml
@@ -147,3 +260,12 @@ ci_templates:
     src: git/templates/gitignore
     dest: .gitignore
     force: false
+  ansible-lint:
+    src: molecule/templates/ansible-lint
+    dest: .ansible-lint
+    force: no
+    when: molecule_active
+  molecule-platforms.yml:
+    src: molecule/templates/molecule-platforms.yml
+    dest: .molecule-platforms.yml
+    force: true

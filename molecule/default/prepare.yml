@@ -4,11 +4,44 @@
   hosts: all
   become: yes
   vars:
-    proxy_url: "{{ lookup('env', 'HTTPS_PROXY') | default('') }}"
-    proxy_use: "{{ True if ( proxy_url is defined and proxy_url|length > 0 ) else False }}"
+
+    proxy_use: "{{ True if ( https_proxy is defined and https_proxy|length > 0 ) else False }}"
+    https_proxy: "{{ lookup('env', 'HTTPS_PROXY') | default('') }}"
+    http_proxy: "{{ lookup('env', 'HTTP_PROXY') | default('') }}"
+    no_proxy: "{{ lookup('env', 'NO_PROXY') | default('127.0.0.1,localhost') }}"
+
+    iptables_distros:
+      - debian10
+      - ubuntu1804
+      - rhel7
+      - centos7
+
+    ufw_distros:
+      - debian11
+      - ubuntu2004
+      - ubuntu2204
+
+    firewalld_distros:
+      - fedora35
+      - fedora36
+      - centos8
+      - centos9
+      - oraclelinux8
+      - oraclelinux9
+      - rocky8
+      - rocky9
+      - almalinux8
+      - almalinux9
+
     systemctl_alternative: False
     prepare_firewall: True
   tasks:
+
+    - name: Create remote_tmp
+      file:
+        path: /root/.ansible/tmp
+        state: directory
+        mode: "0700"
 
     - name: Define molecule distro (Ubuntu)
       set_fact:
@@ -25,7 +58,9 @@
         msg:
           molecule_distro: "{{ molecule_distro }}"
           proxy_use: "{{ proxy_use }}"
-          proxy_url: "{{ proxy_url }}"
+          https_proxy: "{{ https_proxy }}"
+          http_proxy: "{{ http_proxy }}"
+          no_proxy: "{{ no_proxy }}"
           prepare_firewall: "{{ prepare_firewall | default(False) }}"
           update_all: "{{ update_all | default(False) }}"
 
@@ -34,9 +69,9 @@
         - name: Configure APT to use proxy
           copy:
             content: |
-              Acquire::http::proxy "{{ proxy_url }}/";
-              Acquire::https::proxy "{{ proxy_url }}/";
-              Acquire::gtp::proxy "{{ proxy_url }}/";
+              Acquire::http::proxy "{{ http_proxy }}/";
+              Acquire::https::proxy "{{ https_proxy }}/";
+              Acquire::gtp::proxy "{{ https_proxy }}/";
             dest: /etc/apt/apt.conf.d/80proxy
             owner: root
             group: root
@@ -57,6 +92,7 @@
         - name: Install default packages
           package:
             name:
+              - lsb-release
               - netbase
               - gnupg
               - ssh
@@ -69,7 +105,7 @@
         - name: Configure YUM to use proxy
           lineinfile:
             path: /etc/yum.conf
-            line: "proxy={{ proxy_url }}"
+            line: "proxy={{ https_proxy }}"
             regexp: "^proxy=.*$"
           when: proxy_use is defined and proxy_use|bool
 
@@ -133,7 +169,7 @@
         - name: Configure DNF to use proxy
           lineinfile:
             path: /etc/dnf/dnf.conf
-            line: "proxy={{ proxy_url }}"
+            line: "proxy={{ https_proxy }}"
             regexp: "^proxy=.*$"
           when: proxy_use is defined and proxy_use|bool
 
@@ -173,17 +209,17 @@
         - name: Install iptables
           include_role:
             name: iptables
-          when: molecule_distro in [ 'debian10', 'ubuntu1804', 'centos7' ]
+          when: molecule_distro in iptables_distros
 
         - name: Install ufw
           include_role:
             name: ufw
-          when: molecule_distro in [ 'debian11', 'ubuntu2004', 'ubuntu2204' ]
+          when: molecule_distro in ufw_distros
 
         - name: Install firewalld
           include_role:
             name: firewalld
-          when: molecule_distro in [ 'fedora34', 'fedora35', 'fedora36', 'centos8', 'oraclelinux8', 'rockylinux8', 'almalinux8' ]
+          when: molecule_distro in firewalld_distros
 
       when: prepare_firewall is defined and prepare_firewall|bool
 

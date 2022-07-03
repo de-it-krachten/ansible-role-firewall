@@ -1,0 +1,9 @@
+---
+
+warnings:
+  ignore:
+    - "[WARNING]: noop task does not support when conditional"
+
+deprecation_warnings:
+  ignore:
+    - "[DEPRECATION WARNING]: docker_image_facts"

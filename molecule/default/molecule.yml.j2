@@ -10,13 +10,15 @@ lint: |
   ansible-lint
 platforms:
 {% for platform in MOLECULE_DISTROS %}
-  - name: firewall-{{ platform }}
-    image: "geerlingguy/docker-{{ platform }}-ansible:latest"
+  - name: firewall-{{ platform.name }}
+    image: "{{ platform.image }}"
+    rhsm: {{ platform.rhsm | default(False) }}
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    privileged: true
-    pre_build_image: true
+    privileged: {{ platform.privileged | default(True) }}
+    pre_build_image: {{ platform.pre_build_image | default(True) }}
+    dockerfile: Dockerfile.{{ platform.name }}.j2
 {% endfor %}
 provisioner:
   name: ansible

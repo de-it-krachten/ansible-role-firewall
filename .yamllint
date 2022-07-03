@@ -20,6 +20,7 @@ rules:
   document-start: disable
   empty-lines:
     max: 3
+    max-end: 1
     level: error
   hyphens:
     level: error
