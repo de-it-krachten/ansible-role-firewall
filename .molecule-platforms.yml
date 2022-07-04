@@ -1,0 +1,26 @@
+---
+
+- name: centos7
+  image: geerlingguy/docker-centos7-ansible:latest
+- name: rockylinux8
+  image: geerlingguy/docker-rockylinux8-ansible:latest
+- name: oraclelinux8
+  image: dropveter/oraclelinux8-ansible
+- name: almalinux8
+  image: dropveter/almalinux8-ansible
+- name: almalinux9
+  image: dropveter/almalinux9-ansible
+- name: debian10
+  image: geerlingguy/docker-debian10-ansible:latest
+- name: debian11
+  image: geerlingguy/docker-debian11-ansible:latest
+- name: ubuntu1804
+  image: geerlingguy/docker-ubuntu1804-ansible:latest
+- name: ubuntu2004
+  image: geerlingguy/docker-ubuntu2004-ansible:latest
+- name: ubuntu2204
+  image: geerlingguy/docker-ubuntu2204-ansible:latest
+- name: fedora35
+  image: geerlingguy/docker-fedora35-ansible:latest
+- name: fedora36
+  image: geerlingguy/docker-fedora36-ansible:latest
