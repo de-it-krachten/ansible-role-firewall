@@ -1,6 +1,6 @@
 ---
 
-- name: Identity firewall
+- name: Identify firewall
   include_tasks: identify.yml
   when: firewall_type is undefined
 
