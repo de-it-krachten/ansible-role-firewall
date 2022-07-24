@@ -42,7 +42,8 @@
     - _firewalld['status']['ActiveState'] == 'active'
     - firewall_running is undefined
 
-- block:
+- name: Assume iptables if noting else found
+  block:
 
     - name: Search for iptables binary
       command: which iptables
