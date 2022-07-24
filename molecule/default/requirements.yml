@@ -21,3 +21,7 @@ roles:
     src: https://github.com/de-it-krachten/ansible-role-ufw.git
     version: main
     scm: git
+  - name: unbound
+    src: https://github.com/de-it-krachten/ansible-role-unbound.git
+    version: main
+    scm: git

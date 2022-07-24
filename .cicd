@@ -13,7 +13,8 @@ platforms:
     name: Red Hat Enterprise Linux 7
     ci: false
     supported: true
-    image: "dropveter/rhel7-ansible"
+    image: "registry.access.redhat.com/ubi7/ubi-init:latest"
+    pre_build_image: false
     galaxy:
       name: EL
       version: 7
@@ -21,7 +22,8 @@ platforms:
     name: Red Hat Enterprise Linux 8
     ci: false
     supported: true
-    image: "dropveter/rhel8-ansible"
+    image: "registry.access.redhat.com/ubi8/ubi-init:latest"
+    pre_build_image: false
     galaxy:
       name: EL
       version: 8
@@ -29,7 +31,8 @@ platforms:
     name: Red Hat Enterprise Linux 9
     ci: false
     supported: true
-    image: "dropveter/rhel9-ansible"
+    image: "registry.access.redhat.com/ubi9/ubi-init:latest"
+    pre_build_image: false
     galaxy:
       name: EL
       version: 9
@@ -38,6 +41,7 @@ platforms:
     ci: true
     supported: true
     image: "geerlingguy/docker-centos7-ansible:latest"
+    box: "generic/centos7"
     galaxy:
       name: EL
       version: 7
@@ -46,22 +50,52 @@ platforms:
     ci: false
     supported: false
     image: "geerlingguy/docker-centos8-ansible:latest"
+    box: "generic/centos8"
     galaxy:
       name: EL
       version: 8
+  centos8s:
+    name: CentOS Stream 8
+    ci: false
+    supported: false
+    image: "dropveter/centos8s-ansible:latest"
+    box: "generic/centos8s"
+    galaxy:
+      name: EL
+      version: 8
+  centos9s:
+    name: CentOS Stream 9
+    ci: false
+    supported: false
+    image: "dropveter/centos9s-ansible:latest"
+    box: "generic/centos9s"
+    galaxy:
+      name: EL
+      version: 9
   rockylinux8:
     name: RockyLinux 8
     ci: true
     supported: true
     image: "geerlingguy/docker-rockylinux8-ansible:latest"
+    box: "generic/rocky8"
     galaxy:
       name: EL
       version: 8
+  rockylinux9:
+    name: RockyLinux 9
+    ci: true
+    supported: true
+    image: "geerlingguy/docker-rockylinux9-ansible:latest"
+    box: "generic/rocky9"
+    galaxy:
+      name: EL
+      version: 9
   oraclelinux8:
     name: OracleLinux 8
     ci: true
     supported: true
     image: "dropveter/oraclelinux8-ansible"
+    box: "generic/oracle8"
     galaxy:
       name: EL
       version: 8
@@ -70,6 +104,7 @@ platforms:
     ci: true
     supported: true
     image: "dropveter/almalinux8-ansible"
+    box: "generic/alma8"
     galaxy:
       name: EL
       version: 8
@@ -78,6 +113,7 @@ platforms:
     ci: true
     supported: true
     image: "dropveter/almalinux9-ansible"
+    box: "generic/alma9"
     galaxy:
       name: EL
       version: 9
@@ -86,6 +122,7 @@ platforms:
     ci: true
     supported: true
     image: "geerlingguy/docker-debian10-ansible:latest"
+    box: "generic/debian10"
     galaxy:
       name: Debian
       version: buster
@@ -94,6 +131,7 @@ platforms:
     ci: true
     supported: true
     image: "geerlingguy/docker-debian11-ansible:latest"
+    box: "generic/debian11"
     galaxy:
       name: Debian
       version: bullseye
@@ -102,30 +140,34 @@ platforms:
     ci: true
     supported: true
     image: "geerlingguy/docker-ubuntu1804-ansible:latest"
+    box: "generic/ubuntu1804"
     galaxy:
       name: Ubuntu
-      version: 18.04
+      version: bionic
   ubuntu2004:
     name: Ubuntu 20.04 LTS
     ci: true
     supported: true
     image: "geerlingguy/docker-ubuntu2004-ansible:latest"
+    box: "generic/ubuntu2004"
     galaxy:
       name: Ubuntu
-      version: 20.04
+      version: focal
   ubuntu2204:
     name: Ubuntu 22.04 LTS
     ci: true
     supported: true
     image: "geerlingguy/docker-ubuntu2204-ansible:latest"
+    box: "generic/ubuntu2204"
     galaxy:
       name: Ubuntu
-      version: 22.04
+      version: jammy
   fedora35:
     name: Fedora 35
     ci: true
     supported: true
     image: "geerlingguy/docker-fedora35-ansible:latest"
+    box: "generic/fedora35"
     galaxy:
       name: Fedora
       version: all
@@ -134,14 +176,17 @@ platforms:
     ci: true
     supported: true
     image: "geerlingguy/docker-fedora36-ansible:latest"
+    box: "generic/fedora36"
     galaxy:
       name: Fedora
       version: all
-  alpine:
+  alpine3:
     name: Alpine 3
     ci: false
     supported: false
     image: "robertdebock/alpine:latest"
+    box: "generic/alpine312"
+    pre_build_image: false
     galaxy:
       name: Alpine
       version: all
@@ -184,6 +229,16 @@ github:
   parallel: true
   owner: de-it-krachten
   repo: ansible-role-firewall
+  lint_matrix:
+    - name: ansible4
+      ansible: ">4,<5"
+      ansible_lint: ">5,<6"
+    - name: ansible5
+      ansible: ">5,<6"
+      ansible_lint: ">6,<7"
+    - name: ansible6
+      ansible: ">6,<7"
+      ansible_lint: ">6,<7"
 
 # Gitlab
 gitlab:
@@ -192,6 +247,8 @@ gitlab:
 # molecule
 molecule:
   active: true
+  dns_server: false
+  driver: docker
   converge:
     playbooks: []
     vars: {}
@@ -206,6 +263,10 @@ molecule:
       - firewalld
       - iptables
       - ufw
+      - unbound
+  nodes:
+    - name: node1
+      groups: []
 
 # templates
 ci_templates:
@@ -271,7 +332,7 @@ ci_templates:
   ansible-lint:
     src: molecule/templates/ansible-lint
     dest: .ansible-lint
-    force: no
+    # force: no
     when: molecule_active
   molecule-platforms.yml:
     src: molecule/templates/molecule-platforms.yml

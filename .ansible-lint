@@ -6,3 +6,4 @@ exclude_paths:
 
 skip_list:
   - fqcn-builtins
+  - var-spacing
