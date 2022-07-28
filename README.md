@@ -16,6 +16,7 @@ Supported platforms
 - Red Hat Enterprise Linux 9<sup>1</sup>
 - CentOS 7
 - RockyLinux 8
+- RockyLinux 9
 - OracleLinux 8
 - AlmaLinux 8
 - AlmaLinux 9
@@ -48,6 +49,7 @@ firewall_type_unsupported:
 <pre><code>
 - name: sample playbook for role 'firewall'
   hosts: all
+  become: "{{ molecule['converge']['become'] | default('yes') }}"
   vars:
     firewall_ports: [{'port': '22', 'proto': 'tcp'}, {'port': '53', 'proto': 'udp'}]
   tasks:

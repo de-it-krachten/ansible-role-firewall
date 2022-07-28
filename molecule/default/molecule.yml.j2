@@ -10,7 +10,7 @@ lint: |
   ansible-lint
 platforms:
 {% for platform in MOLECULE_DISTROS %}
-  - name: firewall-{{ platform.name }}
+  - name: firewall-{{ platform.name }}-node1
     image: "{{ platform.image }}"
     rhsm: {{ platform.rhsm | default(False) }}
     command: ${MOLECULE_DOCKER_COMMAND:-""}
@@ -22,6 +22,12 @@ platforms:
 {% endfor %}
 provisioner:
   name: ansible
+{% if MOLECULE_ANSIBLE_ARGS is defined %}
+  ansible_args:
+{% for molecule_ansible_arg in MOLECULE_ANSIBLE_ARGS %}
+    - {{ molecule_ansible_arg }}
+{% endfor %}
+{% endif %}
   env:
     ANSIBLE_PIPELINING: "True"
   lint:
@@ -29,9 +35,8 @@ provisioner:
   playbooks:
     converge: ${MOLECULE_PLAYBOOK:-converge.yml}
   inventory:
-    host_vars:
-      firewall-rockylinux8:
-        ansible_python_interpreter: /usr/libexec/platform-python
+    group_vars: {}
+    host_vars: {}
 scenario:
   name: default
 verifier:

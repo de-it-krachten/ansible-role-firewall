@@ -15,6 +15,7 @@
       - ubuntu1804
       - rhel7
       - centos7
+      - alpine3
 
     ufw_distros:
       - debian11
@@ -43,15 +44,16 @@
         state: directory
         mode: "0700"
 
-    - name: Define molecule distro (Ubuntu)
+    - name: Define molecule distro
       set_fact:
-        molecule_distro: "{{ (ansible_distribution|lower) + (ansible_distribution_version|regex_replace('\\.')) }}"
-      when: ansible_distribution == 'Ubuntu'
-
-    - name: Define molecule distro (Rest)
-      set_fact:
-        molecule_distro: "{{ (ansible_distribution|lower) + ansible_distribution_major_version }}"
-      when: ansible_distribution != 'Ubuntu'
+        molecule_distro: >-
+          {%- if ansible_distribution == 'Ubuntu' -%}
+          {{ (ansible_distribution | lower) + (ansible_distribution_version | regex_replace('\\.')) }}
+          {%- elif ansible_distribution == 'CentOS' and ansible_distribution_release == 'Stream' -%}
+          {{ (ansible_distribution | lower) + ansible_distribution_major_version + 's' }}
+          {%- else -%}
+          {{ (ansible_distribution | lower) + ansible_distribution_major_version }}
+          {%- endif -%}
 
     - name: Show settings
       debug:
@@ -64,7 +66,8 @@
           prepare_firewall: "{{ prepare_firewall | default(False) }}"
           update_all: "{{ update_all | default(False) }}"
 
-    - block:
+    - name: family Debian
+      block:
 
         - name: Configure APT to use proxy
           copy:
@@ -100,7 +103,8 @@
 
       when: ansible_os_family == 'Debian'
 
-    - block:
+    - name: family RedHat < 8
+      block:
 
         - name: Configure YUM to use proxy
           lineinfile:
@@ -137,7 +141,8 @@
 
       when: ansible_os_family == 'RedHat' and (ansible_distribution_major_version|int) < 8
 
-    - block:
+    - name: family RedHat 8+
+      block:
 
         # Switch to CentOS 8 vault mirrors
         - name: Get all repo files
@@ -145,7 +150,7 @@
             paths: /etc/yum.repos.d
             patterns: 'CentOS-Linux-*'
           register: _repo
-          when: ansible_distribution == 'CentOS'
+          when: molecule_distro == 'centos8'
 
         - name: Update repo files to point to CentOS vault mirror (1)
           replace:
@@ -155,7 +160,7 @@
           loop: "{{ _repo.files }}"
           loop_control:
             label: "{{ item.path }}"
-          when: ansible_distribution == 'CentOS'
+          when: molecule_distro == 'centos8'
 
         - name: Update repo files to point to CentOS vault mirror (2)
           replace:
@@ -165,7 +170,7 @@
           loop: "{{ _repo.files }}"
           loop_control:
             label: "{{ item.path }}"
-          when: ansible_distribution == 'CentOS'
+          when: molecule_distro == 'centos8'
 
         - name: Configure DNF to use proxy
           lineinfile:
@@ -196,12 +201,13 @@
         - name: Activate epel repository
           include_role:
             name: epel
-          when: activate_epel is defined and activate_epel|bool
+          when: activate_epel is defined and activate_epel|bool and ansible_distribution != 'Fedora'
 
       when: ansible_os_family == 'RedHat' and (ansible_distribution_major_version|int) >= 8
 
 
-    - block:
+    - name: Firewall
+      block:
 
         - name: Install iptables
           include_role:
@@ -218,12 +224,21 @@
             name: firewalld
           when: molecule_distro in firewalld_distros
 
-      when: prepare_firewall is defined and prepare_firewall|bool
+      when:
+        - prepare_firewall is defined and prepare_firewall|bool
+        - inventory_hostname is not search('-dns$')
 
-    - block:
+    - name: re-run setup
+      setup:
+
+    - name: localhosts
+      block:
 
         - name: Register all nodes in /etc/hosts
           include_role:
             name: hosts
+          vars:
+            hosts_mode: hosts
 
       when: register_hosts is defined and register_hosts|bool
+

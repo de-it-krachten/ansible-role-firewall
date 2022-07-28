@@ -4,6 +4,8 @@
   image: geerlingguy/docker-centos7-ansible:latest
 - name: rockylinux8
   image: geerlingguy/docker-rockylinux8-ansible:latest
+- name: rockylinux9
+  image: geerlingguy/docker-rockylinux9-ansible:latest
 - name: oraclelinux8
   image: dropveter/oraclelinux8-ansible
 - name: almalinux8
