@@ -4,12 +4,12 @@
 #  service_facts:
 
 - name: Get ufw information
-  service:
+  ansible.builtin.service:
     name: ufw
   register: _ufw
 
 - name: Identifiy firewall active (ufw)
-  set_fact:
+  ansible.builtin.set_fact:
     firewall_running: ufw
   when:
     - _ufw['status']['ActiveState'] is defined
@@ -17,12 +17,12 @@
     - firewall_running is undefined
 
 - name: Get nftables information
-  service:
+  ansible.builtin.service:
     name: nftables
   register: _nftables
 
 - name: Identifiy firewall active (nftables)
-  set_fact:
+  ansible.builtin.set_fact:
     firewall_running: nftables
   when:
     - _nftables['status']['ActiveState'] is defined
@@ -30,12 +30,12 @@
     - firewall_running is undefined
 
 - name: Get firewalld information
-  service:
+  ansible.builtin.service:
     name: firewalld
   register: _firewalld
 
 - name: Identifiy firewall active (firewalld)
-  set_fact:
+  ansible.builtin.set_fact:
     firewall_running: firewalld
   when:
     - _firewalld['status']['ActiveState'] is defined
@@ -43,30 +43,29 @@
     - firewall_running is undefined
 
 - name: Assume iptables if noting else found
+  when:
+    - firewall_running is undefined
   block:
 
     - name: Search for iptables binary
-      command: which iptables
+      ansible.builtin.command: which iptables
       changed_when: false
       failed_when: false
       register: _iptables
 
     - name: Make sure iptables functions
-      command: iptables -L
+      ansible.builtin.command: iptables -L
       changed_when: false
       register: _iptables_list
       when: _iptables.stdout|length > 0
 
     - name: Assume iptables when binary is found and functioning
-      set_fact:
+      ansible.builtin.set_fact:
         firewall_running: iptables
       when:
         - _iptables.stdout|length > 0
         - _iptables_list.rc == 0
 
-  when:
-    - firewall_running is undefined
-
 - name: Set firewall found
-  set_fact:
+  ansible.builtin.set_fact:
     firewall_type: "{{ firewall_running | default('unknown') }}"

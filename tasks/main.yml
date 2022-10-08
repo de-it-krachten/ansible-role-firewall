@@ -1,14 +1,14 @@
 ---
 
 - name: Identify firewall
-  include_tasks: identify.yml
+  ansible.builtin.include_tasks: identify.yml
   when: firewall_type is undefined
 
 - name: Show unsupported message
-  debug:
+  ansible.builtin.debug:
     msg: "Unsupported firewall '{{ firewall_running }}' found"
   when: firewall_type in firewall_type_unsupported
 
 - name: Include the appropiate tasks
-  include_tasks: "{{ firewall_type }}.yml"
+  ansible.builtin.include_tasks: "{{ firewall_type }}.yml"
   when: firewall_type != 'unknown' and firewall_type not in firewall_type_unsupported
