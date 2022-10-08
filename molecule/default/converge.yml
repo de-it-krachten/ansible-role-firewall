@@ -7,5 +7,5 @@
     firewall_ports: [{'port': '22', 'proto': 'tcp'}, {'port': '53', 'proto': 'udp'}]
   tasks:
     - name: Include role 'ansible-role-firewall'
-      include_role:
+      ansible.builtin.include_role:
         name: ansible-role-firewall

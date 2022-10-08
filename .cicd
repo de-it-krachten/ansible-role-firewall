@@ -7,189 +7,284 @@ generic:
   role_description: |
     <put description in .cicd.overwrite>
 
+# Dependencies
+dependencies:
+  roles: []
+  collections: []
+
 # Supported platforms
 platforms:
   rhel7:
     name: Red Hat Enterprise Linux 7
     ci: false
     supported: true
-    image: "registry.access.redhat.com/ubi7/ubi-init:latest"
-    pre_build_image: false
     galaxy:
       name: EL
       version: 7
+    molecule:
+      docker:
+        image: "registry.access.redhat.com/ubi7/ubi-init:latest"
+        pre_build_image: false
   rhel8:
     name: Red Hat Enterprise Linux 8
     ci: false
     supported: true
-    image: "registry.access.redhat.com/ubi8/ubi-init:latest"
-    pre_build_image: false
     galaxy:
       name: EL
       version: 8
+    molecule:
+      docker:
+        image: "registry.access.redhat.com/ubi8/ubi-init:latest"
+        pre_build_image: false
   rhel9:
     name: Red Hat Enterprise Linux 9
     ci: false
     supported: true
-    image: "registry.access.redhat.com/ubi9/ubi-init:latest"
-    pre_build_image: false
     galaxy:
       name: EL
       version: 9
+    molecule:
+      docker:
+        image: "registry.access.redhat.com/ubi9/ubi-init:latest"
+        pre_build_image: false
   centos7:
     name: CentOS 7
     ci: true
     supported: true
-    image: "geerlingguy/docker-centos7-ansible:latest"
-    box: "generic/centos7"
     galaxy:
       name: EL
       version: 7
+    molecule:
+      docker:
+        image: "geerlingguy/docker-centos7-ansible:latest"
+      vagrant:
+        box: "generic/centos7"
+      hetznercloud:
+        image: centos-7
+        server_type: cx11
   centos8:
     name: CentOS 8
     ci: false
     supported: false
-    image: "geerlingguy/docker-centos8-ansible:latest"
-    box: "generic/centos8"
     galaxy:
       name: EL
       version: 8
+    molecule:
+      docker:
+        image: "geerlingguy/docker-centos8-ansible:latest"
+      vagrant:
+        box: "generic/centos8"
   centos8s:
     name: CentOS Stream 8
     ci: false
     supported: false
-    image: "dropveter/centos8s-ansible:latest"
-    box: "generic/centos8s"
     galaxy:
       name: EL
       version: 8
+    molecule:
+      docker:
+        image: "dropveter/centos8s-ansible:latest"
+      vagrant:
+        box: "generic/centos8s"
+      hetznercloud:
+        image: centos-stream-8
+        server_type: cx11
   centos9s:
     name: CentOS Stream 9
     ci: false
     supported: false
-    image: "dropveter/centos9s-ansible:latest"
-    box: "generic/centos9s"
     galaxy:
       name: EL
       version: 9
+    molecule:
+      docker:
+        image: "dropveter/centos9s-ansible:latest"
+      vagrant:
+        box: "generic/centos9s"
+      hetznercloud:
+        image: centos-stream-9
+        server_type: cx11
   rockylinux8:
     name: RockyLinux 8
     ci: true
     supported: true
-    image: "geerlingguy/docker-rockylinux8-ansible:latest"
-    box: "generic/rocky8"
     galaxy:
       name: EL
       version: 8
+    molecule:
+      docker:
+        image: "geerlingguy/docker-rockylinux8-ansible:latest"
+      vagrant:
+        box: "generic/rocky8"
+      hetznercloud:
+        image: rocky-8
+        server_type: cx11
   rockylinux9:
     name: RockyLinux 9
     ci: true
     supported: true
-    image: "geerlingguy/docker-rockylinux9-ansible:latest"
-    box: "generic/rocky9"
     galaxy:
       name: EL
       version: 9
+    molecule:
+      docker:
+        image: "geerlingguy/docker-rockylinux9-ansible:latest"
+      vagrant:
+        box: "generic/rocky9"
+      hetznercloud:
+        image: rocky-9
+        server_type: cx11
   oraclelinux8:
     name: OracleLinux 8
     ci: true
     supported: true
-    image: "dropveter/oraclelinux8-ansible"
-    box: "generic/oracle8"
     galaxy:
       name: EL
       version: 8
+    molecule:
+      docker:
+        image: "dropveter/oraclelinux8-ansible"
+      vagrant:
+        box: "generic/oracle8"
   almalinux8:
     name: AlmaLinux 8
     ci: true
     supported: true
-    image: "dropveter/almalinux8-ansible"
-    box: "generic/alma8"
     galaxy:
       name: EL
       version: 8
+    molecule:
+      docker:
+        image: "dropveter/almalinux8-ansible"
+      vagrant:
+        box: "generic/alma8"
   almalinux9:
     name: AlmaLinux 9
     ci: true
     supported: true
-    image: "dropveter/almalinux9-ansible"
-    box: "generic/alma9"
     galaxy:
       name: EL
       version: 9
+    molecule:
+      docker:
+        image: "dropveter/almalinux9-ansible"
+      vagrant:
+        box: "generic/alma9"
   debian10:
     name: Debian 10 (Buster)
     ci: true
     supported: true
-    image: "geerlingguy/docker-debian10-ansible:latest"
-    box: "generic/debian10"
     galaxy:
       name: Debian
       version: buster
+    molecule:
+      docker:
+        image: "geerlingguy/docker-debian10-ansible:latest"
+      vagrant:
+        box: "generic/debian10"
+      hetznercloud:
+        image: debian-10
+        server_type: cx11
   debian11:
     name: Debian 11 (Bullseye)
     ci: true
     supported: true
-    image: "geerlingguy/docker-debian11-ansible:latest"
-    box: "generic/debian11"
     galaxy:
       name: Debian
       version: bullseye
+    molecule:
+      docker:
+        image: "geerlingguy/docker-debian11-ansible:latest"
+      vagrant:
+        box: "generic/debian11"
+      hetznercloud:
+        image: debian-11
+        server_type: cx11
   ubuntu1804:
     name: Ubuntu 18.04 LTS
     ci: true
     supported: true
-    image: "geerlingguy/docker-ubuntu1804-ansible:latest"
-    box: "generic/ubuntu1804"
     galaxy:
       name: Ubuntu
       version: bionic
+    molecule:
+      docker:
+        image: "geerlingguy/docker-ubuntu1804-ansible:latest"
+      vagrant:
+        box: "generic/ubuntu1804"
+      hetznercloud:
+        image: ubuntu-18.04
+        server_type: cx11
   ubuntu2004:
     name: Ubuntu 20.04 LTS
     ci: true
     supported: true
-    image: "geerlingguy/docker-ubuntu2004-ansible:latest"
-    box: "generic/ubuntu2004"
     galaxy:
       name: Ubuntu
       version: focal
+    molecule:
+      docker:
+        image: "geerlingguy/docker-ubuntu2004-ansible:latest"
+      vagrant:
+        box: "generic/ubuntu2004"
+      hetznercloud:
+        image: ubuntu-20.04
+        server_type: cx11
   ubuntu2204:
     name: Ubuntu 22.04 LTS
     ci: true
     supported: true
-    image: "geerlingguy/docker-ubuntu2204-ansible:latest"
-    box: "generic/ubuntu2204"
     galaxy:
       name: Ubuntu
       version: jammy
+    molecule:
+      docker:
+        image: "geerlingguy/docker-ubuntu2204-ansible:latest"
+      vagrant:
+        box: "generic/ubuntu2204"
+      hetznercloud:
+        image: ubuntu-22.04
+        server_type: cx11
   fedora35:
     name: Fedora 35
     ci: true
     supported: true
-    image: "geerlingguy/docker-fedora35-ansible:latest"
-    box: "generic/fedora35"
     galaxy:
       name: Fedora
       version: all
+    molecule:
+      docker:
+        image: "geerlingguy/docker-fedora35-ansible:latest"
+      vagrant:
+        box: "generic/fedora35"
   fedora36:
     name: Fedora 36
     ci: true
     supported: true
-    image: "geerlingguy/docker-fedora36-ansible:latest"
-    box: "generic/fedora36"
     galaxy:
       name: Fedora
       version: all
+    molecule:
+      docker:
+        image: "geerlingguy/docker-fedora36-ansible:latest"
+      vagrant:
+        box: "generic/fedora36"
+      hetznercloud:
+        image: fedora-36
+        server_type: cx11
   alpine3:
     name: Alpine 3
     ci: false
     supported: false
-    image: "robertdebock/alpine:latest"
-    box: "generic/alpine312"
-    pre_build_image: false
     galaxy:
       name: Alpine
       version: all
+    molecule:
+      docker:
+        image: "robertdebock/alpine:latest"
+        pre_build_image: false
+      vagrant:
+        box: "generic/alpine312"
 
 # List of platform deviations
 platforms_overwrite: {}
@@ -231,15 +326,22 @@ github:
   owner: de-it-krachten
   repo: ansible-role-firewall
   lint_matrix:
-    - name: ansible4
-      ansible: ">4,<5"
-      ansible_lint: ">5,<6"
-    - name: ansible5
-      ansible: ">5,<6"
-      ansible_lint: ">6,<7"
-    - name: ansible6
-      ansible: ">6,<7"
-      ansible_lint: ">6,<7"
+    - name: ansible_2.9
+      ansible: "ansible==2.9.27"
+      ansible_core: "ansible==2.9.27"
+      ansible_lint: "ansible-lint==5.4.0"
+    - name: ansible_2.11
+      ansible: "ansible>4,<5"
+      ansible_core: "ansible-core>2.11,<2.12"
+      ansible_lint: "ansible-lint>5,<6"
+    - name: ansible_2.12
+      ansible: "ansible>5,<6"
+      ansible_core: "ansible-core>2.12,<2.13"
+      ansible_lint: "ansible-lint>6,<7"
+    - name: ansible_2.13
+      ansible: "ansible>6,<7"
+      ansible_core: "ansible-core<2.13,<2.14"
+      ansible_lint: "ansible-lint>6,<7"
 
 # Gitlab
 gitlab:
@@ -263,6 +365,7 @@ molecule:
       - firewall
       - firewalld
       - iptables
+      - reboot
       - ufw
       - unbound
   nodes:
@@ -274,6 +377,9 @@ ci_templates:
   meta-main.yml:
     src: galaxy/templates/meta-main.yml
     dest: meta/main.yml
+  meta-requirements.yml:
+    src: galaxy/templates/meta-requirements.yml
+    dest: meta/requirements.yml
   yamllint:
     src: yamllint/templates/yamllint
     dest: .yamllint
@@ -331,7 +437,7 @@ ci_templates:
     dest: .gitignore
     force: false
   ansible-lint:
-    src: ansible-lint
+    src: ansible-lint/templates/ansible-lint
     dest: .ansible-lint
     # force: no
 
@@ -339,3 +445,9 @@ ci_templates:
     src: molecule/templates/molecule-platforms.yml
     dest: .molecule-platforms.yml
     force: true
+
+# Ansible-lint
+ansible_lint:
+  exclude_paths:
+    - molecule/
+  skip_list: []

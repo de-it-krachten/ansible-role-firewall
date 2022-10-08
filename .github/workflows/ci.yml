@@ -26,24 +26,31 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: "ansible4"
-            ansible: ">4,<5"
-            ansible_lint: ">5,<6"
-          - name: "ansible5"
-            ansible: ">5,<6"
-            ansible_lint: ">6,<7"
-          - name: "ansible6"
-            ansible: ">6,<7"
-            ansible_lint: ">6,<7"
+          - name: "ansible_2.9"
+            # ansible: "ansible==2.9.27"
+            ansible: "ansible==2.9.27"
+            ansible_lint: "ansible-lint==5.4.0"
+          - name: "ansible_2.11"
+            # ansible: "ansible>4,<5"
+            ansible: "ansible-core>2.11,<2.12"
+            ansible_lint: "ansible-lint>5,<6"
+          - name: "ansible_2.12"
+            # ansible: "ansible>5,<6"
+            ansible: "ansible-core>2.12,<2.13"
+            ansible_lint: "ansible-lint>6,<7"
+          - name: "ansible_2.13"
+            # ansible: "ansible>6,<7"
+            ansible: "ansible-core<2.13,<2.14"
+            ansible_lint: "ansible-lint>6,<7"
 
     steps:
       - name: Check out the codebase.
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: "${{ github.repository }}"
 
       - name: Set up Python 3.
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: '3.x'
 
@@ -59,7 +66,52 @@ jobs:
         run: sudo apparmor_parser -R /etc/apparmor.d/usr.sbin.mysqld
 
       - name: Install test dependencies.
-        run: pip3 install "ansible${{ matrix.ansible }}" "ansible-lint${{ matrix.ansible_lint }}" yamllint jmespath e2j2 yq
+        run: |
+          pip3 install "${{ matrix.ansible }}" "${{ matrix.ansible_lint }}" yamllint jmespath e2j2 yq
+
+      - name: Install required galaxy collections
+        run: |
+          ansible-galaxy collection install community.docker
+          ansible-galaxy collection install community.general
+          ansible-galaxy collection install ansible.posix
+          ansible-galaxy collection install -r .collections
+
+      - name: For ansible 2.9, we need to perform some tweaking
+        run: |
+          ansible=$(pip show ansible 2>/dev/null | awk '/Version:/ {print $2}')
+          ansible_core=$(pip show ansible-core 2>/dev/null | awk '/Version:/ {print $2}')
+          ansible=${ansible:-$ansible_core}
+          echo "Ansible version = $ansible"
+          if [[ $ansible =~ 2.9.* ]]
+          then
+            echo "Patching for Rocky support"
+            site=$(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
+            sed -i "s/'AlmaLinux'\],/'AlmaLinux', 'Rocky'\],/" $site/ansible/module_utils/facts/system/distribution.py
+            echo "Downgrading 'community.general' to '3.8.3'"
+            ansible-galaxy collection install community.general:3.8.3 --force
+          else
+            echo "No need to patch it"
+          fi
+
+      - name: Retrieve wrapper scripts
+        run: |
+          set -e
+          sudo apt install curl
+          sudo curl -s -o /usr/local/bin/functions_ansible.sh \
+            https://raw.githubusercontent.com/de-it-krachten/ansible-role-molecule/dev/files/functions_ansible.sh
+          sudo curl -s -o /usr/local/bin/ansible-galaxy.sh \
+            https://raw.githubusercontent.com/de-it-krachten/ansible-role-molecule/dev/files/ansible-galaxy.sh
+          sudo curl -s -o /usr/local/bin/ansible-lint.sh \
+            https://raw.githubusercontent.com/de-it-krachten/ansible-role-molecule/dev/files/ansible-lint.sh
+          sudo curl -s -o /usr/local/bin/ansible-requirements-clean.sh \
+            https://raw.githubusercontent.com/de-it-krachten/ansible-role-molecule/dev/files/ansible-requirements-clean.sh
+          sudo curl -s -o /usr/local/bin/molecule-test.sh \
+            https://raw.githubusercontent.com/de-it-krachten/ansible-role-molecule/dev/files/molecule-test.sh
+          sudo chmod 644 /usr/local/bin/functions_ansible.sh
+          sudo chmod 755 /usr/local/bin/ansible-galaxy.sh
+          sudo chmod 755 /usr/local/bin/ansible-lint.sh
+          sudo chmod 755 /usr/local/bin/ansible-requirements-clean.sh
+          sudo chmod 755 /usr/local/bin/molecule-test.sh
 
       - name: Show component versions
         run: |
@@ -71,10 +123,10 @@ jobs:
         run: |
           set -e
           yamllint .
-          ansible-lint --exclude molecule/
+          ansible-lint.sh
 
   molecule:
-    name: Molecule
+    name: "${{ matrix.name }}"
     runs-on: ubuntu-latest
     needs: lint
     # continue-on-error: ${{ matrix.continue_on_error }}
@@ -82,67 +134,158 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - distro: centos7
+          - name: centos7_2.9
+            distro: centos7
             playbook: converge.yml
-            # continue_on_error: false
-            # failfast: true
-          - distro: rockylinux8
+            ansible: "ansible==2.9.27"
+            ansible_lint: "ansible-lint==5.4.0"
+          - name: centos7_2.13
+            distro: centos7
             playbook: converge.yml
-            # continue_on_error: false
-            # failfast: true
-          - distro: rockylinux9
+            ansible: "ansible-core>2.13,<2.14"
+            ansible_lint: "ansible-lint>6,<7"
+
+          - name: rockylinux8_2.9
+            distro: rockylinux8
             playbook: converge.yml
-            # continue_on_error: false
-            # failfast: true
-          - distro: oraclelinux8
+            ansible: "ansible==2.9.27"
+            ansible_lint: "ansible-lint==5.4.0"
+          - name: rockylinux8_2.13
+            distro: rockylinux8
             playbook: converge.yml
-            # continue_on_error: false
-            # failfast: true
-          - distro: almalinux8
+            ansible: "ansible-core>2.13,<2.14"
+            ansible_lint: "ansible-lint>6,<7"
+
+          - name: rockylinux9_2.9
+            distro: rockylinux9
             playbook: converge.yml
-            # continue_on_error: false
-            # failfast: true
-          - distro: almalinux9
+            ansible: "ansible==2.9.27"
+            ansible_lint: "ansible-lint==5.4.0"
+          - name: rockylinux9_2.13
+            distro: rockylinux9
             playbook: converge.yml
-            # continue_on_error: false
-            # failfast: true
-          - distro: debian10
+            ansible: "ansible-core>2.13,<2.14"
+            ansible_lint: "ansible-lint>6,<7"
+
+          - name: oraclelinux8_2.9
+            distro: oraclelinux8
             playbook: converge.yml
-            # continue_on_error: false
-            # failfast: true
-          - distro: debian11
+            ansible: "ansible==2.9.27"
+            ansible_lint: "ansible-lint==5.4.0"
+          - name: oraclelinux8_2.13
+            distro: oraclelinux8
             playbook: converge.yml
-            # continue_on_error: false
-            # failfast: true
-          - distro: ubuntu1804
+            ansible: "ansible-core>2.13,<2.14"
+            ansible_lint: "ansible-lint>6,<7"
+
+          - name: almalinux8_2.9
+            distro: almalinux8
             playbook: converge.yml
-            # continue_on_error: false
-            # failfast: true
-          - distro: ubuntu2004
+            ansible: "ansible==2.9.27"
+            ansible_lint: "ansible-lint==5.4.0"
+          - name: almalinux8_2.13
+            distro: almalinux8
             playbook: converge.yml
-            # continue_on_error: false
-            # failfast: true
-          - distro: ubuntu2204
+            ansible: "ansible-core>2.13,<2.14"
+            ansible_lint: "ansible-lint>6,<7"
+
+          - name: almalinux9_2.9
+            distro: almalinux9
             playbook: converge.yml
-            # continue_on_error: false
-            # failfast: true
-          - distro: fedora35
+            ansible: "ansible==2.9.27"
+            ansible_lint: "ansible-lint==5.4.0"
+          - name: almalinux9_2.13
+            distro: almalinux9
             playbook: converge.yml
-            # continue_on_error: false
-            # failfast: true
-          - distro: fedora36
+            ansible: "ansible-core>2.13,<2.14"
+            ansible_lint: "ansible-lint>6,<7"
+
+          - name: debian10_2.9
+            distro: debian10
             playbook: converge.yml
-            # continue_on_error: false
-            # failfast: true
+            ansible: "ansible==2.9.27"
+            ansible_lint: "ansible-lint==5.4.0"
+          - name: debian10_2.13
+            distro: debian10
+            playbook: converge.yml
+            ansible: "ansible-core>2.13,<2.14"
+            ansible_lint: "ansible-lint>6,<7"
+
+          - name: debian11_2.9
+            distro: debian11
+            playbook: converge.yml
+            ansible: "ansible==2.9.27"
+            ansible_lint: "ansible-lint==5.4.0"
+          - name: debian11_2.13
+            distro: debian11
+            playbook: converge.yml
+            ansible: "ansible-core>2.13,<2.14"
+            ansible_lint: "ansible-lint>6,<7"
+
+          - name: ubuntu1804_2.9
+            distro: ubuntu1804
+            playbook: converge.yml
+            ansible: "ansible==2.9.27"
+            ansible_lint: "ansible-lint==5.4.0"
+          - name: ubuntu1804_2.13
+            distro: ubuntu1804
+            playbook: converge.yml
+            ansible: "ansible-core>2.13,<2.14"
+            ansible_lint: "ansible-lint>6,<7"
+
+          - name: ubuntu2004_2.9
+            distro: ubuntu2004
+            playbook: converge.yml
+            ansible: "ansible==2.9.27"
+            ansible_lint: "ansible-lint==5.4.0"
+          - name: ubuntu2004_2.13
+            distro: ubuntu2004
+            playbook: converge.yml
+            ansible: "ansible-core>2.13,<2.14"
+            ansible_lint: "ansible-lint>6,<7"
+
+          - name: ubuntu2204_2.9
+            distro: ubuntu2204
+            playbook: converge.yml
+            ansible: "ansible==2.9.27"
+            ansible_lint: "ansible-lint==5.4.0"
+          - name: ubuntu2204_2.13
+            distro: ubuntu2204
+            playbook: converge.yml
+            ansible: "ansible-core>2.13,<2.14"
+            ansible_lint: "ansible-lint>6,<7"
+
+          - name: fedora35_2.9
+            distro: fedora35
+            playbook: converge.yml
+            ansible: "ansible==2.9.27"
+            ansible_lint: "ansible-lint==5.4.0"
+          - name: fedora35_2.13
+            distro: fedora35
+            playbook: converge.yml
+            ansible: "ansible-core>2.13,<2.14"
+            ansible_lint: "ansible-lint>6,<7"
+
+          - name: fedora36_2.9
+            distro: fedora36
+            playbook: converge.yml
+            ansible: "ansible==2.9.27"
+            ansible_lint: "ansible-lint==5.4.0"
+          - name: fedora36_2.13
+            distro: fedora36
+            playbook: converge.yml
+            ansible: "ansible-core>2.13,<2.14"
+            ansible_lint: "ansible-lint>6,<7"
+
 
     steps:
       - name: Check out the codebase.
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: "${{ github.repository }}"
 
       - name: Set up Python 3.
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: '3.x'
 
@@ -158,25 +301,63 @@ jobs:
         run: sudo apparmor_parser -R /etc/apparmor.d/usr.sbin.mysqld
 
       - name: Install test dependencies.
-        run: pip3 install ansible ansible-lint==5.4.0 molecule[docker] docker yamllint jmespath e2j2 yq
+        run: |
+          pip3 install "${{ matrix.ansible }}" "${{ matrix.ansible_lint }}" molecule[docker] molecule-hetznercloud docker yamllint jmespath e2j2 yq
+
+      - name: Install required galaxy collections
+        run: |
+          ansible-galaxy collection install community.docker
+          ansible-galaxy collection install community.general
+          ansible-galaxy collection install ansible.posix
+          ansible-galaxy collection install -r .collections
+
+      - name: For ansible 2.9, we need to perform some tweaking
+        run: |
+          ansible=$(pip show ansible 2>/dev/null | awk '/Version:/ {print $2}')
+          ansible_core=$(pip show ansible-core 2>/dev/null | awk '/Version:/ {print $2}')
+          ansible=${ansible:-$ansible_core}
+          echo "Ansible version = $ansible"
+          if [[ $ansible =~ 2.9.* ]]
+          then
+            echo "Patching for Rocky support"
+            site=$(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
+            sed -i "s/'AlmaLinux'\],/'AlmaLinux', 'Rocky'\],/" $site/ansible/module_utils/facts/system/distribution.py
+            echo "Downgrading 'community.general' to '3.8.3'"
+            ansible-galaxy collection install community.general:3.8.3 --force
+          else
+            echo "No need to patch it"
+          fi
 
       - name: Set-up github runner
         run: |
           sudo modprobe ip6table_filter
 
-      - name: Retrieve wrapper molecule scripts
+      - name: Retrieve wrapper scripts
         run: |
           set -e
           sudo apt install curl
+          sudo curl -s -o /usr/local/bin/functions_ansible.sh \
+            https://raw.githubusercontent.com/de-it-krachten/ansible-role-molecule/dev/files/functions_ansible.sh
           sudo curl -s -o /usr/local/bin/ansible-galaxy.sh \
             https://raw.githubusercontent.com/de-it-krachten/ansible-role-molecule/dev/files/ansible-galaxy.sh
+          sudo curl -s -o /usr/local/bin/ansible-lint.sh \
+            https://raw.githubusercontent.com/de-it-krachten/ansible-role-molecule/dev/files/ansible-lint.sh
           sudo curl -s -o /usr/local/bin/ansible-requirements-clean.sh \
             https://raw.githubusercontent.com/de-it-krachten/ansible-role-molecule/dev/files/ansible-requirements-clean.sh
           sudo curl -s -o /usr/local/bin/molecule-test.sh \
             https://raw.githubusercontent.com/de-it-krachten/ansible-role-molecule/dev/files/molecule-test.sh
+          sudo chmod 644 /usr/local/bin/functions_ansible.sh
           sudo chmod 755 /usr/local/bin/ansible-galaxy.sh
+          sudo chmod 755 /usr/local/bin/ansible-lint.sh
           sudo chmod 755 /usr/local/bin/ansible-requirements-clean.sh
           sudo chmod 755 /usr/local/bin/molecule-test.sh
+
+      - name: Show component versions
+        run: |
+          ansible --version
+          ansible-lint --version
+          yamllint --version
+          molecule --version
 
       - name: Run Molecule tests.
         run: molecule-test.sh
@@ -185,4 +366,4 @@ jobs:
           ANSIBLE_FORCE_COLOR: '1'
           MOLECULE_DISTRO: ${{ matrix.distro }}
           MOLECULE_PLAYBOOK: ${{ matrix.playbook }}
-
+          HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}

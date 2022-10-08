@@ -1,7 +1,7 @@
 ---
 
-#- name: Populate service facts
-#  service_facts:
+# - name: Populate service facts
+#   service_facts:
 
 - name: Get ufw information
   ansible.builtin.service:
@@ -57,13 +57,13 @@
       ansible.builtin.command: iptables -L
       changed_when: false
       register: _iptables_list
-      when: _iptables.stdout|length > 0
+      when: _iptables.stdout | length > 0
 
     - name: Assume iptables when binary is found and functioning
       ansible.builtin.set_fact:
         firewall_running: iptables
       when:
-        - _iptables.stdout|length > 0
+        - _iptables.stdout | length > 0
         - _iptables_list.rc == 0
 
 - name: Set firewall found

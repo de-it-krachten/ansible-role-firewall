@@ -7,7 +7,9 @@ driver:
 lint: |
   set -e
   yamllint .
+  ln -fs molecule/default/requirements.yml
   ansible-lint
+  rm -f requirements.yml
 platforms:
 {% for platform in MOLECULE_DISTROS %}
   - name: firewall-{{ platform.name }}-node1
