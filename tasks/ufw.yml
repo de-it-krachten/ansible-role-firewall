@@ -1,9 +1,9 @@
 ---
 
 - name: Open UFW firewall ports
-  ufw:
+  community.general.ufw:
     rule: allow
-    port: "{{ (fw.port|regex_replace('-',':')) if fw.port is defined else omit }}"
+    port: "{{ (fw.port | regex_replace('-', ':')) if fw.port is defined else omit }}"
     proto: "{{ fw.proto if fw.proto is defined else omit }}"
     name: "{{ fw.service if fw.service is defined else omit }}"
     state: enabled

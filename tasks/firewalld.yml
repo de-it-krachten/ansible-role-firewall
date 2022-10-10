@@ -1,8 +1,8 @@
 ---
 
 - name: Open firewalld firewall ports
-  firewalld:
-    port: "{{ ((fw.port|string)+'/'+fw.proto) if fw.port is defined else omit }}"
+  ansible.posix.firewalld:
+    port: "{{ ((fw.port | string) + '/' + fw.proto) if fw.port is defined else omit }}"
     service: "{{ fw.service if fw.service is defined else omit }}"
     immediate: yes
     permanent: yes

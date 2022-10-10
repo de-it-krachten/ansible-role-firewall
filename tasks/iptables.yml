@@ -4,7 +4,7 @@
   ansible.builtin.iptables:
     chain: INPUT
     protocol: "{{ fw.proto if fw.proto is defined else omit }}"
-    destination_port: "{{ (fw.port|regex_replace('-',':')) if fw.port is defined else omit }}"
+    destination_port: "{{ (fw.port | regex_replace('-', ':')) if fw.port is defined else omit }}"
     ctstate: "{{ 'NEW' if fw.proto == 'tcp' else omit }}"
     syn: "{{ 'match' if fw.proto == 'tcp' else omit }}"
     jump: ACCEPT
