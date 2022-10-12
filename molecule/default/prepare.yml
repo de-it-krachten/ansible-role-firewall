@@ -9,6 +9,7 @@
     https_proxy: "{{ lookup('env', 'HTTPS_PROXY') | default('') }}"
     http_proxy: "{{ lookup('env', 'HTTP_PROXY') | default('') }}"
     no_proxy: "{{ lookup('env', 'NO_PROXY') | default('127.0.0.1,localhost') }}"
+    molecule_driver: "{{ lookup('env', 'MOLECULE_DRIVER_NAME') }}"
 
     iptables_distros:
       - debian10
@@ -26,7 +27,8 @@
       - fedora35
       - fedora36
       - centos8
-      - centos9
+      - centos8s
+      - centos9s
       - oraclelinux8
       - oraclelinux9
       - rocky8
@@ -39,16 +41,16 @@
   tasks:
 
     - name: Create remote_tmp
-      file:
+      ansible.builtin.file:
         path: /root/.ansible/tmp
         state: directory
         mode: "0700"
 
-    - name: Define molecule distro
-      set_fact:
+    - name: Define molecule distro  # noqa jinja[spacing]
+      ansible.builtin.set_fact:
         molecule_distro: >-
           {%- if ansible_distribution == 'Ubuntu' -%}
-          {{ (ansible_distribution | lower) + (ansible_distribution_version | regex_replace('\\.')) }}
+          {{ (ansible_distribution | lower) + (ansible_distribution_version | regex_replace('\.')) }}
           {%- elif ansible_distribution == 'CentOS' and ansible_distribution_release == 'Stream' -%}
           {{ (ansible_distribution | lower) + ansible_distribution_major_version + 's' }}
           {%- else -%}
@@ -56,9 +58,10 @@
           {%- endif -%}
 
     - name: Show settings
-      debug:
+      ansible.builtin.debug:
         msg:
           molecule_distro: "{{ molecule_distro }}"
+          molecule_driver: "{{ molecule_driver }}"
           proxy_use: "{{ proxy_use }}"
           https_proxy: "{{ https_proxy }}"
           http_proxy: "{{ http_proxy }}"
@@ -66,11 +69,33 @@
           prepare_firewall: "{{ prepare_firewall | default(False) }}"
           update_all: "{{ update_all | default(False) }}"
 
-    - name: family Debian
+    - name: Enable root access
+      when:
+        - molecule_driver is search('^(hetznercloud|vagrant)$')
+        - enable_root_access is defined and enable_root_access | bool
+        - root_pubkey is defined and root_pubkey | length > 0
       block:
 
-        - name: Configure APT to use proxy
-          copy:
+        - name: Create /root/.ssh
+          ansible.builtin.file:
+            path: /root/.ssh
+            state: directory
+            owner: root
+            group: root
+            mode: "0700"
+
+        - name: Setup pubkey authentication for root
+          ansible.posix.authorized_key:
+            user: root
+            state: present
+            key: "{{ root_pubkey }}"
+
+    - name: Family Debian
+      when: ansible_os_family == 'Debian'
+      block:
+
+        - name: Configure APT to use proxy  # noqa template-instead-of-copy
+          ansible.builtin.copy:
             content: |
               Acquire::http::proxy "{{ http_proxy }}/";
               Acquire::https::proxy "{{ https_proxy }}/";
@@ -79,21 +104,21 @@
             owner: root
             group: root
             mode: "0644"
-          when: proxy_use is defined and proxy_use|bool
+          when: proxy_use is defined and proxy_use | bool
 
         - name: Update APT cache
-          apt:
+          ansible.builtin.apt:
             update_cache: yes
             cache_valid_time: 0
 
         - name: Upgrade APT packages
-          apt:
+          ansible.builtin.apt:
             force_apt_get: yes
             upgrade: yes
-          when: update_all is defined and update_all|bool
+          when: update_all is defined and update_all | bool
 
         - name: Install default packages
-          package:
+          ansible.builtin.package:
             name:
               - lsb-release
               - netbase
@@ -101,32 +126,32 @@
               - ssh
             state: present
 
-      when: ansible_os_family == 'Debian'
 
-    - name: family RedHat < 8
+    - name: Family RedHat < 8
+      when: ansible_os_family == 'RedHat' and (ansible_distribution_major_version | int) < 8
       block:
 
         - name: Configure YUM to use proxy
-          lineinfile:
+          ansible.builtin.lineinfile:
             path: /etc/yum.conf
             line: "proxy={{ https_proxy }}"
             regexp: "^proxy=.*$"
-          when: proxy_use is defined and proxy_use|bool
+          when: proxy_use is defined and proxy_use | bool
 
         - name: Update YUM cache  # noqa command-instead-of-module
-          command: yum makecache
+          ansible.builtin.command: yum makecache
           changed_when: false
           args:
             warn: false
 
         - name: Upgrade YUM packages  # noqa package-latest
-          yum:
+          ansible.builtin.yum:
             name: '*'
             state: latest
-          when: update_all is defined and update_all|bool
+          when: update_all is defined and update_all | bool
 
         - name: Install default packages
-          package:
+          ansible.builtin.package:
             name:
               - openssh-server
               - openssh-clients
@@ -135,25 +160,25 @@
             state: present
 
         - name: Activate epel repository
-          include_role:
+          ansible.builtin.include_role:
             name: epel
-          when: activate_epel is defined and activate_epel|bool
+          when: activate_epel is defined and activate_epel | bool
 
-      when: ansible_os_family == 'RedHat' and (ansible_distribution_major_version|int) < 8
 
-    - name: family RedHat 8+
+    - name: Family RedHat 8+
+      when: ansible_os_family == 'RedHat' and (ansible_distribution_major_version | int) >= 8
       block:
 
         # Switch to CentOS 8 vault mirrors
         - name: Get all repo files
-          find:
+          ansible.builtin.find:
             paths: /etc/yum.repos.d
             patterns: 'CentOS-Linux-*'
           register: _repo
           when: molecule_distro == 'centos8'
 
         - name: Update repo files to point to CentOS vault mirror (1)
-          replace:
+          ansible.builtin.replace:
             path: "{{ item.path }}"
             regexp: "^mirrorlist"
             replace: "#mirrorlist"
@@ -163,7 +188,7 @@
           when: molecule_distro == 'centos8'
 
         - name: Update repo files to point to CentOS vault mirror (2)
-          replace:
+          ansible.builtin.replace:
             path: "{{ item.path }}"
             regexp: "^#baseurl=http://mirror.centos.org"
             replace: "baseurl=http://vault.epel.cloud"
@@ -173,24 +198,24 @@
           when: molecule_distro == 'centos8'
 
         - name: Configure DNF to use proxy
-          lineinfile:
+          ansible.builtin.lineinfile:
             path: /etc/dnf/dnf.conf
             line: "proxy={{ https_proxy }}"
             regexp: "^proxy=.*$"
-          when: proxy_use is defined and proxy_use|bool
+          when: proxy_use is defined and proxy_use | bool
 
         - name: Update DNF cache
-          dnf:
+          ansible.builtin.dnf:
             update_cache: yes
 
         - name: Upgrade DNF packages  # noqa package-latest
-          dnf:
+          ansible.builtin.dnf:
             name: '*'
             state: latest
-          when: update_all is defined and update_all|bool
+          when: update_all is defined and update_all | bool
 
         - name: Install default packages
-          package:
+          ansible.builtin.package:
             name:
               - hostname
               - openssh-server
@@ -199,46 +224,48 @@
             state: present
 
         - name: Activate epel repository
-          include_role:
+          ansible.builtin.include_role:
             name: epel
-          when: activate_epel is defined and activate_epel|bool and ansible_distribution != 'Fedora'
-
-      when: ansible_os_family == 'RedHat' and (ansible_distribution_major_version|int) >= 8
+          when: activate_epel is defined and activate_epel | bool and ansible_distribution != 'Fedora'
 
 
     - name: Firewall
+      when:
+        - prepare_firewall is defined and prepare_firewall | bool
+        - inventory_hostname is not search('-dns$')
       block:
 
         - name: Install iptables
-          include_role:
+          ansible.builtin.include_role:
             name: iptables
           when: molecule_distro in iptables_distros
 
         - name: Install ufw
-          include_role:
+          ansible.builtin.include_role:
             name: ufw
           when: molecule_distro in ufw_distros
 
         - name: Install firewalld
-          include_role:
+          ansible.builtin.include_role:
             name: firewalld
           when: molecule_distro in firewalld_distros
 
-      when:
-        - prepare_firewall is defined and prepare_firewall|bool
-        - inventory_hostname is not search('-dns$')
 
-    - name: re-run setup
-      setup:
+    - name: Reboot the server
+      ansible.builtin.include_role:
+        name: reboot
+      when: molecule_driver is search('^(vagrant|hetznercloud)$')
 
-    - name: localhosts
+    - name: Re-run setup
+      ansible.builtin.setup:
+
+    - name: Localhosts
+      when: register_hosts is defined and register_hosts | bool
       block:
 
         - name: Register all nodes in /etc/hosts
-          include_role:
+          ansible.builtin.include_role:
             name: hosts
           vars:
             hosts_mode: hosts
-
-      when: register_hosts is defined and register_hosts|bool
 

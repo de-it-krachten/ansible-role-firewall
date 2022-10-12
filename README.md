@@ -7,6 +7,17 @@ Role to open firewall ports for incoming traffic.
 Supports firewalld, ufw and iptables
 
 
+
+## Dependencies
+
+#### Roles
+None
+
+#### Collections
+- community.general
+- ansible.posix
+- community.general
+
 ## Platforms
 
 Supported platforms
@@ -44,6 +55,7 @@ firewall_type_unsupported:
 
 
 
+
 ## Example Playbook
 ### molecule/default/converge.yml
 <pre><code>
@@ -54,6 +66,6 @@ firewall_type_unsupported:
     firewall_ports: [{'port': '22', 'proto': 'tcp'}, {'port': '53', 'proto': 'udp'}]
   tasks:
     - name: Include role 'firewall'
-      include_role:
+      ansible.builtin.include_role:
         name: firewall
 </pre></code>
