@@ -16,3 +16,9 @@ molecule:
           proto: tcp
         - port: "53"
           proto: udp
+
+dependencies:
+  roles:
+    - firewalld
+    - iptables
+    - ufw
