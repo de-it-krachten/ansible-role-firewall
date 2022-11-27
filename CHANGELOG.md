@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/de-it-krachten/ansible-role-firewall/compare/v1.3.0...v1.3.1) (2022-11-27)
+
+
+### Bug Fixes
+
+* Fix missing external role dependencies ([8f83bad](https://github.com/de-it-krachten/ansible-role-firewall/commit/8f83bad01e5abe7892e20079ddfc5729fe3b2550))
+
 # [1.3.0](https://github.com/de-it-krachten/ansible-role-firewall/compare/v1.2.0...v1.3.0) (2022-10-12)
 
 
