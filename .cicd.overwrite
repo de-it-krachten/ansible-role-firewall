@@ -19,6 +19,6 @@ molecule:
 
 dependencies:
   roles:
-    - firewalld
-    - iptables
-    - ufw
+    - deitkrachten.firewalld
+    - deitkrachten.iptables
+    - deitkrachten.ufw

@@ -2,6 +2,7 @@
 
 # Generic
 generic:
+  org: deitkrachten
   role: ansible-role-firewall
   role_short: firewall
   role_description: |
@@ -54,6 +55,8 @@ platforms:
     galaxy:
       name: EL
       version: 7
+    github:
+      runs_on: "ubuntu-20.04"
     molecule:
       docker:
         image: "geerlingguy/docker-centos7-ansible:latest"
@@ -146,6 +149,18 @@ platforms:
         image: "dropveter/oraclelinux8-ansible"
       vagrant:
         box: "generic/oracle8"
+  oraclelinux9:
+    name: OracleLinux 9
+    ci: true
+    supported: true
+    galaxy:
+      name: EL
+      version: 9
+    molecule:
+      docker:
+        image: "dropveter/oraclelinux9-ansible"
+      vagrant:
+        box: "generic/oracle9"
   almalinux8:
     name: AlmaLinux 8
     ci: true
@@ -285,6 +300,22 @@ platforms:
         pre_build_image: false
       vagrant:
         box: "generic/alpine312"
+  docker:
+    name: Docker dind (CI only)
+    ci: false
+    supported: false
+    molecule:
+      docker:
+        image: "dropveter/docker-dind-ansible:latest"
+        pre_build_image: false
+        volumes:
+          - certs-ca
+          - certs-client
+        networks:
+          - network
+        privileged: true
+        environment:
+          DOCKER_TLS_CERTDIR: /certs
 
 # List of platform deviations
 platforms_overwrite: {}
@@ -340,8 +371,12 @@ github:
       ansible_lint: "ansible-lint>6,<7"
     - name: ansible_2.13
       ansible: "ansible>6,<7"
-      ansible_core: "ansible-core<2.13,<2.14"
+      ansible_core: "ansible-core>2.13,<2.14"
       ansible_lint: "ansible-lint>6,<7"
+    - name: ansible_2.14
+      ansible: "ansible>6,<7"
+      ansible_core: "ansible-core>2.14,<2.15"
+      ansible_lint: "ansible-lint"
 
 # Gitlab
 gitlab:
@@ -361,13 +396,15 @@ molecule:
       systemctl_alternative: false
   requirements:
     roles:
-      - epel
-      - firewall
-      - firewalld
-      - iptables
-      - reboot
-      - ufw
-      - unbound
+      - deitkrachten.epel
+      - deitkrachten.facts
+      - deitkrachten.firewall
+      - deitkrachten.firewalld
+      - deitkrachten.iptables
+      - deitkrachten.reboot
+      - deitkrachten.showinfo
+      - deitkrachten.ufw
+      - deitkrachten.unbound
   nodes:
     - name: node1
       groups: []
@@ -440,7 +477,6 @@ ci_templates:
     src: ansible-lint/templates/ansible-lint
     dest: .ansible-lint
     # force: no
-
   molecule-platforms.yml:
     src: molecule/templates/molecule-platforms.yml
     dest: .molecule-platforms.yml
