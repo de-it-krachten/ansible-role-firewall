@@ -1,6 +1,6 @@
 ---
 
-- name: Open iptables firewall ports
+- name: Open iptables firewall ports  # noqa args[module]
   ansible.builtin.iptables:
     chain: INPUT
     protocol: "{{ fw.proto if fw.proto is defined else omit }}"

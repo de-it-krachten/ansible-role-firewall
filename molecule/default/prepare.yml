@@ -35,9 +35,11 @@
       - rocky9
       - almalinux8
       - almalinux9
-
     systemctl_alternative: False
     prepare_firewall: True
+  roles:
+    - deitkrachten.showinfo
+    - deitkrachten.facts
   tasks:
 
     - name: Create remote_tmp
@@ -68,6 +70,7 @@
           no_proxy: "{{ no_proxy }}"
           prepare_firewall: "{{ prepare_firewall | default(False) }}"
           update_all: "{{ update_all | default(False) }}"
+          activate_epel: "{{ activate_epel | default(False) }}"
 
     - name: Enable root access
       when:
@@ -161,7 +164,7 @@
 
         - name: Activate epel repository
           ansible.builtin.include_role:
-            name: epel
+            name: deitkrachten.epel
           when: activate_epel is defined and activate_epel | bool
 
 
@@ -225,7 +228,7 @@
 
         - name: Activate epel repository
           ansible.builtin.include_role:
-            name: epel
+            name: deitkrachten.epel
           when: activate_epel is defined and activate_epel | bool and ansible_distribution != 'Fedora'
 
 
@@ -237,23 +240,23 @@
 
         - name: Install iptables
           ansible.builtin.include_role:
-            name: iptables
+            name: deitkrachten.iptables
           when: molecule_distro in iptables_distros
 
         - name: Install ufw
           ansible.builtin.include_role:
-            name: ufw
+            name: deitkrachten.ufw
           when: molecule_distro in ufw_distros
 
         - name: Install firewalld
           ansible.builtin.include_role:
-            name: firewalld
+            name: deitkrachten.firewalld
           when: molecule_distro in firewalld_distros
 
 
     - name: Reboot the server
       ansible.builtin.include_role:
-        name: reboot
+        name: deitkrachten.reboot
       when: molecule_driver is search('^(vagrant|hetznercloud)$')
 
     - name: Re-run setup
@@ -265,7 +268,7 @@
 
         - name: Register all nodes in /etc/hosts
           ansible.builtin.include_role:
-            name: hosts
+            name: deitkrachten.hosts
           vars:
             hosts_mode: hosts
 

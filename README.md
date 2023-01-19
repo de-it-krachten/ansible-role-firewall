@@ -11,12 +11,13 @@ Supports firewalld, ufw and iptables
 ## Dependencies
 
 #### Roles
-None
+- deitkrachten.firewalld
+- deitkrachten.iptables
+- deitkrachten.ufw
 
 #### Collections
 - community.general
 - ansible.posix
-- community.general
 
 ## Platforms
 
@@ -29,6 +30,7 @@ Supported platforms
 - RockyLinux 8
 - RockyLinux 9
 - OracleLinux 8
+- OracleLinux 9
 - AlmaLinux 8
 - AlmaLinux 9
 - Debian 10 (Buster)
@@ -61,7 +63,7 @@ firewall_type_unsupported:
 <pre><code>
 - name: sample playbook for role 'firewall'
   hosts: all
-  become: "{{ molecule['converge']['become'] | default('yes') }}"
+  become: "yes"
   vars:
     firewall_ports: [{'port': '22', 'proto': 'tcp'}, {'port': '53', 'proto': 'udp'}]
   tasks:
