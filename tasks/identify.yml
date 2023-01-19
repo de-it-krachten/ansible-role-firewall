@@ -3,7 +3,7 @@
 # - name: Populate service facts
 #   service_facts:
 
-- name: Get ufw information
+- name: Get ufw information  # noqa args[module]
   ansible.builtin.service:
     name: ufw
   register: _ufw
@@ -16,7 +16,7 @@
     - _ufw['status']['ActiveState'] == 'active'
     - firewall_running is undefined
 
-- name: Get nftables information
+- name: Get nftables information  # noqa args[module]
   ansible.builtin.service:
     name: nftables
   register: _nftables
@@ -29,7 +29,7 @@
     - _nftables['status']['ActiveState'] == 'active'
     - firewall_running is undefined
 
-- name: Get firewalld information
+- name: Get firewalld information  # noqa args[module]
   ansible.builtin.service:
     name: firewalld
   register: _firewalld
