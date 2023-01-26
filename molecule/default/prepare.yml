@@ -71,6 +71,7 @@
           prepare_firewall: "{{ prepare_firewall | default(False) }}"
           update_all: "{{ update_all | default(False) }}"
           activate_epel: "{{ activate_epel | default(False) }}"
+          install_python: "{{ install_python | default(False) }}"
 
     - name: Enable root access
       when:
@@ -231,6 +232,10 @@
             name: deitkrachten.epel
           when: activate_epel is defined and activate_epel | bool and ansible_distribution != 'Fedora'
 
+    - name: Install python
+      ansible.builtin.include_role:
+        name: deitkrachten.python
+      when: install_python is defined and install_python | bool
 
     - name: Firewall
       when:

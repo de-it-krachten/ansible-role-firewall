@@ -24,7 +24,7 @@
   image: geerlingguy/docker-ubuntu2004-ansible:latest
 - name: ubuntu2204
   image: geerlingguy/docker-ubuntu2204-ansible:latest
-- name: fedora35
-  image: geerlingguy/docker-fedora35-ansible:latest
 - name: fedora36
   image: geerlingguy/docker-fedora36-ansible:latest
+- name: fedora37
+  image: geerlingguy/docker-fedora37-ansible:latest
