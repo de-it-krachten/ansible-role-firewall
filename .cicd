@@ -260,18 +260,6 @@ platforms:
       hetznercloud:
         image: ubuntu-22.04
         server_type: cx11
-  fedora35:
-    name: Fedora 35
-    ci: true
-    supported: true
-    galaxy:
-      name: Fedora
-      version: all
-    molecule:
-      docker:
-        image: "geerlingguy/docker-fedora35-ansible:latest"
-      vagrant:
-        box: "generic/fedora35"
   fedora36:
     name: Fedora 36
     ci: true
@@ -286,6 +274,21 @@ platforms:
         box: "generic/fedora36"
       hetznercloud:
         image: fedora-36
+        server_type: cx11
+  fedora37:
+    name: Fedora 37
+    ci: true
+    supported: true
+    galaxy:
+      name: Fedora
+      version: all
+    molecule:
+      docker:
+        image: "geerlingguy/docker-fedora37-ansible:latest"
+      vagrant:
+        box: "generic/fedora37"
+      hetznercloud:
+        image: fedora-37
         server_type: cx11
   alpine3:
     name: Alpine 3
@@ -401,6 +404,7 @@ molecule:
       - deitkrachten.firewall
       - deitkrachten.firewalld
       - deitkrachten.iptables
+      - deitkrachten.python
       - deitkrachten.reboot
       - deitkrachten.showinfo
       - deitkrachten.ufw

@@ -71,14 +71,20 @@ jobs:
 
       - name: Install test dependencies.
         run: |
+          sudo rm -f /usr/bin/yq
           pip3 install "${{ matrix.ansible }}" "${{ matrix.ansible_lint }}" yamllint jmespath e2j2 yq
+
+      - name: Retrieve & install wrapper scripts
+        run: |
+          set -e
+          sudo apt install curl
+          curl -s -o /tmp/install.sh \
+            https://raw.githubusercontent.com/de-it-krachten/ansible-role-molecule/dev/files/install.sh
+          bash /tmp/install.sh
 
       - name: Install required galaxy collections
         run: |
-          ansible-galaxy collection install community.docker
-          ansible-galaxy collection install community.general
-          ansible-galaxy collection install ansible.posix
-          ansible-galaxy collection install -r .collections
+          /usr/local/bin/ansible-collections.sh
 
       - name: For ansible 2.9, we need to perform some tweaking
         run: |
@@ -96,26 +102,6 @@ jobs:
           else
             echo "No need to patch it"
           fi
-
-      - name: Retrieve wrapper scripts
-        run: |
-          set -e
-          sudo apt install curl
-          sudo curl -s -o /usr/local/bin/functions_ansible.sh \
-            https://raw.githubusercontent.com/de-it-krachten/ansible-role-molecule/dev/files/functions_ansible.sh
-          sudo curl -s -o /usr/local/bin/ansible-galaxy.sh \
-            https://raw.githubusercontent.com/de-it-krachten/ansible-role-molecule/dev/files/ansible-galaxy.sh
-          sudo curl -s -o /usr/local/bin/ansible-lint.sh \
-            https://raw.githubusercontent.com/de-it-krachten/ansible-role-molecule/dev/files/ansible-lint.sh
-          sudo curl -s -o /usr/local/bin/ansible-requirements-clean.sh \
-            https://raw.githubusercontent.com/de-it-krachten/ansible-role-molecule/dev/files/ansible-requirements-clean.sh
-          sudo curl -s -o /usr/local/bin/molecule-test.sh \
-            https://raw.githubusercontent.com/de-it-krachten/ansible-role-molecule/dev/files/molecule-test.sh
-          sudo chmod 644 /usr/local/bin/functions_ansible.sh
-          sudo chmod 755 /usr/local/bin/ansible-galaxy.sh
-          sudo chmod 755 /usr/local/bin/ansible-lint.sh
-          sudo chmod 755 /usr/local/bin/ansible-requirements-clean.sh
-          sudo chmod 755 /usr/local/bin/molecule-test.sh
 
       - name: Show component versions
         run: |
@@ -294,19 +280,6 @@ jobs:
             ansible: "ansible-core>2.13,<2.14"
             ansible_lint: "ansible-lint>6,<7"
 
-          - name: fedora35_2.9
-            runs_on: ubuntu-latest
-            distro: fedora35
-            playbook: converge.yml
-            ansible: "ansible==2.9.27"
-            ansible_lint: "ansible-lint==5.4.0"
-          - name: fedora35_2.13
-            runs_on: ubuntu-latest
-            distro: fedora35
-            playbook: converge.yml
-            ansible: "ansible-core>2.13,<2.14"
-            ansible_lint: "ansible-lint>6,<7"
-
           - name: fedora36_2.9
             runs_on: ubuntu-latest
             distro: fedora36
@@ -316,6 +289,19 @@ jobs:
           - name: fedora36_2.13
             runs_on: ubuntu-latest
             distro: fedora36
+            playbook: converge.yml
+            ansible: "ansible-core>2.13,<2.14"
+            ansible_lint: "ansible-lint>6,<7"
+
+          - name: fedora37_2.9
+            runs_on: ubuntu-latest
+            distro: fedora37
+            playbook: converge.yml
+            ansible: "ansible==2.9.27"
+            ansible_lint: "ansible-lint==5.4.0"
+          - name: fedora37_2.13
+            runs_on: ubuntu-latest
+            distro: fedora37
             playbook: converge.yml
             ansible: "ansible-core>2.13,<2.14"
             ansible_lint: "ansible-lint>6,<7"
@@ -347,14 +333,20 @@ jobs:
 
       - name: Install test dependencies.
         run: |
+          sudo rm -f /usr/bin/yq
           pip3 install "${{ matrix.ansible }}" "${{ matrix.ansible_lint }}" molecule[docker] yamllint jmespath e2j2 yq
+
+      - name: Retrieve & install wrapper scripts
+        run: |
+          set -e
+          sudo apt install curl
+          curl -s -o /tmp/install.sh \
+            https://raw.githubusercontent.com/de-it-krachten/ansible-role-molecule/dev/files/install.sh
+          bash /tmp/install.sh
 
       - name: Install required galaxy collections
         run: |
-          ansible-galaxy collection install community.docker
-          ansible-galaxy collection install community.general
-          ansible-galaxy collection install ansible.posix
-          ansible-galaxy collection install -r .collections
+          /usr/local/bin/ansible-collections.sh
 
       - name: For ansible 2.9, we need to perform some tweaking
         run: |
@@ -376,26 +368,6 @@ jobs:
       - name: Set-up github runner
         run: |
           sudo modprobe ip6table_filter
-
-      - name: Retrieve wrapper scripts
-        run: |
-          set -e
-          sudo apt install curl
-          sudo curl -s -o /usr/local/bin/functions_ansible.sh \
-            https://raw.githubusercontent.com/de-it-krachten/ansible-role-molecule/dev/files/functions_ansible.sh
-          sudo curl -s -o /usr/local/bin/ansible-galaxy.sh \
-            https://raw.githubusercontent.com/de-it-krachten/ansible-role-molecule/dev/files/ansible-galaxy.sh
-          sudo curl -s -o /usr/local/bin/ansible-lint.sh \
-            https://raw.githubusercontent.com/de-it-krachten/ansible-role-molecule/dev/files/ansible-lint.sh
-          sudo curl -s -o /usr/local/bin/ansible-requirements-clean.sh \
-            https://raw.githubusercontent.com/de-it-krachten/ansible-role-molecule/dev/files/ansible-requirements-clean.sh
-          sudo curl -s -o /usr/local/bin/molecule-test.sh \
-            https://raw.githubusercontent.com/de-it-krachten/ansible-role-molecule/dev/files/molecule-test.sh
-          sudo chmod 644 /usr/local/bin/functions_ansible.sh
-          sudo chmod 755 /usr/local/bin/ansible-galaxy.sh
-          sudo chmod 755 /usr/local/bin/ansible-lint.sh
-          sudo chmod 755 /usr/local/bin/ansible-requirements-clean.sh
-          sudo chmod 755 /usr/local/bin/molecule-test.sh
 
       - name: Show component versions
         run: |
