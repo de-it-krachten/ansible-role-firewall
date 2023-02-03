@@ -69,6 +69,7 @@
           http_proxy: "{{ http_proxy }}"
           no_proxy: "{{ no_proxy }}"
           prepare_firewall: "{{ prepare_firewall | default(False) }}"
+          register_hosts: "{{ register_hosts | default(False) }}"
           update_all: "{{ update_all | default(False) }}"
           activate_epel: "{{ activate_epel | default(False) }}"
           install_python: "{{ install_python | default(False) }}"
@@ -235,6 +236,9 @@
     - name: Install python
       ansible.builtin.include_role:
         name: deitkrachten.python
+      vars:
+        python38: false
+        python_package_install_optional: true
       when: install_python is defined and install_python | bool
 
     - name: Firewall

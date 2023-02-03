@@ -403,6 +403,7 @@ molecule:
       - deitkrachten.facts
       - deitkrachten.firewall
       - deitkrachten.firewalld
+      - deitkrachten.hosts
       - deitkrachten.iptables
       - deitkrachten.python
       - deitkrachten.reboot

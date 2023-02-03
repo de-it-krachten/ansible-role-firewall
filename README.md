@@ -66,6 +66,8 @@ firewall_type_unsupported:
   become: "yes"
   vars:
     firewall_ports: [{'port': '22', 'proto': 'tcp'}, {'port': '53', 'proto': 'udp'}]
+  roles:
+    - deitkrachten.showinfo
   tasks:
     - name: Include role 'firewall'
       ansible.builtin.include_role:

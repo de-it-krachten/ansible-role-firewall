@@ -17,6 +17,10 @@ roles:
     src: https://github.com/de-it-krachten/ansible-role-firewalld.git
     version: main
     scm: git
+  - name: deitkrachten.hosts
+    src: https://github.com/de-it-krachten/ansible-role-hosts.git
+    version: main
+    scm: git
   - name: deitkrachten.iptables
     src: https://github.com/de-it-krachten/ansible-role-iptables.git
     version: main
