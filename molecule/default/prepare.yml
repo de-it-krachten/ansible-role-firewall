@@ -12,20 +12,23 @@
     molecule_driver: "{{ lookup('env', 'MOLECULE_DRIVER_NAME') }}"
 
     iptables_distros:
-      - debian10
-      - ubuntu1804
       - rhel7
+      - centos6
       - centos7
       - alpine3
 
     ufw_distros:
+      - debian10
       - debian11
+      - ubuntu1804
       - ubuntu2004
       - ubuntu2204
 
     firewalld_distros:
-      - fedora35
+      - rhel8
+      - rhel9
       - fedora36
+      - fedora37
       - centos8
       - centos8s
       - centos9s
@@ -131,9 +134,58 @@
               - ssh
             state: present
 
+    - name: Family RedHat (generic)
+      when:
+        - ansible_os_family == 'RedHat'
+      block:
+
+        # Switch to CentOS vault mirrors
+        - name: Get all repo files
+          ansible.builtin.find:
+            paths: /etc/yum.repos.d
+            patterns: 'CentOS-*'
+          register: _repo
+          when: molecule_distro is search('centos(6|8)')
+
+        - name: Update repo files to point to CentOS vault mirror (1)
+          ansible.builtin.replace:
+            path: "{{ item.path }}"
+            regexp: "^mirrorlist"
+            replace: "#mirrorlist"
+          loop: "{{ _repo.files }}"
+          loop_control:
+            label: "{{ item.path }}"
+          when: molecule_distro is search('centos(6|8)')
+
+        - name: Update repo files to point to CentOS vault mirror (2)
+          ansible.builtin.replace:
+            path: "{{ item.path }}"
+            regexp: "^#baseurl=http://mirror.centos.org"
+            replace: "baseurl=http://vault.centos.org"
+          loop: "{{ _repo.files }}"
+          loop_control:
+            label: "{{ item.path }}"
+          when: molecule_distro is search('centos(6|8)')
+
+        # Switch to CentOS epel mirrors
+        - name: Switch to CentOS epel mirrors
+          ansible.builtin.replace:
+            path: "/etc/yum.repos.d/epel.repo"
+            regexp: "{{ item.regexp }}"
+            replace: "{{ item.replace }}"
+          loop:
+            - regexp: "^mirrorlist="
+              replace: "#mirrorlist="
+            - regexp: "^#baseurl=http://download.fedoraproject.org/pub/epel"
+              replace: "baseurl=https://archives.fedoraproject.org/pub/archive/epel"
+          loop_control:
+            label: /etc/yum.repos.d/epel.repo
+          when: molecule_distro is search('centos6')
 
     - name: Family RedHat < 8
-      when: ansible_os_family == 'RedHat' and (ansible_distribution_major_version | int) < 8
+      when:
+        - ansible_os_family == 'RedHat'
+        - ansible_distribution_major_version | int < 8
       block:
 
         - name: Configure YUM to use proxy
@@ -146,8 +198,8 @@
         - name: Update YUM cache  # noqa command-instead-of-module
           ansible.builtin.command: yum makecache
           changed_when: false
-          args:
-            warn: false
+          # args:
+          #   warn: false
 
         - name: Upgrade YUM packages  # noqa package-latest
           ansible.builtin.yum:
@@ -161,8 +213,14 @@
               - openssh-server
               - openssh-clients
               - iproute
+            state: present
+
+        - name: Install extra packages
+          ansible.builtin.package:
+            name:
               - hostname
             state: present
+          when: ansible_distribution_major_version | int == 7
 
         - name: Activate epel repository
           ansible.builtin.include_role:
@@ -171,36 +229,10 @@
 
 
     - name: Family RedHat 8+
-      when: ansible_os_family == 'RedHat' and (ansible_distribution_major_version | int) >= 8
+      when:
+        - ansible_os_family == 'RedHat'
+        - ansible_distribution_major_version | int >= 8
       block:
-
-        # Switch to CentOS 8 vault mirrors
-        - name: Get all repo files
-          ansible.builtin.find:
-            paths: /etc/yum.repos.d
-            patterns: 'CentOS-Linux-*'
-          register: _repo
-          when: molecule_distro == 'centos8'
-
-        - name: Update repo files to point to CentOS vault mirror (1)
-          ansible.builtin.replace:
-            path: "{{ item.path }}"
-            regexp: "^mirrorlist"
-            replace: "#mirrorlist"
-          loop: "{{ _repo.files }}"
-          loop_control:
-            label: "{{ item.path }}"
-          when: molecule_distro == 'centos8'
-
-        - name: Update repo files to point to CentOS vault mirror (2)
-          ansible.builtin.replace:
-            path: "{{ item.path }}"
-            regexp: "^#baseurl=http://mirror.centos.org"
-            replace: "baseurl=http://vault.epel.cloud"
-          loop: "{{ _repo.files }}"
-          loop_control:
-            label: "{{ item.path }}"
-          when: molecule_distro == 'centos8'
 
         - name: Configure DNF to use proxy
           ansible.builtin.lineinfile:
@@ -231,14 +263,17 @@
         - name: Activate epel repository
           ansible.builtin.include_role:
             name: deitkrachten.epel
-          when: activate_epel is defined and activate_epel | bool and ansible_distribution != 'Fedora'
+          when:
+            - activate_epel is defined
+            - activate_epel | bool
+            - ansible_distribution != 'Fedora'
 
     - name: Install python
       ansible.builtin.include_role:
         name: deitkrachten.python
       vars:
-        python38: false
-        python_package_install_optional: true
+        python38: "{{ install_python38 | default(False) }}"
+        python_package_install_optional: "{{ install_python_optional | default(True) }}"
       when: install_python is defined and install_python | bool
 
     - name: Firewall
@@ -280,4 +315,5 @@
             name: deitkrachten.hosts
           vars:
             hosts_mode: hosts
+            hosts_adapter: "{{ 'eth1' if molecule_driver == 'vagrant' else 'default' }}"
 

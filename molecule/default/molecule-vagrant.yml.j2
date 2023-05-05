@@ -1,0 +1,46 @@
+---
+
+dependency:
+  name: galaxy
+driver:
+  name: vagrant
+lint: |
+  set -e
+  yamllint .
+  ln -fs molecule/default/requirements.yml
+  ansible-lint
+  rm -f requirements.yml
+platforms:
+{% for platform in MOLECULE_DISTROS %}
+  - name: firewall-{{ platform.name }}-node1
+    box: "{{ platform.box }}"
+    memory: {{ platform.memory | default(2048) }}
+    cpus: {{ platform.cpus | default(2) }}
+{% if platform.interfaces is defined %}
+    interfaces: {{ platform.interfaces }}
+{% endif %}
+    config_options:
+      ssh.keep_alive: yes
+      ssh.remote_user: "'vagrant'"
+{% endfor %}
+provisioner:
+  name: ansible
+{% if MOLECULE_ANSIBLE_ARGS is defined %}
+  ansible_args:
+{% for molecule_ansible_arg in MOLECULE_ANSIBLE_ARGS %}
+    - {{ molecule_ansible_arg }}
+{% endfor %}
+{% endif %}
+  env:
+    ANSIBLE_PIPELINING: "True"
+  lint:
+    name: ansible-lint
+  playbooks:
+    converge: ${MOLECULE_PLAYBOOK:-converge.yml}
+  inventory:
+    group_vars: {}
+    host_vars: {}
+scenario:
+  name: default
+verifier:
+  name: ansible

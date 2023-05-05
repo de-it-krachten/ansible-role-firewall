@@ -26,6 +26,9 @@ platforms:
       docker:
         image: "registry.access.redhat.com/ubi7/ubi-init:latest"
         pre_build_image: false
+      podman:
+        image: "registry.access.redhat.com/ubi7/ubi-init:latest"
+        pre_build_image: false
   rhel8:
     name: Red Hat Enterprise Linux 8
     ci: false
@@ -35,6 +38,9 @@ platforms:
       version: 8
     molecule:
       docker:
+        image: "registry.access.redhat.com/ubi8/ubi-init:latest"
+        pre_build_image: false
+      podman:
         image: "registry.access.redhat.com/ubi8/ubi-init:latest"
         pre_build_image: false
   rhel9:
@@ -48,6 +54,9 @@ platforms:
       docker:
         image: "registry.access.redhat.com/ubi9/ubi-init:latest"
         pre_build_image: false
+      podman:
+        image: "registry.access.redhat.com/ubi9/ubi-init:latest"
+        pre_build_image: false
   centos7:
     name: CentOS 7
     ci: true
@@ -59,9 +68,22 @@ platforms:
       runs_on: "ubuntu-20.04"
     molecule:
       docker:
-        image: "geerlingguy/docker-centos7-ansible:latest"
+        image: "docker.io/geerlingguy/docker-centos7-ansible:latest"
+        pre_build_image: true
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
+      podman:
+        image: "docker.io/geerlingguy/docker-centos7-ansible:latest"
+        pre_build_image: true
+        privileged: false
       vagrant:
         box: "generic/centos7"
+        interfaces:
+          - network_name: private_network
+            type: dhcp
+            auto_config: true
       hetznercloud:
         image: centos-7
         server_type: cx11
@@ -74,9 +96,20 @@ platforms:
       version: 8
     molecule:
       docker:
-        image: "geerlingguy/docker-centos8-ansible:latest"
+        image: "docker.io/geerlingguy/docker-centos8-ansible:latest"
+        pre_build_image: true
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
+      podman:
+        image: "docker.io/geerlingguy/docker-centos8-ansible:latest"
       vagrant:
         box: "generic/centos8"
+        interfaces:
+          - network_name: private_network
+            type: dhcp
+            auto_config: true
   centos8s:
     name: CentOS Stream 8
     ci: false
@@ -86,9 +119,20 @@ platforms:
       version: 8
     molecule:
       docker:
-        image: "dropveter/centos8s-ansible:latest"
+        image: "docker.io/dropveter/centos8s-ansible:latest"
+        pre_build_image: true
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
+      podman:
+        image: "docker.io/dropveter/centos8s-ansible:latest"
       vagrant:
         box: "generic/centos8s"
+        interfaces:
+          - network_name: private_network
+            type: dhcp
+            auto_config: true
       hetznercloud:
         image: centos-stream-8
         server_type: cx11
@@ -101,9 +145,20 @@ platforms:
       version: 9
     molecule:
       docker:
-        image: "dropveter/centos9s-ansible:latest"
+        image: "docker.io/dropveter/centos9s-ansible:latest"
+        pre_build_image: true
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
+      podman:
+        image: "docker.io/dropveter/centos9s-ansible:latest"
       vagrant:
         box: "generic/centos9s"
+        interfaces:
+          - network_name: private_network
+            type: dhcp
+            auto_config: true
       hetznercloud:
         image: centos-stream-9
         server_type: cx11
@@ -116,9 +171,24 @@ platforms:
       version: 8
     molecule:
       docker:
-        image: "geerlingguy/docker-rockylinux8-ansible:latest"
+        image: "docker.io/geerlingguy/docker-rockylinux8-ansible:latest"
+        pre_build_image: true
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
+      podman:
+        image: "docker.io/geerlingguy/docker-rockylinux8-ansible:latest"
+        pre_build_image: true
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:ro
       vagrant:
         box: "generic/rocky8"
+        interfaces:
+          - network_name: private_network
+            type: dhcp
+            auto_config: true
       hetznercloud:
         image: rocky-8
         server_type: cx11
@@ -131,9 +201,20 @@ platforms:
       version: 9
     molecule:
       docker:
-        image: "geerlingguy/docker-rockylinux9-ansible:latest"
+        image: "docker.io/geerlingguy/docker-rockylinux9-ansible:latest"
+        pre_build_image: true
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
+      podman:
+        image: "docker.io/geerlingguy/docker-rockylinux9-ansible:latest"
       vagrant:
         box: "generic/rocky9"
+        interfaces:
+          - network_name: private_network
+            type: dhcp
+            auto_config: true
       hetznercloud:
         image: rocky-9
         server_type: cx11
@@ -146,9 +227,20 @@ platforms:
       version: 8
     molecule:
       docker:
-        image: "dropveter/oraclelinux8-ansible"
+        image: "docker.io/dropveter/oraclelinux8-ansible"
+        pre_build_image: true
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
+      podman:
+        image: "docker.io/dropveter/oraclelinux8-ansible"
       vagrant:
         box: "generic/oracle8"
+        interfaces:
+          - network_name: private_network
+            type: dhcp
+            auto_config: true
   oraclelinux9:
     name: OracleLinux 9
     ci: true
@@ -158,9 +250,20 @@ platforms:
       version: 9
     molecule:
       docker:
-        image: "dropveter/oraclelinux9-ansible"
+        image: "docker.io/dropveter/oraclelinux9-ansible"
+        pre_build_image: true
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
+      podman:
+        image: "docker.io/dropveter/oraclelinux9-ansible"
       vagrant:
         box: "generic/oracle9"
+        interfaces:
+          - network_name: private_network
+            type: dhcp
+            auto_config: true
   almalinux8:
     name: AlmaLinux 8
     ci: true
@@ -170,9 +273,20 @@ platforms:
       version: 8
     molecule:
       docker:
-        image: "dropveter/almalinux8-ansible"
+        image: "docker.io/dropveter/almalinux8-ansible"
+        pre_build_image: true
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
+      podman:
+        image: "docker.io/dropveter/almalinux8-ansible"
       vagrant:
         box: "generic/alma8"
+        interfaces:
+          - network_name: private_network
+            type: dhcp
+            auto_config: true
   almalinux9:
     name: AlmaLinux 9
     ci: true
@@ -182,9 +296,20 @@ platforms:
       version: 9
     molecule:
       docker:
-        image: "dropveter/almalinux9-ansible"
+        image: "docker.io/dropveter/almalinux9-ansible"
+        pre_build_image: true
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
+      podman:
+        image: "docker.io/dropveter/almalinux9-ansible"
       vagrant:
         box: "generic/alma9"
+        interfaces:
+          - network_name: private_network
+            type: dhcp
+            auto_config: true
   debian10:
     name: Debian 10 (Buster)
     ci: true
@@ -194,9 +319,20 @@ platforms:
       version: buster
     molecule:
       docker:
-        image: "geerlingguy/docker-debian10-ansible:latest"
+        image: "docker.io/geerlingguy/docker-debian10-ansible:latest"
+        pre_build_image: true
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
+      podman:
+        image: "docker.io/geerlingguy/docker-debian10-ansible:latest"
       vagrant:
         box: "generic/debian10"
+        interfaces:
+          - network_name: private_network
+            type: dhcp
+            auto_config: true
       hetznercloud:
         image: debian-10
         server_type: cx11
@@ -209,9 +345,20 @@ platforms:
       version: bullseye
     molecule:
       docker:
-        image: "geerlingguy/docker-debian11-ansible:latest"
+        image: "docker.io/geerlingguy/docker-debian11-ansible:latest"
+        pre_build_image: true
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
+      podman:
+        image: "docker.io/geerlingguy/docker-debian11-ansible:latest"
       vagrant:
         box: "generic/debian11"
+        interfaces:
+          - network_name: private_network
+            type: dhcp
+            auto_config: true
       hetznercloud:
         image: debian-11
         server_type: cx11
@@ -224,9 +371,20 @@ platforms:
       version: bionic
     molecule:
       docker:
-        image: "geerlingguy/docker-ubuntu1804-ansible:latest"
+        image: "docker.io/geerlingguy/docker-ubuntu1804-ansible:latest"
+        pre_build_image: true
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
+      podman:
+        image: "docker.io/geerlingguy/docker-ubuntu1804-ansible:latest"
       vagrant:
         box: "generic/ubuntu1804"
+        interfaces:
+          - network_name: private_network
+            type: dhcp
+            auto_config: true
       hetznercloud:
         image: ubuntu-18.04
         server_type: cx11
@@ -239,9 +397,24 @@ platforms:
       version: focal
     molecule:
       docker:
-        image: "geerlingguy/docker-ubuntu2004-ansible:latest"
+        image: "docker.io/geerlingguy/docker-ubuntu2004-ansible:latest"
+        pre_build_image: true
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
+      podman:
+        image: "docker.io/geerlingguy/docker-ubuntu2004-ansible:latest"
+        pre_build_image: true
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:ro
       vagrant:
         box: "generic/ubuntu2004"
+        interfaces:
+          - network_name: private_network
+            type: dhcp
+            auto_config: true
       hetznercloud:
         image: ubuntu-20.04
         server_type: cx11
@@ -254,9 +427,19 @@ platforms:
       version: jammy
     molecule:
       docker:
-        image: "geerlingguy/docker-ubuntu2204-ansible:latest"
+        image: "docker.io/geerlingguy/docker-ubuntu2204-ansible:latest"
+        pre_build_image: true
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
+      podman:
+        image: "docker.io/geerlingguy/docker-ubuntu2204-ansible:latest"
       vagrant:
         box: "generic/ubuntu2204"
+        interfaces:
+          - network_name: private_network
+            type: dhcp
       hetznercloud:
         image: ubuntu-22.04
         server_type: cx11
@@ -269,9 +452,19 @@ platforms:
       version: all
     molecule:
       docker:
-        image: "geerlingguy/docker-fedora36-ansible:latest"
+        image: "docker.io/geerlingguy/docker-fedora36-ansible:latest"
+        pre_build_image: true
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
+      podman:
+        image: "docker.io/geerlingguy/docker-fedora36-ansible:latest"
       vagrant:
         box: "generic/fedora36"
+        interfaces:
+          - network_name: private_network
+            type: dhcp
       hetznercloud:
         image: fedora-36
         server_type: cx11
@@ -284,9 +477,19 @@ platforms:
       version: all
     molecule:
       docker:
-        image: "geerlingguy/docker-fedora37-ansible:latest"
+        image: "docker.io/geerlingguy/docker-fedora37-ansible:latest"
+        pre_build_image: true
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
+      podman:
+        image: "docker.io/geerlingguy/docker-fedora37-ansible:latest"
       vagrant:
         box: "generic/fedora37"
+        interfaces:
+          - network_name: private_network
+            type: dhcp
       hetznercloud:
         image: fedora-37
         server_type: cx11
@@ -299,24 +502,36 @@ platforms:
       version: all
     molecule:
       docker:
-        image: "robertdebock/alpine:latest"
+        image: "docker.io/dropveter/alpine-python3"
+        pre_build_image: true
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
+      podman:
+        image: "docker.io/dropveter/alpine-python3"
         pre_build_image: false
       vagrant:
         box: "generic/alpine312"
+        interfaces:
+          - network_name: private_network
+            type: dhcp
   docker:
     name: Docker dind (CI only)
     ci: false
     supported: false
     molecule:
       docker:
-        image: "dropveter/docker-dind-ansible:latest"
+        image: "docker.io/dropveter/docker-dind-ansible:latest"
+        cgroupns_mode: host
         pre_build_image: false
+        privileged: true
         volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
           - certs-ca
           - certs-client
         networks:
           - network
-        privileged: true
         environment:
           DOCKER_TLS_CERTDIR: /certs
 
@@ -389,6 +604,11 @@ gitlab:
 molecule:
   active: true
   dns_server: false
+  drivers:
+    - docker
+    - vagrant
+    - hetznercloud
+    - podman
   driver: docker
   converge:
     playbooks: []
@@ -449,9 +669,25 @@ ci_templates:
     src: molecule/templates/prepare.yml
     dest: molecule/default/prepare.yml
     when: molecule_active
-  molecule.yml.j2:
-    src: molecule/templates/molecule.yml.j2
-    dest: molecule/default/molecule.yml.j2
+#  molecule.yml.j2:
+#    src: molecule/templates/molecule.yml.j2
+#    dest: molecule/default/molecule.yml.j2
+#    when: molecule_active
+  molecule-docker.yml.j2:
+    src: molecule/templates/molecule-docker.yml.j2
+    dest: molecule/default/molecule-docker.yml.j2
+    when: molecule_active
+  molecule-hetznercloud.yml.j2:
+    src: molecule/templates/molecule-hetznercloud.yml.j2
+    dest: molecule/default/molecule-hetznercloud.yml.j2
+    when: molecule_active
+  molecule-podman.yml.j2:
+    src: molecule/templates/molecule-podman.yml.j2
+    dest: molecule/default/molecule-podman.yml.j2
+    when: molecule_active
+  molecule-vagrant.yml.j2:
+    src: molecule/templates/molecule-vagrant.yml.j2
+    dest: molecule/default/molecule-vagrant.yml.j2
     when: molecule_active
   molecule-test.yml:
     src: molecule/templates/molecule-test.yml
@@ -482,9 +718,25 @@ ci_templates:
     src: ansible-lint/templates/ansible-lint
     dest: .ansible-lint
     # force: no
-  molecule-platforms.yml:
-    src: molecule/templates/molecule-platforms.yml
-    dest: .molecule-platforms.yml
+#  molecule-platforms.yml:
+#    src: molecule/templates/molecule-platforms.yml
+#    dest: .molecule-platforms.yml
+#    force: true
+  molecule-platforms-docker.yml:
+    src: molecule/templates/molecule-platforms-docker.yml
+    dest: molecule/default/.molecule-platforms-docker.yml
+    force: true
+  molecule-platforms-hetznercloud.yml:
+    src: molecule/templates/molecule-platforms-hetznercloud.yml
+    dest: molecule/default/.molecule-platforms-hetznercloud.yml
+    force: true
+  molecule-platforms-podman.yml:
+    src: molecule/templates/molecule-platforms-podman.yml
+    dest: molecule/default/.molecule-platforms-podman.yml
+    force: true
+  molecule-platforms-vagrant.yml:
+    src: molecule/templates/molecule-platforms-vagrant.yml
+    dest: molecule/default/.molecule-platforms-vagrant.yml
     force: true
 
 # Ansible-lint
