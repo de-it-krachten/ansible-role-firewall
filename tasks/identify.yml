@@ -1,45 +1,30 @@
 ---
 
-# - name: Populate service facts
-#   service_facts:
-
-- name: Get ufw information  # noqa args[module]
-  ansible.builtin.service:
-    name: ufw
-  register: _ufw
+- name: Populate service facts
+  ansible.builtin.service_facts:
 
 - name: Identifiy firewall active (ufw)
   ansible.builtin.set_fact:
     firewall_running: ufw
   when:
-    - _ufw['status']['ActiveState'] is defined
-    - _ufw['status']['ActiveState'] == 'active'
+    - ansible_facts.services['ufw'] is defined
+    - ansible_facts.services['ufw']['state'] == 'running'
     - firewall_running is undefined
-
-- name: Get nftables information  # noqa args[module]
-  ansible.builtin.service:
-    name: nftables
-  register: _nftables
 
 - name: Identifiy firewall active (nftables)
   ansible.builtin.set_fact:
     firewall_running: nftables
   when:
-    - _nftables['status']['ActiveState'] is defined
-    - _nftables['status']['ActiveState'] == 'active'
+    - ansible_facts.services['nftables'] is defined
+    - ansible_facts.services['nftables']['state'] == 'running'
     - firewall_running is undefined
-
-- name: Get firewalld information  # noqa args[module]
-  ansible.builtin.service:
-    name: firewalld
-  register: _firewalld
 
 - name: Identifiy firewall active (firewalld)
   ansible.builtin.set_fact:
     firewall_running: firewalld
   when:
-    - _firewalld['status']['ActiveState'] is defined
-    - _firewalld['status']['ActiveState'] == 'active'
+    - ansible_facts.services['firewalld'] is defined
+    - ansible_facts.services['firewalld']['state'] == 'running'
     - firewall_running is undefined
 
 - name: Assume iptables if noting else found

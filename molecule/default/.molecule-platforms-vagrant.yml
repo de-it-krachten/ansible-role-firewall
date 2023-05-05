@@ -1,0 +1,74 @@
+---
+
+- name: centos7
+  ci: true
+  box: generic/centos7
+  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
+- name: centos8
+  ci: false
+  box: generic/centos8
+  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
+- name: centos8s
+  ci: false
+  box: generic/centos8s
+  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
+- name: centos9s
+  ci: false
+  box: generic/centos9s
+  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
+- name: rockylinux8
+  ci: true
+  box: generic/rocky8
+  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
+- name: rockylinux9
+  ci: true
+  box: generic/rocky9
+  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
+- name: oraclelinux8
+  ci: true
+  box: generic/oracle8
+  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
+- name: oraclelinux9
+  ci: true
+  box: generic/oracle9
+  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
+- name: almalinux8
+  ci: true
+  box: generic/alma8
+  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
+- name: almalinux9
+  ci: true
+  box: generic/alma9
+  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
+- name: debian10
+  ci: true
+  box: generic/debian10
+  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
+- name: debian11
+  ci: true
+  box: generic/debian11
+  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
+- name: ubuntu1804
+  ci: true
+  box: generic/ubuntu1804
+  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
+- name: ubuntu2004
+  ci: true
+  box: generic/ubuntu2004
+  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
+- name: ubuntu2204
+  ci: true
+  box: generic/ubuntu2204
+  interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
+- name: fedora36
+  ci: true
+  box: generic/fedora36
+  interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
+- name: fedora37
+  ci: true
+  box: generic/fedora37
+  interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
+- name: alpine3
+  ci: false
+  box: generic/alpine312
+  interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
