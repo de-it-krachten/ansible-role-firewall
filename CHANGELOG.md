@@ -1,3 +1,10 @@
+## [1.3.2](https://github.com/de-it-krachten/ansible-role-firewall/compare/v1.3.1...v1.3.2) (2023-05-06)
+
+
+### Bug Fixes
+
+* Switch to service_facts module ([9e78c38](https://github.com/de-it-krachten/ansible-role-firewall/commit/9e78c3809115def50026c787f11fc3ece059507e))
+
 ## [1.3.1](https://github.com/de-it-krachten/ansible-role-firewall/compare/v1.3.0...v1.3.1) (2022-11-27)
 
 
