@@ -1,3 +1,10 @@
+## [1.3.3](https://github.com/de-it-krachten/ansible-role-firewall/compare/v1.3.2...v1.3.3) (2023-05-06)
+
+
+### Bug Fixes
+
+* Support service facts w/ '.service' ([6dbc3b5](https://github.com/de-it-krachten/ansible-role-firewall/commit/6dbc3b50b6a2129657f8b72b9f4d79dcaf169ae6))
+
 ## [1.3.2](https://github.com/de-it-krachten/ansible-role-firewall/compare/v1.3.1...v1.3.2) (2023-05-06)
 
 
