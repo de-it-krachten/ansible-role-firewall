@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/de-it-krachten/ansible-role-firewall/compare/v1.3.3...v1.4.0) (2023-07-03)
+
+
+### Features
+
+* Add support for SLES/OpenSUSE Leap 15 ([37fb6ad](https://github.com/de-it-krachten/ansible-role-firewall/commit/37fb6ad51a502adb21d3e5251ac0830f6b09007d))
+
 ## [1.3.3](https://github.com/de-it-krachten/ansible-role-firewall/compare/v1.3.2...v1.3.3) (2023-05-06)
 
 
