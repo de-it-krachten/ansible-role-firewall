@@ -63,11 +63,10 @@ jobs:
         run: |
           hostname -f
 
-      - name: disable apparmor for mysql
-        run: sudo ln -s /etc/apparmor.d/usr.sbin.mysqld /etc/apparmor.d/disable/
-
-      - name: parse apparmor for mysql
-        run: sudo apparmor_parser -R /etc/apparmor.d/usr.sbin.mysqld
+      - name: Disable specific apparmor profiles
+        run: |
+          sudo ln -s /etc/apparmor.d/usr.sbin.mysqld /etc/apparmor.d/disable/
+          sudo apparmor_parser -R /etc/apparmor.d/usr.sbin.mysqld
 
       - name: Install test dependencies.
         run: |
@@ -236,6 +235,22 @@ jobs:
             ansible_lint: "ansible-lint>6,<7"
             hetznercloud: False
 
+          # - name: opensuse15_2.9
+          #   runs_on: ubuntu-latest
+          #   distro: opensuse15
+          #   playbook: converge.yml
+          #   ansible: "ansible==2.9.27"
+          #   ansible_lint: "ansible-lint==5.4.0"
+          #   hetznercloud: False
+          # - name: opensuse15_2.14
+          - name: opensuse15
+            runs_on: ubuntu-latest
+            distro: opensuse15
+            playbook: converge.yml
+            ansible: "ansible-core>2.14,<2.15"
+            ansible_lint: "ansible-lint>6,<7"
+            hetznercloud: False
+
           # - name: debian10_2.9
           #   runs_on: ubuntu-latest
           #   distro: debian10
@@ -263,22 +278,6 @@ jobs:
           - name: debian11
             runs_on: ubuntu-latest
             distro: debian11
-            playbook: converge.yml
-            ansible: "ansible-core>2.14,<2.15"
-            ansible_lint: "ansible-lint>6,<7"
-            hetznercloud: True
-
-          # - name: ubuntu1804_2.9
-          #   runs_on: ubuntu-latest
-          #   distro: ubuntu1804
-          #   playbook: converge.yml
-          #   ansible: "ansible==2.9.27"
-          #   ansible_lint: "ansible-lint==5.4.0"
-          #   hetznercloud: True
-          # - name: ubuntu1804_2.14
-          - name: ubuntu1804
-            runs_on: ubuntu-latest
-            distro: ubuntu1804
             playbook: converge.yml
             ansible: "ansible-core>2.14,<2.15"
             ansible_lint: "ansible-lint>6,<7"
@@ -316,22 +315,6 @@ jobs:
             ansible_lint: "ansible-lint>6,<7"
             hetznercloud: True
 
-          # - name: fedora36_2.9
-          #   runs_on: ubuntu-latest
-          #   distro: fedora36
-          #   playbook: converge.yml
-          #   ansible: "ansible==2.9.27"
-          #   ansible_lint: "ansible-lint==5.4.0"
-          #   hetznercloud: True
-          # - name: fedora36_2.14
-          - name: fedora36
-            runs_on: ubuntu-latest
-            distro: fedora36
-            playbook: converge.yml
-            ansible: "ansible-core>2.14,<2.15"
-            ansible_lint: "ansible-lint>6,<7"
-            hetznercloud: True
-
           # - name: fedora37_2.9
           #   runs_on: ubuntu-latest
           #   distro: fedora37
@@ -343,6 +326,22 @@ jobs:
           - name: fedora37
             runs_on: ubuntu-latest
             distro: fedora37
+            playbook: converge.yml
+            ansible: "ansible-core>2.14,<2.15"
+            ansible_lint: "ansible-lint>6,<7"
+            hetznercloud: True
+
+          # - name: fedora38_2.9
+          #   runs_on: ubuntu-latest
+          #   distro: fedora38
+          #   playbook: converge.yml
+          #   ansible: "ansible==2.9.27"
+          #   ansible_lint: "ansible-lint==5.4.0"
+          #   hetznercloud: True
+          # - name: fedora38_2.14
+          - name: fedora38
+            runs_on: ubuntu-latest
+            distro: fedora38
             playbook: converge.yml
             ansible: "ansible-core>2.14,<2.15"
             ansible_lint: "ansible-lint>6,<7"
@@ -367,11 +366,10 @@ jobs:
         run: |
           hostname -f
 
-      - name: disable apparmor for mysql
-        run: sudo ln -s /etc/apparmor.d/usr.sbin.mysqld /etc/apparmor.d/disable/
-
-      - name: parse apparmor for mysql
-        run: sudo apparmor_parser -R /etc/apparmor.d/usr.sbin.mysqld
+      - name: Disable specific apparmor profiles
+        run: |
+          sudo ln -s /etc/apparmor.d/usr.sbin.mysqld /etc/apparmor.d/disable/
+          sudo apparmor_parser -R /etc/apparmor.d/usr.sbin.mysqld
 
       - name: Install test dependencies.
         run: |

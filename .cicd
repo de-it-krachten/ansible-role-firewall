@@ -26,6 +26,10 @@ platforms:
       docker:
         image: "registry.access.redhat.com/ubi7/ubi-init:latest"
         pre_build_image: false
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
       podman:
         image: "registry.access.redhat.com/ubi7/ubi-init:latest"
         pre_build_image: false
@@ -40,6 +44,10 @@ platforms:
       docker:
         image: "registry.access.redhat.com/ubi8/ubi-init:latest"
         pre_build_image: false
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
       podman:
         image: "registry.access.redhat.com/ubi8/ubi-init:latest"
         pre_build_image: false
@@ -54,6 +62,10 @@ platforms:
       docker:
         image: "registry.access.redhat.com/ubi9/ubi-init:latest"
         pre_build_image: false
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
       podman:
         image: "registry.access.redhat.com/ubi9/ubi-init:latest"
         pre_build_image: false
@@ -310,6 +322,75 @@ platforms:
           - network_name: private_network
             type: dhcp
             auto_config: true
+  sles15:
+    name: SUSE Linux Enterprise
+    ci: false
+    supported: false
+    galaxy:
+      name: opensuse
+      version: all
+#    molecule:
+#      docker:
+#        image: "robertdebock/opensuse"
+#        pre_build_image: true
+#        privileged: true
+#        volumes:
+#          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+#        cgroupns_mode: host
+#      podman:
+#        image: "docker.io/robertdebock/opensuse"
+#      vagrant:
+#        box: "generic/opensuse15"
+#        interfaces:
+#          - network_name: private_network
+#            type: dhcp
+#            auto_config: true
+  opensuse15:
+    name: openSUSE Leap 15
+    ci: false
+    supported: false
+    galaxy:
+      name: opensuse
+      version: all
+    molecule:
+      docker:
+        image: "docker.io/dropveter/opensuse15-ansible:latest"
+        pre_build_image: true
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
+      podman:
+        image: "docker.io/dropveter/opensuse15-ansible:latest"
+      vagrant:
+        box: "generic/opensuse15"
+        interfaces:
+          - network_name: private_network
+            type: dhcp
+            auto_config: true
+  opensusetumbleweed15:
+    name: openSUSE Tumbleweed 15
+    ci: false
+    supported: false
+    galaxy:
+      name: opensuse
+      version: all
+    molecule:
+      docker:
+        image: "robertdebock/opensuse"
+        pre_build_image: true
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
+      podman:
+        image: "docker.io/robertdebock/opensuse"
+      vagrant:
+        box: "generic/opensuse15"
+        interfaces:
+          - network_name: private_network
+            type: dhcp
+            auto_config: true
   debian10:
     name: Debian 10 (Buster)
     ci: true
@@ -364,8 +445,8 @@ platforms:
         server_type: cx11
   ubuntu1804:
     name: Ubuntu 18.04 LTS
-    ci: true
-    supported: true
+    ci: false
+    supported: false
     galaxy:
       name: Ubuntu
       version: bionic
@@ -443,31 +524,6 @@ platforms:
       hetznercloud:
         image: ubuntu-22.04
         server_type: cx11
-  fedora36:
-    name: Fedora 36
-    ci: true
-    supported: true
-    galaxy:
-      name: Fedora
-      version: all
-    molecule:
-      docker:
-        image: "docker.io/geerlingguy/docker-fedora36-ansible:latest"
-        pre_build_image: true
-        privileged: true
-        volumes:
-          - /sys/fs/cgroup:/sys/fs/cgroup:rw
-        cgroupns_mode: host
-      podman:
-        image: "docker.io/geerlingguy/docker-fedora36-ansible:latest"
-      vagrant:
-        box: "generic/fedora36"
-        interfaces:
-          - network_name: private_network
-            type: dhcp
-      hetznercloud:
-        image: fedora-36
-        server_type: cx11
   fedora37:
     name: Fedora 37
     ci: true
@@ -492,6 +548,31 @@ platforms:
             type: dhcp
       hetznercloud:
         image: fedora-37
+        server_type: cx11
+  fedora38:
+    name: Fedora 38
+    ci: true
+    supported: true
+    galaxy:
+      name: Fedora
+      version: all
+    molecule:
+      docker:
+        image: "docker.io/geerlingguy/docker-fedora38-ansible:latest"
+        pre_build_image: true
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
+      podman:
+        image: "docker.io/geerlingguy/docker-fedora38-ansible:latest"
+      vagrant:
+        box: "generic/fedora38"
+        interfaces:
+          - network_name: private_network
+            type: dhcp
+      hetznercloud:
+        image: fedora-38
         server_type: cx11
   alpine3:
     name: Alpine 3
@@ -558,7 +639,7 @@ galaxy:
         - bullseye
     - name: Ubuntu
       versions:
-        - 18.04
+        # - 18.04
         - 20.04
         - 22.04
     - name: Fedora
