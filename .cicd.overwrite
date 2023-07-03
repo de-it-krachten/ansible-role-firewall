@@ -5,6 +5,16 @@ generic:
     Role to open firewall ports for incoming traffic.
     Supports firewalld, ufw and iptables
 
+# Supported platforms
+platforms:
+  opensuse15:
+    ci: true
+    supported: true
+  sles15:
+    ci: false
+    supported: true
+
+# Molecule
 molecule:
   prepare:
     vars:
@@ -17,6 +27,7 @@ molecule:
         - port: "53"
           proto: udp
 
+# Roles & collections dependencies
 dependencies:
   roles:
     - deitkrachten.firewalld

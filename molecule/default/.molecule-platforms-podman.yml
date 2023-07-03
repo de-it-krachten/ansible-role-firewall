@@ -48,6 +48,12 @@
 - name: almalinux9
   ci: true
   image: docker.io/dropveter/almalinux9-ansible
+- name: opensuse15
+  ci: true
+  image: docker.io/dropveter/opensuse15-ansible:latest
+- name: opensusetumbleweed15
+  ci: false
+  image: docker.io/robertdebock/opensuse
 - name: debian10
   ci: true
   image: docker.io/geerlingguy/docker-debian10-ansible:latest
@@ -55,7 +61,7 @@
   ci: true
   image: docker.io/geerlingguy/docker-debian11-ansible:latest
 - name: ubuntu1804
-  ci: true
+  ci: false
   image: docker.io/geerlingguy/docker-ubuntu1804-ansible:latest
 - name: ubuntu2004
   ci: true
@@ -67,12 +73,12 @@
 - name: ubuntu2204
   ci: true
   image: docker.io/geerlingguy/docker-ubuntu2204-ansible:latest
-- name: fedora36
-  ci: true
-  image: docker.io/geerlingguy/docker-fedora36-ansible:latest
 - name: fedora37
   ci: true
   image: docker.io/geerlingguy/docker-fedora37-ansible:latest
+- name: fedora38
+  ci: true
+  image: docker.io/geerlingguy/docker-fedora38-ansible:latest
 - name: alpine3
   ci: false
   image: docker.io/dropveter/alpine-python3

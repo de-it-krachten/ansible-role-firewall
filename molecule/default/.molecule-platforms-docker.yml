@@ -3,15 +3,27 @@
 - name: rhel7
   ci: false
   image: registry.access.redhat.com/ubi7/ubi-init:latest
+  privileged: true
   pre_build_image: false
+  cgroupns_mode: host
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:rw
 - name: rhel8
   ci: false
   image: registry.access.redhat.com/ubi8/ubi-init:latest
+  privileged: true
   pre_build_image: false
+  cgroupns_mode: host
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:rw
 - name: rhel9
   ci: false
   image: registry.access.redhat.com/ubi9/ubi-init:latest
+  privileged: true
   pre_build_image: false
+  cgroupns_mode: host
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:rw
 - name: centos7
   ci: true
   image: docker.io/geerlingguy/docker-centos7-ansible:latest
@@ -92,6 +104,22 @@
   cgroupns_mode: host
   volumes:
     - /sys/fs/cgroup:/sys/fs/cgroup:rw
+- name: opensuse15
+  ci: true
+  image: docker.io/dropveter/opensuse15-ansible:latest
+  privileged: true
+  pre_build_image: true
+  cgroupns_mode: host
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:rw
+- name: opensusetumbleweed15
+  ci: false
+  image: robertdebock/opensuse
+  privileged: true
+  pre_build_image: true
+  cgroupns_mode: host
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:rw
 - name: debian10
   ci: true
   image: docker.io/geerlingguy/docker-debian10-ansible:latest
@@ -109,7 +137,7 @@
   volumes:
     - /sys/fs/cgroup:/sys/fs/cgroup:rw
 - name: ubuntu1804
-  ci: true
+  ci: false
   image: docker.io/geerlingguy/docker-ubuntu1804-ansible:latest
   privileged: true
   pre_build_image: true
@@ -132,17 +160,17 @@
   cgroupns_mode: host
   volumes:
     - /sys/fs/cgroup:/sys/fs/cgroup:rw
-- name: fedora36
+- name: fedora37
   ci: true
-  image: docker.io/geerlingguy/docker-fedora36-ansible:latest
+  image: docker.io/geerlingguy/docker-fedora37-ansible:latest
   privileged: true
   pre_build_image: true
   cgroupns_mode: host
   volumes:
     - /sys/fs/cgroup:/sys/fs/cgroup:rw
-- name: fedora37
+- name: fedora38
   ci: true
-  image: docker.io/geerlingguy/docker-fedora37-ansible:latest
+  image: docker.io/geerlingguy/docker-fedora38-ansible:latest
   privileged: true
   pre_build_image: true
   cgroupns_mode: host

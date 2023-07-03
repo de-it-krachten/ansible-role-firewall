@@ -41,8 +41,8 @@
     systemctl_alternative: False
     prepare_firewall: True
   roles:
-    - deitkrachten.showinfo
     - deitkrachten.facts
+    - deitkrachten.showinfo
   tasks:
 
     - name: Create remote_tmp
@@ -56,6 +56,8 @@
         molecule_distro: >-
           {%- if ansible_distribution == 'Ubuntu' -%}
           {{ (ansible_distribution | lower) + (ansible_distribution_version | regex_replace('\.')) }}
+          {%- elif ansible_distribution == 'openSUSE Leap' -%}
+          {{ 'opensuse' + ansible_distribution_major_version }}
           {%- elif ansible_distribution == 'CentOS' and ansible_distribution_release == 'Stream' -%}
           {{ (ansible_distribution | lower) + ansible_distribution_major_version + 's' }}
           {%- else -%}
@@ -145,7 +147,7 @@
             paths: /etc/yum.repos.d
             patterns: 'CentOS-*'
           register: _repo
-          when: molecule_distro is search('centos(6|8)')
+          when: molecule_distro is search('^centos(6|8)$')
 
         - name: Update repo files to point to CentOS vault mirror (1)
           ansible.builtin.replace:
@@ -155,7 +157,7 @@
           loop: "{{ _repo.files }}"
           loop_control:
             label: "{{ item.path }}"
-          when: molecule_distro is search('centos(6|8)')
+          when: molecule_distro is search('^centos(6|8)$')
 
         - name: Update repo files to point to CentOS vault mirror (2)
           ansible.builtin.replace:
@@ -165,7 +167,7 @@
           loop: "{{ _repo.files }}"
           loop_control:
             label: "{{ item.path }}"
-          when: molecule_distro is search('centos(6|8)')
+          when: molecule_distro is search('^centos(6|8)$')
 
         # Switch to CentOS epel mirrors
         - name: Switch to CentOS epel mirrors
@@ -180,7 +182,7 @@
               replace: "baseurl=https://archives.fedoraproject.org/pub/archive/epel"
           loop_control:
             label: /etc/yum.repos.d/epel.repo
-          when: molecule_distro is search('centos6')
+          when: molecule_distro is search('^centos6$')
 
     - name: Family RedHat < 8
       when:
@@ -250,6 +252,15 @@
             name: '*'
             state: latest
           when: update_all is defined and update_all | bool
+
+        - name: Replace minimal packages
+          ansible.builtin.dnf:
+            name: "{{ item }}"
+            state: present
+            allowerasing: true
+          loop:
+            - curl
+            - coreutils
 
         - name: Install default packages
           ansible.builtin.package:
