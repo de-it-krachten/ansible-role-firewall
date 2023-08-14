@@ -251,22 +251,6 @@ jobs:
             ansible_lint: "ansible-lint>6,<7"
             hetznercloud: False
 
-          # - name: debian10_2.9
-          #   runs_on: ubuntu-latest
-          #   distro: debian10
-          #   playbook: converge.yml
-          #   ansible: "ansible==2.9.27"
-          #   ansible_lint: "ansible-lint==5.4.0"
-          #   hetznercloud: True
-          # - name: debian10_2.14
-          - name: debian10
-            runs_on: ubuntu-latest
-            distro: debian10
-            playbook: converge.yml
-            ansible: "ansible-core>2.14,<2.15"
-            ansible_lint: "ansible-lint>6,<7"
-            hetznercloud: True
-
           # - name: debian11_2.9
           #   runs_on: ubuntu-latest
           #   distro: debian11
@@ -278,6 +262,22 @@ jobs:
           - name: debian11
             runs_on: ubuntu-latest
             distro: debian11
+            playbook: converge.yml
+            ansible: "ansible-core>2.14,<2.15"
+            ansible_lint: "ansible-lint>6,<7"
+            hetznercloud: True
+
+          # - name: debian12_2.9
+          #   runs_on: ubuntu-latest
+          #   distro: debian12
+          #   playbook: converge.yml
+          #   ansible: "ansible==2.9.27"
+          #   ansible_lint: "ansible-lint==5.4.0"
+          #   hetznercloud: True
+          # - name: debian12_2.14
+          - name: debian12
+            runs_on: ubuntu-latest
+            distro: debian12
             playbook: converge.yml
             ansible: "ansible-core>2.14,<2.15"
             ansible_lint: "ansible-lint>6,<7"

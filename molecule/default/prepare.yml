@@ -38,6 +38,9 @@
       - rocky9
       - almalinux8
       - almalinux9
+      - sles15
+      - opensuse15
+
     systemctl_alternative: False
     prepare_firewall: True
   roles:
@@ -99,6 +102,14 @@
             user: root
             state: present
             key: "{{ root_pubkey }}"
+
+    - name: Generic
+      block:
+
+        - name: Remove packages known to make CI fail
+          ansible.builtin.package:
+            name: "{{ packages_rm | default([]) }}"
+            state: absent
 
     - name: Family Debian
       when: ansible_os_family == 'Debian'
@@ -308,6 +319,10 @@
             name: deitkrachten.firewalld
           when: molecule_distro in firewalld_distros
 
+    - name: Install docker
+      ansible.builtin.include_role:
+        name: deitkrachten.docker
+      when: install_docker is defined and install_docker | bool
 
     - name: Reboot the server
       ansible.builtin.include_role:
