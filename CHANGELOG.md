@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/de-it-krachten/ansible-role-firewall/compare/v1.4.0...v1.5.0) (2023-08-14)
+
+
+### Features
+
+* Update supported platforms & CI ([7ba1140](https://github.com/de-it-krachten/ansible-role-firewall/commit/7ba1140ffaca4e84bf1621b65cff62029cdd3ab2))
+
 # [1.4.0](https://github.com/de-it-krachten/ansible-role-firewall/compare/v1.3.3...v1.4.0) (2023-07-03)
 
 
