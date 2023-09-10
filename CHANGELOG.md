@@ -1,3 +1,10 @@
+## [1.5.1](https://github.com/de-it-krachten/ansible-role-firewall/compare/v1.5.0...v1.5.1) (2023-09-10)
+
+
+### Bug Fixes
+
+* Simplify firewall identification ([b0178fb](https://github.com/de-it-krachten/ansible-role-firewall/commit/b0178fb03c78019f4cefd0f3ec70ece7e24d1d69))
+
 # [1.5.0](https://github.com/de-it-krachten/ansible-role-firewall/compare/v1.4.0...v1.5.0) (2023-08-14)
 
 
