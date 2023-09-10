@@ -3,57 +3,30 @@
 - name: Populate service facts
   ansible.builtin.service_facts:
 
-- name: Identifiy firewall active (ufw)
+- name: Identifiy firewall active  # noqa jinja[spacing]
   ansible.builtin.set_fact:
-    firewall_running: ufw
+    firewall_running: >-
+      {%- if ansible_facts.services['ufw'] is defined and ansible_facts.services['ufw']['state'] == 'running' -%}
+      ufw
+      {%- elif ansible_facts.services['ufw.service'] is defined and ansible_facts.services['ufw.service']['state'] == 'running' -%}
+      ufw
+      {%- elif ansible_facts.services['nftables'] is defined and ansible_facts.services['nftables']['state'] == 'running' -%}
+      nftables
+      {%- elif ansible_facts.services['nftables.service'] is defined and ansible_facts.services['nftables.service']['state'] == 'running' -%}
+      nftables
+      {%- elif ansible_facts.services['firewalld'] is defined and ansible_facts.services['firewalld']['state'] == 'running' -%}
+      firewalld
+      {%- elif ansible_facts.services['firewalld.service'] is defined and ansible_facts.services['firewalld.service']['state'] == 'running' -%}
+      firewalld
+      {%- else -%}
+      unknown
+      {%- endif -%}
   when:
-    - ansible_facts.services['ufw'] is defined
-    - ansible_facts.services['ufw']['state'] == 'running'
-    - firewall_running is undefined
-
-- name: Identifiy firewall active (ufw.service)
-  ansible.builtin.set_fact:
-    firewall_running: ufw
-  when:
-    - ansible_facts.services['ufw.service'] is defined
-    - ansible_facts.services['ufw.service']['state'] == 'running'
-    - firewall_running is undefined
-
-- name: Identifiy firewall active (nftables)
-  ansible.builtin.set_fact:
-    firewall_running: nftables
-  when:
-    - ansible_facts.services['nftables'] is defined
-    - ansible_facts.services['nftables']['state'] == 'running'
-    - firewall_running is undefined
-
-- name: Identifiy firewall active (nftables.service)
-  ansible.builtin.set_fact:
-    firewall_running: nftables
-  when:
-    - ansible_facts.services['nftables.service'] is defined
-    - ansible_facts.services['nftables.service']['state'] == 'running'
-    - firewall_running is undefined
-
-- name: Identifiy firewall active (firewalld)
-  ansible.builtin.set_fact:
-    firewall_running: firewalld
-  when:
-    - ansible_facts.services['firewalld'] is defined
-    - ansible_facts.services['firewalld']['state'] == 'running'
-    - firewall_running is undefined
-
-- name: Identifiy firewall active (firewalld.service)
-  ansible.builtin.set_fact:
-    firewall_running: firewalld
-  when:
-    - ansible_facts.services['firewalld.service'] is defined
-    - ansible_facts.services['firewalld.service']['state'] == 'running'
     - firewall_running is undefined
 
 - name: Assume iptables if noting else found
   when:
-    - firewall_running is undefined
+    - firewall_running == 'NONE'
   block:
 
     - name: Search for iptables binary
@@ -78,3 +51,7 @@
 - name: Set firewall found
   ansible.builtin.set_fact:
     firewall_type: "{{ firewall_running | default('unknown') }}"
+
+- name: Show firewall type
+  ansible.builtin.debug:
+    var: firewall_type

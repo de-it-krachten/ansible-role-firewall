@@ -354,7 +354,7 @@ platforms:
       version: all
     molecule:
       docker:
-        image: "docker.io/dropveter/opensuse15-ansible:latest"
+        image: "docker.io/geerlingguy/docker-opensuseleap15-ansible:latest"
         pre_build_image: true
         privileged: true
         volumes:
@@ -701,6 +701,10 @@ github:
     - name: ansible_2.14
       ansible: "ansible>6,<7"
       ansible_core: "ansible-core>2.14,<2.15"
+      ansible_lint: "ansible-lint"
+    - name: ansible_2.15
+      ansible: "ansible>7,<8"
+      ansible_core: "ansible-core>2.15,<2.16"
       ansible_lint: "ansible-lint"
 
 # Gitlab
