@@ -46,6 +46,10 @@ jobs:
             # ansible: "ansible>6,<7"
             ansible: "ansible-core>2.14,<2.15"
             ansible_lint: "ansible-lint"
+          - name: "ansible_2.15"
+            # ansible: "ansible>7,<8"
+            ansible: "ansible-core>2.15,<2.16"
+            ansible_lint: "ansible-lint"
 
     steps:
       - name: Check out the codebase.

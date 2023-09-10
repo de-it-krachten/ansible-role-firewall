@@ -20,6 +20,7 @@
     ufw_distros:
       - debian10
       - debian11
+      - debian12
       - ubuntu1804
       - ubuntu2004
       - ubuntu2204
@@ -29,6 +30,7 @@
       - rhel9
       - fedora36
       - fedora37
+      - fedora38
       - centos8
       - centos8s
       - centos9s
@@ -111,6 +113,52 @@
             name: "{{ packages_rm | default([]) }}"
             state: absent
 
+    - name: Family Suse
+      when: ansible_os_family == 'Suse'
+      block:
+
+        - name: Configure to use proxy  # noqa template-instead-of-copy
+          ansible.builtin.copy:
+            content: |
+              PROXY_ENABLED="yes"
+              HTTP_PROXY="{{ http_proxy }}"
+              HTTPS_PROXY="{{ http_proxy }}"
+              NO_PROXY="localhost, 127.0.0.1"
+            dest: /etc/sysconfig/proxy
+            owner: root
+            group: root
+            mode: "0644"
+          when: proxy_use is defined and proxy_use | bool
+
+        - name: Update zypper cache
+          community.general.zypper:
+            name: zypper
+            update_cache: true
+
+        - name: Update all packages
+          community.general.zypper:
+            name: '*'
+            state: latest
+          when: update_all is defined and update_all | bool
+
+        - name: Remove conflicting packages
+          ansible.builtin.package:
+            name:
+              - busybox-tar
+            state: absent
+
+        - name: Install default packages
+          ansible.builtin.package:
+            name:
+              - lsb
+              - iproute
+              - python-xml
+              - python3-xml
+              - python3-rpm
+              - unzip
+              - tar
+            state: present
+
     - name: Family Debian
       when: ansible_os_family == 'Debian'
       block:
@@ -145,6 +193,7 @@
               - netbase
               - gnupg
               - ssh
+              - python3-apt
             state: present
 
     - name: Family RedHat (generic)
