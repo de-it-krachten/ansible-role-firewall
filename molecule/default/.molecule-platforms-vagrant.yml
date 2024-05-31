@@ -58,7 +58,7 @@
   interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
 - name: debian12
   ci: true
-  box: generic/debian12
+  box: debian/bookworm64
   interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
 - name: ubuntu1804
   ci: false
@@ -72,15 +72,47 @@
   ci: true
   box: generic/ubuntu2204
   interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
-- name: fedora37
+- name: ubuntu2404
   ci: true
+  box: generic/ubuntu2404
+  interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
+- name: fedora37
+  ci: false
   box: generic/fedora37
   interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
 - name: fedora38
-  ci: true
+  ci: false
   box: generic/fedora38
+  interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
+- name: fedora39
+  ci: true
+  box: generic/fedora39
+  interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
+- name: fedora40
+  ci: true
+  box: generic/fedora40
   interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
 - name: alpine3
   ci: false
   box: generic/alpine312
+  interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
+- name: win2012r2
+  ci: false
+  box: jborean93/WindowsServer2012R2
+  groups: ['windows']
+  interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
+- name: win2016
+  ci: false
+  box: jborean93/WindowsServer2016
+  groups: ['windows']
+  interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
+- name: win2019
+  ci: false
+  box: jborean93/WindowsServer2019
+  groups: ['windows']
+  interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
+- name: win2022
+  ci: false
+  box: jborean93/WindowsServer2022
+  groups: ['windows']
   interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]

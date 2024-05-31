@@ -46,7 +46,7 @@
     systemctl_alternative: False
     prepare_firewall: True
   roles:
-    - deitkrachten.facts
+    - { role: deitkrachten.facts, when: ansible_os_family != 'Windows' }
     - deitkrachten.showinfo
   tasks:
 
@@ -55,6 +55,7 @@
         path: /root/.ansible/tmp
         state: directory
         mode: "0700"
+      when: ansible_os_family != 'Windows'
 
     - name: Define molecule distro  # noqa jinja[spacing]
       ansible.builtin.set_fact:
@@ -83,12 +84,15 @@
           update_all: "{{ update_all | default(False) }}"
           activate_epel: "{{ activate_epel | default(False) }}"
           install_python: "{{ install_python | default(False) }}"
+          auto_logon: "{{ auto_logon | default(False) }}"
+          set_hostname: "{{ set_hostname | default(False) }}"
 
     - name: Enable root access
       when:
         - molecule_driver is search('^(hetznercloud|vagrant)$')
         - enable_root_access is defined and enable_root_access | bool
         - root_pubkey is defined and root_pubkey | length > 0
+        - ansible_os_family != 'Windows'
       block:
 
         - name: Create /root/.ssh
@@ -105,7 +109,32 @@
             state: present
             key: "{{ root_pubkey }}"
 
-    - name: Generic
+    - name: Generic (Windows)
+      when:
+        - ansible_os_family == 'Windows'
+      block:
+
+        - name: Set autologin for vagrant
+          community.windows.win_auto_logon:
+            username: vagrant
+            password: vagrant
+          register: _win_autologin
+          when: auto_logon is defined and auto_logon | bool
+
+        - name: Set the hostname
+          ansible.windows.win_hostname:
+            name: "{{ inventory_hostname }}"
+          when: set_hostname is defined and set_hostname | bool
+          register: _win_hostname
+
+        - name: Reboot
+          ansible.windows.win_reboot:
+          when: _win_hostname.changed or _win_autologin.changed
+
+
+    - name: Generic (Linux)
+      when:
+        - ansible_os_family != 'Windows'
       block:
 
         - name: Remove packages known to make CI fail
@@ -257,11 +286,19 @@
             regexp: "^proxy=.*$"
           when: proxy_use is defined and proxy_use | bool
 
-        - name: Update YUM cache  # noqa command-instead-of-module
-          ansible.builtin.command: yum makecache
+        - name: Update YUM cache (ansible < 2.14)  # noqa command-instead-of-module
+          ansible.builtin.command:
+            cmd: yum makecache
           changed_when: false
-          # args:
-          #   warn: false
+          args:
+            warn: false
+          when: ansible_version.full is version("2.14", "<")
+
+        - name: Update YUM cache (ansible >= 2.14)  # noqa command-instead-of-module
+          ansible.builtin.command:
+            cmd: yum makecache
+          changed_when: false
+          when: ansible_version.full is version("2.14", ">=")
 
         - name: Upgrade YUM packages  # noqa package-latest
           ansible.builtin.yum:
@@ -296,6 +333,16 @@
         - ansible_distribution_major_version | int >= 8
       block:
 
+        - name: Get RPM GPG key for Alma Linux
+          ansible.builtin.shell: |
+            dnf install wget -y
+            mv={{ ansible_distribution_major_version }}
+            [[ $mv == 8 ]] && gpgkey=https://repo.almalinux.org/almalinux/$mv/BaseOS/x86_64/os/RPM-GPG-KEY-AlmaLinux
+            [[ $mv == 9 ]] && gpgkey=https://repo.almalinux.org/almalinux/$mv/BaseOS/x86_64/os/RPM-GPG-KEY-AlmaLinux-$mv
+            wget -O RPM-GPG-KEY-AlmaLinux $gpgkey
+            rpm --import RPM-GPG-KEY-AlmaLinux
+          when: ansible_distribution == 'AlmaLinux'
+
         - name: Configure DNF to use proxy
           ansible.builtin.lineinfile:
             path: /etc/dnf/dnf.conf
@@ -329,6 +376,7 @@
               - openssh-server
               - openssh-clients
               - iproute
+              - glibc-langpack-en
             state: present
 
         - name: Activate epel repository
@@ -339,18 +387,35 @@
             - activate_epel | bool
             - ansible_distribution != 'Fedora'
 
+    - name: Show locales
+      when: show_locales is defined and show_locales | bool
+      block:
+
+        - name: Get locales
+          ansible.builtin.command:
+            cmd: locale -a
+          changed_when: false
+          register: __locale
+
+        - name: Show available locale
+          ansible.builtin.debug:
+            var: __locale.stdout_lines
+
     - name: Install python
       ansible.builtin.include_role:
         name: deitkrachten.python
       vars:
         python38: "{{ install_python38 | default(False) }}"
         python_package_install_optional: "{{ install_python_optional | default(True) }}"
-      when: install_python is defined and install_python | bool
+      when:
+        - install_python is defined and install_python | bool
+        - ansible_os_family != 'Windows'
 
     - name: Firewall
       when:
         - prepare_firewall is defined and prepare_firewall | bool
         - inventory_hostname is not search('-dns$')
+        - ansible_os_family != 'Windows'
       block:
 
         - name: Install iptables
@@ -371,12 +436,16 @@
     - name: Install docker
       ansible.builtin.include_role:
         name: deitkrachten.docker
-      when: install_docker is defined and install_docker | bool
+      when:
+        - install_docker is defined and install_docker | bool
+        - ansible_os_family != 'Windows'
 
     - name: Reboot the server
       ansible.builtin.include_role:
         name: deitkrachten.reboot
-      when: molecule_driver is search('^(vagrant|hetznercloud)$')
+      when:
+        - molecule_driver is search('^(vagrant|hetznercloud)$')
+        - ansible_os_family != 'Windows'
 
     - name: Re-run setup
       ansible.builtin.setup:
