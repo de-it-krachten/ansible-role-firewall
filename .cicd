@@ -394,7 +394,7 @@ platforms:
   debian10:
     name: Debian 10 (Buster)
     ci: false
-    supported: true
+    supported: false
     galaxy:
       name: Debian
       version: buster
@@ -461,7 +461,7 @@ platforms:
       podman:
         image: "docker.io/geerlingguy/docker-debian12-ansible:latest"
       vagrant:
-        box: "generic/debian12"
+        box: "debian/bookworm64"
         interfaces:
           - network_name: private_network
             type: dhcp
@@ -550,10 +550,35 @@ platforms:
       hetznercloud:
         image: ubuntu-22.04
         server_type: cx11
-  fedora37:
-    name: Fedora 37
+  ubuntu2404:
+    name: Ubuntu 24.04 LTS
     ci: true
     supported: true
+    galaxy:
+      name: Ubuntu
+      version: jammy
+    molecule:
+      docker:
+        image: "docker.io/geerlingguy/docker-ubuntu2404-ansible:latest"
+        pre_build_image: true
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
+      podman:
+        image: "docker.io/geerlingguy/docker-ubuntu2404-ansible:latest"
+      vagrant:
+        box: "generic/ubuntu2404"
+        interfaces:
+          - network_name: private_network
+            type: dhcp
+      hetznercloud:
+        image: ubuntu-24.04
+        server_type: cx11
+  fedora37:
+    name: Fedora 37
+    ci: false
+    supported: false
     galaxy:
       name: Fedora
       version: all
@@ -577,8 +602,8 @@ platforms:
         server_type: cx11
   fedora38:
     name: Fedora 38
-    ci: true
-    supported: true
+    ci: false
+    supported: false
     galaxy:
       name: Fedora
       version: all
@@ -599,6 +624,56 @@ platforms:
             type: dhcp
       hetznercloud:
         image: fedora-38
+        server_type: cx11
+  fedora39:
+    name: Fedora 39
+    ci: true
+    supported: true
+    galaxy:
+      name: Fedora
+      version: all
+    molecule:
+      docker:
+        image: "docker.io/geerlingguy/docker-fedora39-ansible:latest"
+        pre_build_image: true
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
+      podman:
+        image: "docker.io/geerlingguy/docker-fedora39-ansible:latest"
+      vagrant:
+        box: "generic/fedora39"
+        interfaces:
+          - network_name: private_network
+            type: dhcp
+      hetznercloud:
+        image: fedora-39
+        server_type: cx11
+  fedora40:
+    name: Fedora 40
+    ci: true
+    supported: true
+    galaxy:
+      name: Fedora
+      version: all
+    molecule:
+      docker:
+        image: "docker.io/geerlingguy/docker-fedora40-ansible:latest"
+        pre_build_image: true
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
+      podman:
+        image: "docker.io/geerlingguy/docker-fedora40-ansible:latest"
+      vagrant:
+        box: "generic/fedora40"
+        interfaces:
+          - network_name: private_network
+            type: dhcp
+      hetznercloud:
+        image: fedora-40
         server_type: cx11
   alpine3:
     name: Alpine 3
@@ -641,6 +716,66 @@ platforms:
           - network
         environment:
           DOCKER_TLS_CERTDIR: /certs
+  win2012r2:
+    name: Windows Server 2012 R2
+    ci: false
+    supported: false
+    galaxy:
+      name: Windows
+      version: all
+    molecule:
+      vagrant:
+        box: jborean93/WindowsServer2012R2
+        groups:
+          - windows
+        interfaces:
+          - network_name: private_network
+            type: dhcp
+  win2016:
+    name: Windows Server 2016
+    ci: false
+    supported: false
+    galaxy:
+      name: Windows
+      version: all
+    molecule:
+      vagrant:
+        box: jborean93/WindowsServer2016
+        groups:
+          - windows
+        interfaces:
+          - network_name: private_network
+            type: dhcp
+  win2019:
+    name: Windows Server 2019
+    ci: false
+    supported: false
+    galaxy:
+      name: Windows
+      version: all
+    molecule:
+      vagrant:
+        box: jborean93/WindowsServer2019
+        groups:
+          - windows
+        interfaces:
+          - network_name: private_network
+            type: dhcp
+  win2022:
+    name: Windows Server 2022
+    ci: false
+    supported: false
+    galaxy:
+      name: Windows
+      version: all
+    molecule:
+      vagrant:
+        box: jborean93/WindowsServer2022
+        groups:
+          - windows
+        interfaces:
+          - network_name: private_network
+            type: dhcp
 
 # List of platform deviations
 platforms_overwrite: {}
@@ -671,6 +806,7 @@ galaxy:
     - name: Fedora
       versions:
         - all
+  dependencies: []
 
 # Github
 github:
@@ -681,34 +817,23 @@ github:
   parallel: true
   owner: de-it-krachten
   repo: ansible-role-firewall
+  # https://docs.ansible.com/ansible/latest/reference_appendices/release_and_maintenance.html
   lint_matrix:
-    - name: ansible_2.9
-      ansible: "ansible==2.9.27"
-      ansible_core: "ansible==2.9.27"
-      ansible_lint: "ansible-lint==5.4.0"
-    - name: ansible_2.11
-      ansible: "ansible>4,<5"
-      ansible_core: "ansible-core>2.11,<2.12"
-      ansible_lint: "ansible-lint>5,<6"
-    - name: ansible_2.12
-      ansible: "ansible>5,<6"
-      ansible_core: "ansible-core>2.12,<2.13"
-      ansible_lint: "ansible-lint>6,<7"
-    - name: ansible_2.13
-      ansible: "ansible>6,<7"
-      ansible_core: "ansible-core>2.13,<2.14"
-      ansible_lint: "ansible-lint>6,<7"
-    - name: ansible_2.14
-      ansible: "ansible>6,<7"
-      ansible_core: "ansible-core>2.14,<2.15"
-      ansible_lint: "ansible-lint"
     - name: ansible_2.15
-      ansible: "ansible>7,<8"
+      ansible: "ansible>8,<9"
       ansible_core: "ansible-core>2.15,<2.16"
+      ansible_lint: "ansible-lint"
+    - name: ansible_2.16
+      ansible: "ansible>9,<10"
+      ansible_core: "ansible-core>2.16,<2.17"
       ansible_lint: "ansible-lint"
 
 # Gitlab
 gitlab:
+  active: false
+
+# Axure DevOps
+ado:
   active: false
 
 # molecule
@@ -721,6 +846,8 @@ molecule:
     - hetznercloud
     - podman
   driver: docker
+  ansible:
+   verbosity: 0
   converge:
     playbooks: []
     vars: {}
@@ -745,6 +872,17 @@ molecule:
   nodes:
     - name: node1
       groups: []
+  group_vars:
+    linux:
+      ansible_user: vagrant
+      ansible_password: vagrant
+    windows:
+      ansible_user: vagrant
+      ansible_password: vagrant
+      ansible_become_user: vagrant
+      ansible_become_method: runas
+      ansible_connection: ssh
+      ansible_shell_type: cmd
 
 # templates
 ci_templates:
@@ -777,6 +915,10 @@ ci_templates:
     src: gitlab/templates/gitlab-ci.yml
     dest: .gitlab-ci.yml
     when: gitlab_active
+  azure-pipelines.yml:
+    src: ado/templates/azure-pipelines.yml
+    dest: azure-pipelines.yml
+    when: ado_active
   prepare.yml:
     src: molecule/templates/prepare.yml
     dest: molecule/default/prepare.yml
