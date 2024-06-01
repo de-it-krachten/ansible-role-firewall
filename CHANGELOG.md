@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/de-it-krachten/ansible-role-firewall/compare/v1.5.1...v1.6.0) (2024-06-01)
+
+
+### Features
+
+* Add support for Ubuntu 24.04 LTS + Fedora 40 ([83e3be1](https://github.com/de-it-krachten/ansible-role-firewall/commit/83e3be122e2166aad2bb3a0ef604e74b614d69e3))
+
 ## [1.5.1](https://github.com/de-it-krachten/ansible-role-firewall/compare/v1.5.0...v1.5.1) (2023-09-10)
 
 
