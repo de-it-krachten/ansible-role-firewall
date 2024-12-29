@@ -18,7 +18,7 @@ platforms:
   rhel7:
     name: Red Hat Enterprise Linux 7
     ci: false
-    supported: true
+    supported: false
     galaxy:
       name: EL
       version: 7
@@ -71,8 +71,8 @@ platforms:
         pre_build_image: false
   centos7:
     name: CentOS 7
-    ci: true
-    supported: true
+    ci: false
+    supported: false
     galaxy:
       name: EL
       version: 7
@@ -627,8 +627,8 @@ platforms:
         server_type: cx11
   fedora39:
     name: Fedora 39
-    ci: true
-    supported: true
+    ci: false
+    supported: false
     galaxy:
       name: Fedora
       version: all
@@ -674,6 +674,31 @@ platforms:
             type: dhcp
       hetznercloud:
         image: fedora-40
+        server_type: cx11
+  fedora41:
+    name: Fedora 41
+    ci: true
+    supported: true
+    galaxy:
+      name: Fedora
+      version: all
+    molecule:
+      docker:
+        image: "docker.io/geerlingguy/docker-fedora41-ansible:latest"
+        pre_build_image: true
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
+      podman:
+        image: "docker.io/geerlingguy/docker-fedora41-ansible:latest"
+      vagrant:
+        box: "generic/fedora41"
+        interfaces:
+          - network_name: private_network
+            type: dhcp
+      hetznercloud:
+        image: fedora-41
         server_type: cx11
   alpine3:
     name: Alpine 3
@@ -792,8 +817,8 @@ galaxy:
   platforms:
     - name: EL
       versions:
-        - 7
         - 8
+        - 9
     - name: Debian
       versions:
         - buster
@@ -803,6 +828,7 @@ galaxy:
         # - 18.04
         - 20.04
         - 22.04
+        - 24.04
     - name: Fedora
       versions:
         - all

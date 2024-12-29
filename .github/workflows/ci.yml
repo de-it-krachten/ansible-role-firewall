@@ -21,7 +21,7 @@ jobs:
 
   lint:
     name: "${{ matrix.name }}"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
       matrix:
@@ -49,7 +49,18 @@ jobs:
 
       - name: Show runner info
         run: |
-          hostname -f
+
+          hostname="$(hostname -f)"
+          eval os_name=$(awk -F= '/^NAME=/ {print $2}' /etc/os-release)
+          eval os_version=$(awk -F= '/^VERSION=/ {print $2}' /etc/os-release)
+          os="$os_name $os_version"
+          user="$(id -un)"
+          python=$(which python3)
+
+          echo "hostname : $hostname"
+          echo "user     : $user"
+          echo "os       : $os"
+          echo "python   : $python ($(python3 --version))"
 
       - name: Disable specific apparmor profiles
         run: |
@@ -119,241 +130,113 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # - name: centos7_2.9
-          #   runs_on: ubuntu-20.04
-          #   distro: centos7
-          #   playbook: converge.yml
-          #   ansible: "ansible==2.9.27"
-          #   ansible_lint: "ansible-lint==5.4.0"
-          #   hetznercloud: True
-          # - name: centos7_2.14
-          - name: centos7
-            runs_on: ubuntu-20.04
-            distro: centos7
-            playbook: converge.yml
-            ansible: "ansible-core>2.16,<2.17"
-            ansible_lint: "ansible-lint>6,<7"
-            hetznercloud: True
-
-          # - name: rockylinux8_2.9
-          #   runs_on: ubuntu-latest
-          #   distro: rockylinux8
-          #   playbook: converge.yml
-          #   ansible: "ansible==2.9.27"
-          #   ansible_lint: "ansible-lint==5.4.0"
-          #   hetznercloud: True
-          # - name: rockylinux8_2.14
           - name: rockylinux8
-            runs_on: ubuntu-latest
+            runs_on: ubuntu-22.04
             distro: rockylinux8
             playbook: converge.yml
             ansible: "ansible-core>2.16,<2.17"
             ansible_lint: "ansible-lint>6,<7"
             hetznercloud: True
 
-          # - name: rockylinux9_2.9
-          #   runs_on: ubuntu-latest
-          #   distro: rockylinux9
-          #   playbook: converge.yml
-          #   ansible: "ansible==2.9.27"
-          #   ansible_lint: "ansible-lint==5.4.0"
-          #   hetznercloud: True
-          # - name: rockylinux9_2.14
           - name: rockylinux9
-            runs_on: ubuntu-latest
+            runs_on: ubuntu-22.04
             distro: rockylinux9
             playbook: converge.yml
             ansible: "ansible-core>2.16,<2.17"
             ansible_lint: "ansible-lint>6,<7"
             hetznercloud: True
 
-          # - name: oraclelinux8_2.9
-          #   runs_on: ubuntu-latest
-          #   distro: oraclelinux8
-          #   playbook: converge.yml
-          #   ansible: "ansible==2.9.27"
-          #   ansible_lint: "ansible-lint==5.4.0"
-          #   hetznercloud: False
-          # - name: oraclelinux8_2.14
           - name: oraclelinux8
-            runs_on: ubuntu-latest
+            runs_on: ubuntu-22.04
             distro: oraclelinux8
             playbook: converge.yml
             ansible: "ansible-core>2.16,<2.17"
             ansible_lint: "ansible-lint>6,<7"
             hetznercloud: False
 
-          # - name: oraclelinux9_2.9
-          #   runs_on: ubuntu-latest
-          #   distro: oraclelinux9
-          #   playbook: converge.yml
-          #   ansible: "ansible==2.9.27"
-          #   ansible_lint: "ansible-lint==5.4.0"
-          #   hetznercloud: False
-          # - name: oraclelinux9_2.14
           - name: oraclelinux9
-            runs_on: ubuntu-latest
+            runs_on: ubuntu-22.04
             distro: oraclelinux9
             playbook: converge.yml
             ansible: "ansible-core>2.16,<2.17"
             ansible_lint: "ansible-lint>6,<7"
             hetznercloud: False
 
-          # - name: almalinux8_2.9
-          #   runs_on: ubuntu-latest
-          #   distro: almalinux8
-          #   playbook: converge.yml
-          #   ansible: "ansible==2.9.27"
-          #   ansible_lint: "ansible-lint==5.4.0"
-          #   hetznercloud: False
-          # - name: almalinux8_2.14
           - name: almalinux8
-            runs_on: ubuntu-latest
+            runs_on: ubuntu-22.04
             distro: almalinux8
             playbook: converge.yml
             ansible: "ansible-core>2.16,<2.17"
             ansible_lint: "ansible-lint>6,<7"
             hetznercloud: False
 
-          # - name: almalinux9_2.9
-          #   runs_on: ubuntu-latest
-          #   distro: almalinux9
-          #   playbook: converge.yml
-          #   ansible: "ansible==2.9.27"
-          #   ansible_lint: "ansible-lint==5.4.0"
-          #   hetznercloud: False
-          # - name: almalinux9_2.14
           - name: almalinux9
-            runs_on: ubuntu-latest
+            runs_on: ubuntu-22.04
             distro: almalinux9
             playbook: converge.yml
             ansible: "ansible-core>2.16,<2.17"
             ansible_lint: "ansible-lint>6,<7"
             hetznercloud: False
 
-          # - name: opensuse15_2.9
-          #   runs_on: ubuntu-latest
-          #   distro: opensuse15
-          #   playbook: converge.yml
-          #   ansible: "ansible==2.9.27"
-          #   ansible_lint: "ansible-lint==5.4.0"
-          #   hetznercloud: False
-          # - name: opensuse15_2.14
           - name: opensuse15
-            runs_on: ubuntu-latest
+            runs_on: ubuntu-22.04
             distro: opensuse15
             playbook: converge.yml
             ansible: "ansible-core>2.16,<2.17"
             ansible_lint: "ansible-lint>6,<7"
             hetznercloud: False
 
-          # - name: debian11_2.9
-          #   runs_on: ubuntu-latest
-          #   distro: debian11
-          #   playbook: converge.yml
-          #   ansible: "ansible==2.9.27"
-          #   ansible_lint: "ansible-lint==5.4.0"
-          #   hetznercloud: True
-          # - name: debian11_2.14
           - name: debian11
-            runs_on: ubuntu-latest
+            runs_on: ubuntu-22.04
             distro: debian11
             playbook: converge.yml
             ansible: "ansible-core>2.16,<2.17"
             ansible_lint: "ansible-lint>6,<7"
             hetznercloud: True
 
-          # - name: debian12_2.9
-          #   runs_on: ubuntu-latest
-          #   distro: debian12
-          #   playbook: converge.yml
-          #   ansible: "ansible==2.9.27"
-          #   ansible_lint: "ansible-lint==5.4.0"
-          #   hetznercloud: True
-          # - name: debian12_2.14
           - name: debian12
-            runs_on: ubuntu-latest
+            runs_on: ubuntu-22.04
             distro: debian12
             playbook: converge.yml
             ansible: "ansible-core>2.16,<2.17"
             ansible_lint: "ansible-lint>6,<7"
             hetznercloud: True
 
-          # - name: ubuntu2004_2.9
-          #   runs_on: ubuntu-latest
-          #   distro: ubuntu2004
-          #   playbook: converge.yml
-          #   ansible: "ansible==2.9.27"
-          #   ansible_lint: "ansible-lint==5.4.0"
-          #   hetznercloud: True
-          # - name: ubuntu2004_2.14
           - name: ubuntu2004
-            runs_on: ubuntu-latest
+            runs_on: ubuntu-22.04
             distro: ubuntu2004
             playbook: converge.yml
             ansible: "ansible-core>2.16,<2.17"
             ansible_lint: "ansible-lint>6,<7"
             hetznercloud: True
 
-          # - name: ubuntu2204_2.9
-          #   runs_on: ubuntu-latest
-          #   distro: ubuntu2204
-          #   playbook: converge.yml
-          #   ansible: "ansible==2.9.27"
-          #   ansible_lint: "ansible-lint==5.4.0"
-          #   hetznercloud: True
-          # - name: ubuntu2204_2.14
           - name: ubuntu2204
-            runs_on: ubuntu-latest
+            runs_on: ubuntu-22.04
             distro: ubuntu2204
             playbook: converge.yml
             ansible: "ansible-core>2.16,<2.17"
             ansible_lint: "ansible-lint>6,<7"
             hetznercloud: True
 
-          # - name: ubuntu2404_2.9
-          #   runs_on: ubuntu-latest
-          #   distro: ubuntu2404
-          #   playbook: converge.yml
-          #   ansible: "ansible==2.9.27"
-          #   ansible_lint: "ansible-lint==5.4.0"
-          #   hetznercloud: True
-          # - name: ubuntu2404_2.14
           - name: ubuntu2404
-            runs_on: ubuntu-latest
+            runs_on: ubuntu-22.04
             distro: ubuntu2404
             playbook: converge.yml
             ansible: "ansible-core>2.16,<2.17"
             ansible_lint: "ansible-lint>6,<7"
             hetznercloud: True
 
-          # - name: fedora39_2.9
-          #   runs_on: ubuntu-latest
-          #   distro: fedora39
-          #   playbook: converge.yml
-          #   ansible: "ansible==2.9.27"
-          #   ansible_lint: "ansible-lint==5.4.0"
-          #   hetznercloud: True
-          # - name: fedora39_2.14
-          - name: fedora39
-            runs_on: ubuntu-latest
-            distro: fedora39
+          - name: fedora40
+            runs_on: ubuntu-22.04
+            distro: fedora40
             playbook: converge.yml
             ansible: "ansible-core>2.16,<2.17"
             ansible_lint: "ansible-lint>6,<7"
             hetznercloud: True
 
-          # - name: fedora40_2.9
-          #   runs_on: ubuntu-latest
-          #   distro: fedora40
-          #   playbook: converge.yml
-          #   ansible: "ansible==2.9.27"
-          #   ansible_lint: "ansible-lint==5.4.0"
-          #   hetznercloud: True
-          # - name: fedora40_2.14
-          - name: fedora40
-            runs_on: ubuntu-latest
-            distro: fedora40
+          - name: fedora41
+            runs_on: ubuntu-22.04
+            distro: fedora41
             playbook: converge.yml
             ansible: "ansible-core>2.16,<2.17"
             ansible_lint: "ansible-lint>6,<7"
@@ -376,7 +259,18 @@ jobs:
 
       - name: Show runner info
         run: |
-          hostname -f
+
+          hostname="$(hostname -f)"
+          eval os_name=$(awk -F= '/^NAME=/ {print $2}' /etc/os-release)
+          eval os_version=$(awk -F= '/^VERSION=/ {print $2}' /etc/os-release)
+          os="$os_name $os_version"
+          user="$(id -un)"
+          python=$(which python3)
+
+          echo "hostname : $hostname"
+          echo "user     : $user"
+          echo "os       : $os"
+          echo "python   : $python ($(python3 --version))"
 
       - name: Disable specific apparmor profiles
         run: |
@@ -390,7 +284,8 @@ jobs:
           source ~/.venv/bin/activate
           pip3 install pip wheel setuptools --upgrade
           pip3 install yq e2j2 jinja2-ansible-filters
-          pip3 install "${{ matrix.ansible }}" "${{ matrix.ansible_lint }}" "ansible-compat<4" "molecule<5" yamllint jmespath
+          # pip3 install "${{ matrix.ansible }}" "${{ matrix.ansible_lint }}" "ansible-compat<4" "molecule<5" yamllint jmespath
+          pip3 install "${{ matrix.ansible }}" "${{ matrix.ansible_lint }}" yamllint jmespath molecule
 
           echo "MOLECULE_DRIVER = $MOLECULE_DRIVER"
           if [[ $MOLECULE_DRIVER == 'hetznercloud' ]] ; then
@@ -402,11 +297,11 @@ jobs:
             sudo apt install curl
             curl -s -o $createyml_file $createyml_url
           elif [[ $MOLECULE_DRIVER == 'vagrant' ]] ; then
-            pip3 install molecule[vagrant]
+            pip3 install molecule-vagrant
           elif [[ $MOLECULE_DRIVER == 'podman' ]] ; then
-            pip3 install molecule[podman]
+            pip3 install molecule-podman
           else
-            pip3 install molecule[docker]
+            pip3 install molecule-docker
           fi
 
           pip3 install "requests<2.29" "urllib3<2"

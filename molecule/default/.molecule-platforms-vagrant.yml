@@ -1,7 +1,7 @@
 ---
 
 - name: centos7
-  ci: true
+  ci: false
   box: generic/centos7
   interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
 - name: centos8
@@ -85,12 +85,16 @@
   box: generic/fedora38
   interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
 - name: fedora39
-  ci: true
+  ci: false
   box: generic/fedora39
   interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
 - name: fedora40
   ci: true
   box: generic/fedora40
+  interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
+- name: fedora41
+  ci: true
+  box: generic/fedora41
   interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
 - name: alpine3
   ci: false
