@@ -13,7 +13,7 @@
   image: registry.access.redhat.com/ubi9/ubi-init:latest
   pre_build_image: false
 - name: centos7
-  ci: true
+  ci: false
   image: docker.io/geerlingguy/docker-centos7-ansible:latest
   privileged: false
   pre_build_image: true
@@ -86,11 +86,14 @@
   ci: false
   image: docker.io/geerlingguy/docker-fedora38-ansible:latest
 - name: fedora39
-  ci: true
+  ci: false
   image: docker.io/geerlingguy/docker-fedora39-ansible:latest
 - name: fedora40
   ci: true
   image: docker.io/geerlingguy/docker-fedora40-ansible:latest
+- name: fedora41
+  ci: true
+  image: docker.io/geerlingguy/docker-fedora41-ansible:latest
 - name: alpine3
   ci: false
   image: docker.io/dropveter/alpine-python3

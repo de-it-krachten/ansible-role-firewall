@@ -335,11 +335,10 @@
 
         - name: Get RPM GPG key for Alma Linux
           ansible.builtin.shell: |
-            dnf install wget -y
             mv={{ ansible_distribution_major_version }}
             [[ $mv == 8 ]] && gpgkey=https://repo.almalinux.org/almalinux/$mv/BaseOS/x86_64/os/RPM-GPG-KEY-AlmaLinux
             [[ $mv == 9 ]] && gpgkey=https://repo.almalinux.org/almalinux/$mv/BaseOS/x86_64/os/RPM-GPG-KEY-AlmaLinux-$mv
-            wget -O RPM-GPG-KEY-AlmaLinux $gpgkey
+            curl -o RPM-GPG-KEY-AlmaLinux $gpgkey
             rpm --import RPM-GPG-KEY-AlmaLinux
           when: ansible_distribution == 'AlmaLinux'
 
@@ -377,6 +376,7 @@
               - openssh-clients
               - iproute
               - glibc-langpack-en
+              - gnupg2
             state: present
 
         - name: Activate epel repository
