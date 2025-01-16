@@ -6,3 +6,6 @@ firewall_ports: []
 # List of unsupported firewalls
 firewall_type_unsupported:
   - nftables
+
+# name of the windows firewall service
+firewall_win_service_name: mpssvc
