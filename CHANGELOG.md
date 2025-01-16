@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/de-it-krachten/ansible-role-firewall/compare/v1.7.0...v1.8.0) (2025-01-16)
+
+
+### Features
+
+* Add support for Windows (Defender Firewall) ([385fcfc](https://github.com/de-it-krachten/ansible-role-firewall/commit/385fcfc755b94b4b6978579ebc30d2a3623ffe3f))
+
 # [1.7.0](https://github.com/de-it-krachten/ansible-role-firewall/compare/v1.6.0...v1.7.0) (2024-12-29)
 
 
