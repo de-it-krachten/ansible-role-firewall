@@ -3,7 +3,7 @@
 generic:
   role_description: |
     Role to open firewall ports for incoming traffic.
-    Supports firewalld, ufw and iptables
+    Supports firewalld, ufw, iptables and Windows firewall
 
 # Supported platforms
 platforms:
@@ -13,6 +13,21 @@ platforms:
   sles15:
     ci: false
     supported: true
+  win2012r2:
+    ci: false
+    supported: true
+  win2016:
+    ci: false
+    supported: true
+  win2019:
+    ci: false
+    supported: true
+  win2022:
+    ci: false
+    supported: true
+#  win2025:
+#    ci: false
+#    supported: true
 
 # Molecule
 molecule:
@@ -22,9 +37,11 @@ molecule:
   converge:
     vars:
       firewall_ports:
-        - port: "22"
+        - name: SSH
+          port: "22"
           proto: tcp
-        - port: "53"
+        - name: DNS
+          port: "53"
           proto: udp
 
 # Roles & collections dependencies

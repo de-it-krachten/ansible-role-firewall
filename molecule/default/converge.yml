@@ -4,7 +4,7 @@
   hosts: all
   become: "yes"
   vars:
-    firewall_ports: [{'port': '22', 'proto': 'tcp'}, {'port': '53', 'proto': 'udp'}]
+    firewall_ports: [{'name': 'SSH', 'port': '22', 'proto': 'tcp'}, {'name': 'DNS', 'port': '53', 'proto': 'udp'}]
   tasks:
     - name: Include role 'ansible-role-firewall'
       ansible.builtin.include_role:
