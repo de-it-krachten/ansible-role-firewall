@@ -1,52 +1,81 @@
 ---
 
-- name: Populate service facts
-  ansible.builtin.service_facts:
-
-- name: Identifiy firewall active  # noqa jinja[spacing]
-  ansible.builtin.set_fact:
-    firewall_running: >-
-      {%- if ansible_facts.services['ufw'] is defined and ansible_facts.services['ufw']['state'] == 'running' -%}
-      ufw
-      {%- elif ansible_facts.services['ufw.service'] is defined and ansible_facts.services['ufw.service']['state'] == 'running' -%}
-      ufw
-      {%- elif ansible_facts.services['nftables'] is defined and ansible_facts.services['nftables']['state'] == 'running' -%}
-      nftables
-      {%- elif ansible_facts.services['nftables.service'] is defined and ansible_facts.services['nftables.service']['state'] == 'running' -%}
-      nftables
-      {%- elif ansible_facts.services['firewalld'] is defined and ansible_facts.services['firewalld']['state'] == 'running' -%}
-      firewalld
-      {%- elif ansible_facts.services['firewalld.service'] is defined and ansible_facts.services['firewalld.service']['state'] == 'running' -%}
-      firewalld
-      {%- else -%}
-      unknown
-      {%- endif -%}
-  when:
-    - firewall_running is undefined
-
-- name: Assume iptables if noting else found
-  when:
-    - firewall_running == 'NONE'
+- name: Linux
+  when: ansible_os_family != 'Windows'
   block:
 
-    - name: Search for iptables binary
-      ansible.builtin.command: which iptables
-      changed_when: false
-      failed_when: false
-      register: _iptables
+    - name: Get all linux services
+      ansible.builtin.service_facts:
 
-    - name: Make sure iptables functions
-      ansible.builtin.command: iptables -L
-      changed_when: false
-      register: _iptables_list
-      when: _iptables.stdout | length > 0
-
-    - name: Assume iptables when binary is found and functioning
+    - name: Identifiy firewall active  # noqa jinja[spacing]
       ansible.builtin.set_fact:
-        firewall_running: iptables
+        firewall_running: >-
+          {%- if ansible_facts.services['ufw'] is defined and ansible_facts.services['ufw']['state'] == 'running' -%}
+          ufw
+          {%- elif ansible_facts.services['ufw.service'] is defined and ansible_facts.services['ufw.service']['state'] == 'running' -%}
+          ufw
+          {%- elif ansible_facts.services['nftables'] is defined and ansible_facts.services['nftables']['state'] == 'running' -%}
+          nftables
+          {%- elif ansible_facts.services['nftables.service'] is defined and ansible_facts.services['nftables.service']['state'] == 'running' -%}
+          nftables
+          {%- elif ansible_facts.services['firewalld'] is defined and ansible_facts.services['firewalld']['state'] == 'running' -%}
+          firewalld
+          {%- elif ansible_facts.services['firewalld.service'] is defined and ansible_facts.services['firewalld.service']['state'] == 'running' -%}
+          firewalld
+           {%- else -%}
+          unknown
+          {%- endif -%}
       when:
-        - _iptables.stdout | length > 0
-        - _iptables_list.rc == 0
+        - firewall_running is undefined
+
+    - name: Assume iptables if noting else found
+      when:
+        - firewall_running == 'NONE'
+      block:
+
+        - name: Search for iptables binary
+          ansible.builtin.command: which iptables
+          changed_when: false
+          failed_when: false
+          register: _iptables
+
+        - name: Make sure iptables functions
+          ansible.builtin.command: iptables -L
+          changed_when: false
+          register: _iptables_list
+          when: _iptables.stdout | length > 0
+
+        - name: Assume iptables when binary is found and functioning
+          ansible.builtin.set_fact:
+            firewall_running: iptables
+          when:
+            - _iptables.stdout | length > 0
+            - _iptables_list.rc == 0
+
+- name: Windows
+  when: ansible_os_family == 'Windows'
+  block:
+
+    - name: Get all windows services
+      ansible.windows.win_service_info:
+      register: __win_services
+
+    - name: Get state of the windows service
+      ansible.builtin.set_fact:
+        __win_fw_state: "{{ __win_services.services | json_query(q) | first }}"
+      vars:
+        q: "[?name==`{{ firewall_win_service_name }}`].state"
+
+    - name: Identifiy firewall active  # noqa jinja[spacing]
+      ansible.builtin.set_fact:
+        firewall_running: >-
+          {%- if __win_fw_state is defined and __win_fw_state == 'started' -%}
+          windows-firewall
+          {%- else -%}
+          unknown
+          {%- endif -%}
+      when:
+        - firewall_running is undefined
 
 - name: Set firewall found
   ansible.builtin.set_fact:

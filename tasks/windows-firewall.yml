@@ -1,0 +1,14 @@
+---
+
+- name: Open Windows firewall ports  # noqa args[module]
+  community.windows.win_firewall_rule:
+    name: "{{ fw.name }}"
+    localport: "{{ fw.port }}"
+    action: allow
+    direction: in
+    protocol: "{{ fw.proto | default('tcp') }}"
+    state: present
+    enabled: true
+  loop: "{{ firewall_ports }}"
+  loop_control:
+    loop_var: fw

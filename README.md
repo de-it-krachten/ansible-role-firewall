@@ -4,7 +4,7 @@
 # ansible-role-firewall
 
 Role to open firewall ports for incoming traffic.
-Supports firewalld, ufw and iptables
+Supports firewalld, ufw, iptables and Windows firewall
 
 
 
@@ -18,6 +18,7 @@ Supports firewalld, ufw and iptables
 #### Collections
 - ansible.posix
 - community.general
+- community.windows
 
 ## Platforms
 
@@ -40,6 +41,10 @@ Supported platforms
 - Ubuntu 24.04 LTS
 - Fedora 40
 - Fedora 41
+- Windows Server 2012 R2<sup>1</sup>
+- Windows Server 2016<sup>1</sup>
+- Windows Server 2019<sup>1</sup>
+- Windows Server 2022<sup>1</sup>
 
 Note:
 <sup>1</sup> : no automated testing is performed on these platforms
@@ -53,6 +58,9 @@ firewall_ports: []
 # List of unsupported firewalls
 firewall_type_unsupported:
   - nftables
+
+# name of the windows firewall service
+firewall_win_service_name: mpssvc
 </pre></code>
 
 
@@ -66,9 +74,11 @@ firewall_type_unsupported:
   become: 'yes'
   vars:
     firewall_ports:
-      - port: '22'
+      - name: SSH
+        port: '22'
         proto: tcp
-      - port: '53'
+      - name: DNS
+        port: '53'
         proto: udp
   tasks:
     - name: Include role 'firewall'
