@@ -1,3 +1,10 @@
+## [1.8.1](https://github.com/de-it-krachten/ansible-role-firewall/compare/v1.8.0...v1.8.1) (2025-01-21)
+
+
+### Bug Fixes
+
+* fix for alternative service name (Windows) ([7916af6](https://github.com/de-it-krachten/ansible-role-firewall/commit/7916af64bc1a7f928ed47c22d5268b45a46496f5))
+
 # [1.8.0](https://github.com/de-it-krachten/ansible-role-firewall/compare/v1.7.0...v1.8.0) (2025-01-16)
 
 
