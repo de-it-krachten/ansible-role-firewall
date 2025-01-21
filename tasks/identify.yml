@@ -62,14 +62,27 @@
 
     - name: Get state of the windows service
       ansible.builtin.set_fact:
-        __win_fw_state: "{{ __win_services.services | json_query(q) | first }}"
+        __win_fw_state1: "{{ __win_services.services | json_query(q1) }}"
+        __win_fw_state2: "{{ __win_services.services | json_query(q2) }}"
       vars:
-        q: "[?name==`{{ firewall_win_service_name }}`].state"
+        q1: "[?name==`{{ firewall_win_service_name }}`].state"
+        q2: "[?name==`{{ firewall_win_service_alt_name }}`].state"
+
+    - name: Get the correct windows service state  # noqa jinja[spacing]
+      ansible.builtin.set_fact:
+        __win_fw_state: >-
+          {%- if __win_fw_state1 is defined and __win_fw_state1 | length > 0 -%}
+          {{ __win_fw_state1 | first }}
+          {%- elif __win_fw_state2 is defined and __win_fw_state2 | length > 0 -%}
+          {{ __win_fw_state2 | first }}
+          {%- else -%}
+          unknown
+          {%- endif -%}
 
     - name: Identifiy firewall active  # noqa jinja[spacing]
       ansible.builtin.set_fact:
         firewall_running: >-
-          {%- if __win_fw_state is defined and __win_fw_state == 'started' -%}
+          {%- if __win_fw_state == 'started' -%}
           windows-firewall
           {%- else -%}
           unknown

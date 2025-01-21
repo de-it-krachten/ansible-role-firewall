@@ -9,3 +9,4 @@ firewall_type_unsupported:
 
 # name of the windows firewall service
 firewall_win_service_name: mpssvc
+firewall_win_service_alt_name: MpsSvc
