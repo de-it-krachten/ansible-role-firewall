@@ -69,6 +69,24 @@ platforms:
       podman:
         image: "registry.access.redhat.com/ubi9/ubi-init:latest"
         pre_build_image: false
+  rhel10:
+    name: Red Hat Enterprise Linux 10
+    ci: false
+    supported: true
+    galaxy:
+      name: EL
+      version: 10
+    molecule:
+      docker:
+        image: "registry.access.redhat.com/ubi10/ubi-init:latest"
+        pre_build_image: false
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
+      podman:
+        image: "registry.access.redhat.com/ubi10/ubi-init:latest"
+        pre_build_image: false
   centos7:
     name: CentOS 7
     ci: false
@@ -98,7 +116,7 @@ platforms:
             auto_config: true
       hetznercloud:
         image: centos-7
-        server_type: cx11
+        server_type: cx22
   centos8:
     name: CentOS 8
     ci: false
@@ -147,7 +165,7 @@ platforms:
             auto_config: true
       hetznercloud:
         image: centos-stream-8
-        server_type: cx11
+        server_type: cx22
   centos9s:
     name: CentOS Stream 9
     ci: false
@@ -173,7 +191,33 @@ platforms:
             auto_config: true
       hetznercloud:
         image: centos-stream-9
-        server_type: cx11
+        server_type: cx22
+  centos10s:
+    name: CentOS Stream 10
+    ci: false
+    supported: false
+    galaxy:
+      name: EL
+      version: 10
+    molecule:
+      docker:
+        image: "docker.io/dropveter/centos10s-ansible:latest"
+        pre_build_image: true
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
+      podman:
+        image: "docker.io/dropveter/centos10s-ansible:latest"
+      vagrant:
+        box: "generic/centos10s"
+        interfaces:
+          - network_name: private_network
+            type: dhcp
+            auto_config: true
+      hetznercloud:
+        image: centos-stream-10
+        server_type: cx22
   rockylinux8:
     name: RockyLinux 8
     ci: true
@@ -203,7 +247,7 @@ platforms:
             auto_config: true
       hetznercloud:
         image: rocky-8
-        server_type: cx11
+        server_type: cx22
   rockylinux9:
     name: RockyLinux 9
     ci: true
@@ -229,7 +273,33 @@ platforms:
             auto_config: true
       hetznercloud:
         image: rocky-9
-        server_type: cx11
+        server_type: cx22
+  rockylinux10:
+    name: RockyLinux 10
+    ci: true
+    supported: true
+    galaxy:
+      name: EL
+      version: 10
+    molecule:
+      docker:
+        image: "docker.io/geerlingguy/docker-rockylinux10-ansible:latest"
+        pre_build_image: true
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
+      podman:
+        image: "docker.io/geerlingguy/docker-rockylinux10-ansible:latest"
+      vagrant:
+        box: "generic/rocky10"
+        interfaces:
+          - network_name: private_network
+            type: dhcp
+            auto_config: true
+      hetznercloud:
+        image: rocky-10
+        server_type: cx22
   oraclelinux8:
     name: OracleLinux 8
     ci: true
@@ -276,6 +346,29 @@ platforms:
           - network_name: private_network
             type: dhcp
             auto_config: true
+  oraclelinux10:
+    name: OracleLinux 10
+    ci: true
+    supported: true
+    galaxy:
+      name: EL
+      version: 10
+    molecule:
+      docker:
+        image: "docker.io/dropveter/oraclelinux10-ansible"
+        pre_build_image: true
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
+      podman:
+        image: "docker.io/dropveter/oraclelinux10-ansible"
+      vagrant:
+        box: "generic/oracle10"
+        interfaces:
+          - network_name: private_network
+            type: dhcp
+            auto_config: true
   almalinux8:
     name: AlmaLinux 8
     ci: true
@@ -318,6 +411,29 @@ platforms:
         image: "docker.io/dropveter/almalinux9-ansible"
       vagrant:
         box: "generic/alma9"
+        interfaces:
+          - network_name: private_network
+            type: dhcp
+            auto_config: true
+  almalinux10:
+    name: AlmaLinux 10
+    ci: true
+    supported: true
+    galaxy:
+      name: EL
+      version: 10
+    molecule:
+      docker:
+        image: "docker.io/dropveter/almalinux10-ansible"
+        pre_build_image: true
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
+      podman:
+        image: "docker.io/dropveter/almalinux10-ansible"
+      vagrant:
+        box: "generic/alma10"
         interfaces:
           - network_name: private_network
             type: dhcp
@@ -416,7 +532,7 @@ platforms:
             auto_config: true
       hetznercloud:
         image: debian-10
-        server_type: cx11
+        server_type: cx22
   debian11:
     name: Debian 11 (Bullseye)
     ci: true
@@ -442,7 +558,7 @@ platforms:
             auto_config: true
       hetznercloud:
         image: debian-11
-        server_type: cx11
+        server_type: cx22
   debian12:
     name: Debian 12 (Bookworm)
     ci: true
@@ -468,7 +584,33 @@ platforms:
             auto_config: true
       hetznercloud:
         image: debian-12
-        server_type: cx11
+        server_type: cx22
+  debian13:
+    name: Debian 13 (Trixie)
+    ci: true
+    supported: true
+    galaxy:
+      name: Debian
+      version: trixie
+    molecule:
+      docker:
+        image: "docker.io/geerlingguy/docker-debian13-ansible:latest"
+        pre_build_image: true
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
+      podman:
+        image: "docker.io/geerlingguy/docker-debian13-ansible:latest"
+      vagrant:
+        box: "debian/trixie64"
+        interfaces:
+          - network_name: private_network
+            type: dhcp
+            auto_config: true
+      hetznercloud:
+        image: debian-13
+        server_type: cx22
   ubuntu1804:
     name: Ubuntu 18.04 LTS
     ci: false
@@ -494,7 +636,7 @@ platforms:
             auto_config: true
       hetznercloud:
         image: ubuntu-18.04
-        server_type: cx11
+        server_type: cx22
   ubuntu2004:
     name: Ubuntu 20.04 LTS
     ci: true
@@ -524,7 +666,7 @@ platforms:
             auto_config: true
       hetznercloud:
         image: ubuntu-20.04
-        server_type: cx11
+        server_type: cx22
   ubuntu2204:
     name: Ubuntu 22.04 LTS
     ci: true
@@ -549,7 +691,7 @@ platforms:
             type: dhcp
       hetznercloud:
         image: ubuntu-22.04
-        server_type: cx11
+        server_type: cx22
   ubuntu2404:
     name: Ubuntu 24.04 LTS
     ci: true
@@ -574,7 +716,7 @@ platforms:
             type: dhcp
       hetznercloud:
         image: ubuntu-24.04
-        server_type: cx11
+        server_type: cx22
   fedora37:
     name: Fedora 37
     ci: false
@@ -599,7 +741,7 @@ platforms:
             type: dhcp
       hetznercloud:
         image: fedora-37
-        server_type: cx11
+        server_type: cx22
   fedora38:
     name: Fedora 38
     ci: false
@@ -624,7 +766,7 @@ platforms:
             type: dhcp
       hetznercloud:
         image: fedora-38
-        server_type: cx11
+        server_type: cx22
   fedora39:
     name: Fedora 39
     ci: false
@@ -649,11 +791,11 @@ platforms:
             type: dhcp
       hetznercloud:
         image: fedora-39
-        server_type: cx11
+        server_type: cx22
   fedora40:
     name: Fedora 40
-    ci: true
-    supported: true
+    ci: false
+    supported: false
     galaxy:
       name: Fedora
       version: all
@@ -674,7 +816,7 @@ platforms:
             type: dhcp
       hetznercloud:
         image: fedora-40
-        server_type: cx11
+        server_type: cx22
   fedora41:
     name: Fedora 41
     ci: true
@@ -699,7 +841,32 @@ platforms:
             type: dhcp
       hetznercloud:
         image: fedora-41
-        server_type: cx11
+        server_type: cx22
+  fedora42:
+    name: Fedora 42
+    ci: true
+    supported: true
+    galaxy:
+      name: Fedora
+      version: all
+    molecule:
+      docker:
+        image: "docker.io/geerlingguy/docker-fedora42-ansible:latest"
+        pre_build_image: true
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
+      podman:
+        image: "docker.io/geerlingguy/docker-fedora42-ansible:latest"
+      vagrant:
+        box: "generic/fedora41"
+        interfaces:
+          - network_name: private_network
+            type: dhcp
+      hetznercloud:
+        image: fedora-42
+        server_type: cx22
   alpine3:
     name: Alpine 3
     ci: false
@@ -801,6 +968,22 @@ platforms:
         interfaces:
           - network_name: private_network
             type: dhcp
+  win2025:
+    name: Windows Server 2025
+    ci: false
+    supported: false
+    galaxy:
+      name: Windows
+      version: all
+    molecule:
+      vagrant:
+        box: jborean93/WindowsServer2025
+        groups:
+          - windows
+        interfaces:
+          - network_name: private_network
+            type: dhcp
+
 
 # List of platform deviations
 platforms_overwrite: {}
@@ -819,10 +1002,12 @@ galaxy:
       versions:
         - 8
         - 9
+        - 10
     - name: Debian
       versions:
         - buster
         - bullseye
+        - trixie
     - name: Ubuntu
       versions:
         # - 18.04
@@ -844,14 +1029,16 @@ github:
   owner: de-it-krachten
   repo: ansible-role-firewall
   # https://docs.ansible.com/ansible/latest/reference_appendices/release_and_maintenance.html
+  image: ubuntu2204
+  python: '3.13'
   lint_matrix:
-    - name: ansible_2.15
-      ansible: "ansible>8,<9"
-      ansible_core: "ansible-core>2.15,<2.16"
+    - name: ansible_2.17
+      ansible: "ansible>10,<11"
+      ansible_core: "ansible-core>2.17,<2.18"
       ansible_lint: "ansible-lint"
-    - name: ansible_2.16
-      ansible: "ansible>9,<10"
-      ansible_core: "ansible-core>2.16,<2.17"
+    - name: ansible_2.18
+      ansible: "ansible>11,<12"
+      ansible_core: "ansible-core>2.18,<2.19"
       ansible_lint: "ansible-lint"
 
 # Gitlab

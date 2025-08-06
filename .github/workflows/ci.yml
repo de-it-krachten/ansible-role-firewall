@@ -26,13 +26,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: "ansible_2.15"
-            # ansible: "ansible>8,<9"
-            ansible: "ansible-core>2.15,<2.16"
+          - name: "ansible_2.17"
+            # ansible: "ansible>10,<11"
+            ansible: "ansible-core>2.17,<2.18"
             ansible_lint: "ansible-lint"
-          - name: "ansible_2.16"
-            # ansible: "ansible>9,<10"
-            ansible: "ansible-core>2.16,<2.17"
+          - name: "ansible_2.18"
+            # ansible: "ansible>11,<12"
+            ansible: "ansible-core>2.18,<2.19"
             ansible_lint: "ansible-lint"
 
     steps:
@@ -44,7 +44,7 @@ jobs:
       - name: Set up Python 3.
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.13'
 
 
       - name: Show runner info
@@ -146,6 +146,14 @@ jobs:
             ansible_lint: "ansible-lint>6,<7"
             hetznercloud: True
 
+          - name: rockylinux10
+            runs_on: ubuntu-22.04
+            distro: rockylinux10
+            playbook: converge.yml
+            ansible: "ansible-core>2.16,<2.17"
+            ansible_lint: "ansible-lint>6,<7"
+            hetznercloud: True
+
           - name: oraclelinux8
             runs_on: ubuntu-22.04
             distro: oraclelinux8
@@ -162,6 +170,14 @@ jobs:
             ansible_lint: "ansible-lint>6,<7"
             hetznercloud: False
 
+          - name: oraclelinux10
+            runs_on: ubuntu-22.04
+            distro: oraclelinux10
+            playbook: converge.yml
+            ansible: "ansible-core>2.16,<2.17"
+            ansible_lint: "ansible-lint>6,<7"
+            hetznercloud: False
+
           - name: almalinux8
             runs_on: ubuntu-22.04
             distro: almalinux8
@@ -173,6 +189,14 @@ jobs:
           - name: almalinux9
             runs_on: ubuntu-22.04
             distro: almalinux9
+            playbook: converge.yml
+            ansible: "ansible-core>2.16,<2.17"
+            ansible_lint: "ansible-lint>6,<7"
+            hetznercloud: False
+
+          - name: almalinux10
+            runs_on: ubuntu-22.04
+            distro: almalinux10
             playbook: converge.yml
             ansible: "ansible-core>2.16,<2.17"
             ansible_lint: "ansible-lint>6,<7"
@@ -202,6 +226,14 @@ jobs:
             ansible_lint: "ansible-lint>6,<7"
             hetznercloud: True
 
+          - name: debian13
+            runs_on: ubuntu-22.04
+            distro: debian13
+            playbook: converge.yml
+            ansible: "ansible-core>2.16,<2.17"
+            ansible_lint: "ansible-lint>6,<7"
+            hetznercloud: True
+
           - name: ubuntu2004
             runs_on: ubuntu-22.04
             distro: ubuntu2004
@@ -226,17 +258,17 @@ jobs:
             ansible_lint: "ansible-lint>6,<7"
             hetznercloud: True
 
-          - name: fedora40
+          - name: fedora41
             runs_on: ubuntu-22.04
-            distro: fedora40
+            distro: fedora41
             playbook: converge.yml
             ansible: "ansible-core>2.16,<2.17"
             ansible_lint: "ansible-lint>6,<7"
             hetznercloud: True
 
-          - name: fedora41
+          - name: fedora42
             runs_on: ubuntu-22.04
-            distro: fedora41
+            distro: fedora42
             playbook: converge.yml
             ansible: "ansible-core>2.16,<2.17"
             ansible_lint: "ansible-lint>6,<7"
@@ -254,7 +286,7 @@ jobs:
       - name: Set up Python 3.
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.13'
 
 
       - name: Show runner info
@@ -283,7 +315,7 @@ jobs:
           python3 -m venv ~/.venv
           source ~/.venv/bin/activate
           pip3 install pip wheel setuptools --upgrade
-          pip3 install yq e2j2 jinja2-ansible-filters
+          pip3 install yq e2j2 jinja2-ansible-filters passlib
           # pip3 install "${{ matrix.ansible }}" "${{ matrix.ansible_lint }}" "ansible-compat<4" "molecule<5" yamllint jmespath
           pip3 install "${{ matrix.ansible }}" "${{ matrix.ansible_lint }}" yamllint jmespath molecule
 

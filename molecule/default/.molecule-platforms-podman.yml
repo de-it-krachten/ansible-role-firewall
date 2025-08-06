@@ -12,6 +12,10 @@
   ci: false
   image: registry.access.redhat.com/ubi9/ubi-init:latest
   pre_build_image: false
+- name: rhel10
+  ci: false
+  image: registry.access.redhat.com/ubi10/ubi-init:latest
+  pre_build_image: false
 - name: centos7
   ci: false
   image: docker.io/geerlingguy/docker-centos7-ansible:latest
@@ -26,6 +30,9 @@
 - name: centos9s
   ci: false
   image: docker.io/dropveter/centos9s-ansible:latest
+- name: centos10s
+  ci: false
+  image: docker.io/dropveter/centos10s-ansible:latest
 - name: rockylinux8
   ci: true
   image: docker.io/geerlingguy/docker-rockylinux8-ansible:latest
@@ -36,18 +43,27 @@
 - name: rockylinux9
   ci: true
   image: docker.io/geerlingguy/docker-rockylinux9-ansible:latest
+- name: rockylinux10
+  ci: true
+  image: docker.io/geerlingguy/docker-rockylinux10-ansible:latest
 - name: oraclelinux8
   ci: true
   image: docker.io/dropveter/oraclelinux8-ansible
 - name: oraclelinux9
   ci: true
   image: docker.io/dropveter/oraclelinux9-ansible
+- name: oraclelinux10
+  ci: true
+  image: docker.io/dropveter/oraclelinux10-ansible
 - name: almalinux8
   ci: true
   image: docker.io/dropveter/almalinux8-ansible
 - name: almalinux9
   ci: true
   image: docker.io/dropveter/almalinux9-ansible
+- name: almalinux10
+  ci: true
+  image: docker.io/dropveter/almalinux10-ansible
 - name: opensuse15
   ci: true
   image: docker.io/dropveter/opensuse15-ansible:latest
@@ -63,6 +79,9 @@
 - name: debian12
   ci: true
   image: docker.io/geerlingguy/docker-debian12-ansible:latest
+- name: debian13
+  ci: true
+  image: docker.io/geerlingguy/docker-debian13-ansible:latest
 - name: ubuntu1804
   ci: false
   image: docker.io/geerlingguy/docker-ubuntu1804-ansible:latest
@@ -89,11 +108,14 @@
   ci: false
   image: docker.io/geerlingguy/docker-fedora39-ansible:latest
 - name: fedora40
-  ci: true
+  ci: false
   image: docker.io/geerlingguy/docker-fedora40-ansible:latest
 - name: fedora41
   ci: true
   image: docker.io/geerlingguy/docker-fedora41-ansible:latest
+- name: fedora42
+  ci: true
+  image: docker.io/geerlingguy/docker-fedora42-ansible:latest
 - name: alpine3
   ci: false
   image: docker.io/dropveter/alpine-python3
