@@ -2,69 +2,85 @@
 
 - name: centos7
   ci: false
-  server_type: cx11
+  server_type: cx22
   image: centos-7
 - name: centos8s
   ci: false
-  server_type: cx11
+  server_type: cx22
   image: centos-stream-8
 - name: centos9s
   ci: false
-  server_type: cx11
+  server_type: cx22
   image: centos-stream-9
+- name: centos10s
+  ci: false
+  server_type: cx22
+  image: centos-stream-10
 - name: rockylinux8
   ci: true
-  server_type: cx11
+  server_type: cx22
   image: rocky-8
 - name: rockylinux9
   ci: true
-  server_type: cx11
+  server_type: cx22
   image: rocky-9
+- name: rockylinux10
+  ci: true
+  server_type: cx22
+  image: rocky-10
 - name: debian10
   ci: false
-  server_type: cx11
+  server_type: cx22
   image: debian-10
 - name: debian11
   ci: true
-  server_type: cx11
+  server_type: cx22
   image: debian-11
 - name: debian12
   ci: true
-  server_type: cx11
+  server_type: cx22
   image: debian-12
+- name: debian13
+  ci: true
+  server_type: cx22
+  image: debian-13
 - name: ubuntu1804
   ci: false
-  server_type: cx11
+  server_type: cx22
   image: ubuntu-18.04
 - name: ubuntu2004
   ci: true
-  server_type: cx11
+  server_type: cx22
   image: ubuntu-20.04
 - name: ubuntu2204
   ci: true
-  server_type: cx11
+  server_type: cx22
   image: ubuntu-22.04
 - name: ubuntu2404
   ci: true
-  server_type: cx11
+  server_type: cx22
   image: ubuntu-24.04
 - name: fedora37
   ci: false
-  server_type: cx11
+  server_type: cx22
   image: fedora-37
 - name: fedora38
   ci: false
-  server_type: cx11
+  server_type: cx22
   image: fedora-38
 - name: fedora39
   ci: false
-  server_type: cx11
+  server_type: cx22
   image: fedora-39
 - name: fedora40
-  ci: true
-  server_type: cx11
+  ci: false
+  server_type: cx22
   image: fedora-40
 - name: fedora41
   ci: true
-  server_type: cx11
+  server_type: cx22
   image: fedora-41
+- name: fedora42
+  ci: true
+  server_type: cx22
+  image: fedora-42

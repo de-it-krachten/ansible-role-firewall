@@ -34,7 +34,7 @@ platforms:
 {% if not platform.name | regex_search('win2') %}
     config_options:
       ssh.keep_alive: yes
-      ssh.remote_user: "'vagrant'"
+      ssh.remote_user: "vagrant"
 {% endif %}
     groups:
 {% if platform.groups is undefined or platform.groups | length == 0 %}
@@ -57,6 +57,7 @@ provisioner:
   env:
     ANSIBLE_PIPELINING: "True"
     ANSIBLE_VERBOSITY: 0
+    ANSIBLE_LIBRARY: '{{ Ansible_driver_libary }}'
   lint:
     name: ansible-lint
   playbooks:
