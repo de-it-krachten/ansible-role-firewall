@@ -1,3 +1,14 @@
+# [1.9.0](https://github.com/de-it-krachten/ansible-role-firewall/compare/v1.8.1...v1.9.0) (2025-08-06)
+
+
+### Features
+
+* Add support for AlmaLinux 10 ([075f5a3](https://github.com/de-it-krachten/ansible-role-firewall/commit/075f5a312a86dadd26114cdee1b3fb713e825d85))
+* Add support for Debian 13 (Trixie) ([61fb64d](https://github.com/de-it-krachten/ansible-role-firewall/commit/61fb64df4fa39b7056713cd95c4f3dd2564b5edc))
+* Add support for OracleLinux 10 ([ebb23e4](https://github.com/de-it-krachten/ansible-role-firewall/commit/ebb23e40e9891a60f87df5664dd8184d31c89dda))
+* Add support for Red Hat Enterprise Linux 10 ([ec0b6f1](https://github.com/de-it-krachten/ansible-role-firewall/commit/ec0b6f1309a4144a31be2a93557a75414cd6fe06))
+* Add support for RockyLinux 10 ([4d76ccc](https://github.com/de-it-krachten/ansible-role-firewall/commit/4d76cccdf46162c86e2dab13325a3a4d4004a2e4))
+
 ## [1.8.1](https://github.com/de-it-krachten/ansible-role-firewall/compare/v1.8.0...v1.8.1) (2025-01-21)
 
 
