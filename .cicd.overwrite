@@ -7,27 +7,33 @@ generic:
 
 # Supported platforms
 platforms:
-  opensuse15:
-    ci: true
-    supported: true
   sles15:
-    ci: false
     supported: true
+    ci: false
+  sles16:
+    supported: true
+    ci: false
+  opensuse15:
+    supported: true
+    ci: true
+  opensuse16:
+    supported: true
+    ci: true
+  ubuntu2004:
+    supported: true
+    ci: true
   win2012r2:
-    ci: false
     supported: true
+    ci: false
   win2016:
-    ci: false
     supported: true
+    ci: false
   win2019:
-    ci: false
     supported: true
+    ci: false
   win2022:
-    ci: false
     supported: true
-#  win2025:
-#    ci: false
-#    supported: true
+    ci: false
 
 # Molecule
 molecule:

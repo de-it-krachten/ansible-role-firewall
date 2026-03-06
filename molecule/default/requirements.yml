@@ -1,51 +1,54 @@
 ---
 
+
 roles:
   - name: deitkrachten.docker
-    src: https://github.com/de-it-krachten/ansible-role-docker.git
+    src: https://github.com/de-it-krachten/ansible-role-docker
     version: main
     scm: git
   - name: deitkrachten.epel
-    src: https://github.com/de-it-krachten/ansible-role-epel.git
+    src: https://github.com/de-it-krachten/ansible-role-epel
     version: main
     scm: git
   - name: deitkrachten.facts
-    src: https://github.com/de-it-krachten/ansible-role-facts.git
+    src: https://github.com/de-it-krachten/ansible-role-facts
     version: main
     scm: git
   - name: deitkrachten.firewall
-    src: https://github.com/de-it-krachten/ansible-role-firewall.git
+    src: https://github.com/de-it-krachten/ansible-role-firewall
     version: main
     scm: git
   - name: deitkrachten.firewalld
-    src: https://github.com/de-it-krachten/ansible-role-firewalld.git
+    src: https://github.com/de-it-krachten/ansible-role-firewalld
     version: main
     scm: git
   - name: deitkrachten.hosts
-    src: https://github.com/de-it-krachten/ansible-role-hosts.git
+    src: https://github.com/de-it-krachten/ansible-role-hosts
     version: main
     scm: git
   - name: deitkrachten.iptables
-    src: https://github.com/de-it-krachten/ansible-role-iptables.git
+    src: https://github.com/de-it-krachten/ansible-role-iptables
     version: main
     scm: git
   - name: deitkrachten.python
-    src: https://github.com/de-it-krachten/ansible-role-python.git
+    src: https://github.com/de-it-krachten/ansible-role-python
     version: main
     scm: git
   - name: deitkrachten.reboot
-    src: https://github.com/de-it-krachten/ansible-role-reboot.git
+    src: https://github.com/de-it-krachten/ansible-role-reboot
     version: main
     scm: git
   - name: deitkrachten.showinfo
-    src: https://github.com/de-it-krachten/ansible-role-showinfo.git
+    src: https://github.com/de-it-krachten/ansible-role-showinfo
     version: main
     scm: git
   - name: deitkrachten.ufw
-    src: https://github.com/de-it-krachten/ansible-role-ufw.git
+    src: https://github.com/de-it-krachten/ansible-role-ufw
     version: main
     scm: git
   - name: deitkrachten.unbound
-    src: https://github.com/de-it-krachten/ansible-role-unbound.git
+    src: https://github.com/de-it-krachten/ansible-role-unbound
     version: main
     scm: git
+
+collections: []

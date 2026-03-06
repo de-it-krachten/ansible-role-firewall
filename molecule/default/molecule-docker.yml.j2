@@ -1,4 +1,24 @@
 ---
+ansible:
+{% if ansible_navigator | default(false) | bool %}
+  executor:
+    backend: ansible-navigator
+    args:
+      ansible_navigator:
+        - --execution-environment-image=docker.io/dropveter/ee_rocky9_py311_ac216:latest
+  env:
+    ANSIBLE_INVENTORY: inventory/
+    ANSIBLE_COLLECTIONS_PATH: $COLLECTIONS_PATH
+{% endif %}
+  playbooks:
+    custom: custom.yml
+    create: create.yml
+    destroy: destroy.yml
+    converge: converge.yml
+    prepare: prepare.yml
+    verify: verify.yml
+    cleanup: cleanup.yml
+    side_effect: side_effect.yml
 
 dependency:
   name: galaxy
