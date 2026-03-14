@@ -14,12 +14,6 @@ galaxy_info:
         - '8'
         - '9'
         - '10'
-    - name: SLES
-      versions:
-        - all
-    - name: opensuse
-      versions:
-        - all
     - name: Debian
       versions:
         - bullseye
