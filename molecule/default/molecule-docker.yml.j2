@@ -34,6 +34,12 @@ platforms:
 {% for platform in MOLECULE_DISTROS %}
   - name: firewall-{{ platform.name }}-node1
     image: "{{ platform.image }}"
+{% if platform.cap_add is defined %}
+    cap_add:
+{% for cap in platform.cap_add %}
+      - {{ cap }}
+{% endfor %}
+{% endif %}
 {% if platform.kernel_memory is defined %}
     kernel_memory: {{ platform.kernel_memory }}
 {% endif %}
