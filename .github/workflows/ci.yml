@@ -30,22 +30,35 @@ jobs:
             # ansible: "ansible>10,<11"
             ansible: "ansible-core>2.17,<2.18"
             ansible_lint: "ansible-lint"
+            python: "3.13"
+
           - name: "ansible_2.18"
             # ansible: "ansible>11,<12"
             ansible: "ansible-core>2.18,<2.19"
             ansible_lint: "ansible-lint"
+            python: "3.13"
+
 
     steps:
+
       - name: Check out the codebase.
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: "${{ github.repository }}"
 
-      - name: Set up Python 3.
-        uses: actions/setup-python@v5
+      - name: Set up Python3.
+        uses: actions/setup-python@v6
         with:
-          python-version: '3.13'
+          python-version: "${{ matrix.python }}"
 
+
+      - name: Configure deployment key
+        run: |
+          [[ ! -d ~/.ssh ]] && mkdir -m 700 ~/.ssh
+          echo "$DEPLOYMENT_KEY" | base64 -d > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+        env:
+          DEPLOYMENT_KEY: ${{ secrets.DEPLOYMENT_KEY }}
 
       - name: Show runner info
         run: |
@@ -78,11 +91,43 @@ jobs:
 
       - name: Retrieve & install wrapper scripts
         run: |
-          set -e
-          sudo apt install curl
-          curl -s -o /tmp/install.sh \
-            https://raw.githubusercontent.com/de-it-krachten/ansible-role-molecule/dev/files/install.sh
-          bash /tmp/install.sh
+
+          cicd_version=${{ vars.cicd_version }}
+
+          # Install requirements
+          echo "== Installing dependencies"
+          sudo apt install curl jq -y
+
+          # If no package version was given, get the latest
+          if [[ -z $cicd_version ]]
+          then
+            echo "== Retrieving cicd_tools version"
+
+            # API uri to query
+            api_url=https://api.github.com/repos/de-it-krachten/cicd-tools/releases/latest
+
+            # Get latest release download URL for .deb asset
+            cicd_version=$(curl -s $api_url | jq -r '.tag_name' | sed "s/^v//")
+
+          fi
+
+          # If still no version found, fall back onto a default
+          if [[ -z $cicd_version ]]
+          then
+            echo "== Fallback to default version '1.6.0'"
+            cicd_version=1.6.0
+          fi
+
+          # Construct url
+          release_url=https://github.com/de-it-krachten/cicd-tools/releases/download/v${cicd_version}/cicd-tools_${cicd_version}.deb
+
+          # Download package
+          echo "== Downloading package '$release_url'"
+          file=$(basename $release_url)
+          curl -s -L -o $file -s $release_url || exit 1
+
+          echo "== Installing package '$file'"
+          sudo dpkg -i $file || exit 1
 
       - name: Install required galaxy collections
         run: |
@@ -119,7 +164,7 @@ jobs:
           set -e
           source ~/.venv/bin/activate
           yamllint .
-          ansible-lint.sh
+          /usr/local/bin/ansible-lint.sh -f readable
 
   molecule:
     name: "${{ matrix.name }}"
@@ -136,22 +181,25 @@ jobs:
             playbook: converge.yml
             ansible: "ansible-core>2.16,<2.17"
             ansible_lint: "ansible-lint>6,<7"
+            python: "3.12"
             hetznercloud: True
 
           - name: rockylinux9
             runs_on: ubuntu-22.04
             distro: rockylinux9
             playbook: converge.yml
-            ansible: "ansible-core>2.16,<2.17"
-            ansible_lint: "ansible-lint>6,<7"
+            ansible: "ansible-core>2.18,<2.19"
+            ansible_lint: "ansible-lint"
+            python: "3.13"
             hetznercloud: True
 
           - name: rockylinux10
             runs_on: ubuntu-22.04
             distro: rockylinux10
             playbook: converge.yml
-            ansible: "ansible-core>2.16,<2.17"
-            ansible_lint: "ansible-lint>6,<7"
+            ansible: "ansible-core>2.18,<2.19"
+            ansible_lint: "ansible-lint"
+            python: "3.13"
             hetznercloud: True
 
           - name: oraclelinux8
@@ -160,22 +208,25 @@ jobs:
             playbook: converge.yml
             ansible: "ansible-core>2.16,<2.17"
             ansible_lint: "ansible-lint>6,<7"
+            python: "3.12"
             hetznercloud: False
 
           - name: oraclelinux9
             runs_on: ubuntu-22.04
             distro: oraclelinux9
             playbook: converge.yml
-            ansible: "ansible-core>2.16,<2.17"
-            ansible_lint: "ansible-lint>6,<7"
+            ansible: "ansible-core>2.18,<2.19"
+            ansible_lint: "ansible-lint"
+            python: "3.13"
             hetznercloud: False
 
           - name: oraclelinux10
             runs_on: ubuntu-22.04
             distro: oraclelinux10
             playbook: converge.yml
-            ansible: "ansible-core>2.16,<2.17"
-            ansible_lint: "ansible-lint>6,<7"
+            ansible: "ansible-core>2.18,<2.19"
+            ansible_lint: "ansible-lint"
+            python: "3.13"
             hetznercloud: False
 
           - name: almalinux8
@@ -184,110 +235,121 @@ jobs:
             playbook: converge.yml
             ansible: "ansible-core>2.16,<2.17"
             ansible_lint: "ansible-lint>6,<7"
+            python: "3.12"
             hetznercloud: False
 
           - name: almalinux9
             runs_on: ubuntu-22.04
             distro: almalinux9
             playbook: converge.yml
-            ansible: "ansible-core>2.16,<2.17"
-            ansible_lint: "ansible-lint>6,<7"
+            ansible: "ansible-core>2.18,<2.19"
+            ansible_lint: "ansible-lint"
+            python: "3.13"
             hetznercloud: False
 
           - name: almalinux10
             runs_on: ubuntu-22.04
             distro: almalinux10
             playbook: converge.yml
-            ansible: "ansible-core>2.16,<2.17"
-            ansible_lint: "ansible-lint>6,<7"
-            hetznercloud: False
-
-          - name: opensuse15
-            runs_on: ubuntu-22.04
-            distro: opensuse15
-            playbook: converge.yml
-            ansible: "ansible-core>2.16,<2.17"
-            ansible_lint: "ansible-lint>6,<7"
+            ansible: "ansible-core>2.18,<2.19"
+            ansible_lint: "ansible-lint"
+            python: "3.13"
             hetznercloud: False
 
           - name: debian11
             runs_on: ubuntu-22.04
             distro: debian11
             playbook: converge.yml
-            ansible: "ansible-core>2.16,<2.17"
-            ansible_lint: "ansible-lint>6,<7"
+            ansible: "ansible-core>2.18,<2.19"
+            ansible_lint: "ansible-lint"
+            python: "3.13"
             hetznercloud: True
 
           - name: debian12
             runs_on: ubuntu-22.04
             distro: debian12
             playbook: converge.yml
-            ansible: "ansible-core>2.16,<2.17"
-            ansible_lint: "ansible-lint>6,<7"
+            ansible: "ansible-core>2.18,<2.19"
+            ansible_lint: "ansible-lint"
+            python: "3.13"
             hetznercloud: True
 
           - name: debian13
             runs_on: ubuntu-22.04
             distro: debian13
             playbook: converge.yml
-            ansible: "ansible-core>2.16,<2.17"
-            ansible_lint: "ansible-lint>6,<7"
+            ansible: "ansible-core>2.18,<2.19"
+            ansible_lint: "ansible-lint"
+            python: "3.13"
             hetznercloud: True
 
           - name: ubuntu2004
             runs_on: ubuntu-22.04
             distro: ubuntu2004
             playbook: converge.yml
-            ansible: "ansible-core>2.16,<2.17"
-            ansible_lint: "ansible-lint>6,<7"
+            ansible: "ansible-core>2.18,<2.19"
+            ansible_lint: "ansible-lint"
+            python: "3.13"
             hetznercloud: True
 
           - name: ubuntu2204
             runs_on: ubuntu-22.04
             distro: ubuntu2204
             playbook: converge.yml
-            ansible: "ansible-core>2.16,<2.17"
-            ansible_lint: "ansible-lint>6,<7"
+            ansible: "ansible-core>2.18,<2.19"
+            ansible_lint: "ansible-lint"
+            python: "3.13"
             hetznercloud: True
 
           - name: ubuntu2404
             runs_on: ubuntu-22.04
             distro: ubuntu2404
             playbook: converge.yml
-            ansible: "ansible-core>2.16,<2.17"
-            ansible_lint: "ansible-lint>6,<7"
-            hetznercloud: True
-
-          - name: fedora41
-            runs_on: ubuntu-22.04
-            distro: fedora41
-            playbook: converge.yml
-            ansible: "ansible-core>2.16,<2.17"
-            ansible_lint: "ansible-lint>6,<7"
+            ansible: "ansible-core>2.18,<2.19"
+            ansible_lint: "ansible-lint"
+            python: "3.13"
             hetznercloud: True
 
           - name: fedora42
             runs_on: ubuntu-22.04
             distro: fedora42
             playbook: converge.yml
-            ansible: "ansible-core>2.16,<2.17"
-            ansible_lint: "ansible-lint>6,<7"
+            ansible: "ansible-core>2.18,<2.19"
+            ansible_lint: "ansible-lint"
+            python: "3.13"
+            hetznercloud: True
+
+          - name: fedora43
+            runs_on: ubuntu-22.04
+            distro: fedora43
+            playbook: converge.yml
+            ansible: "ansible-core>2.18,<2.19"
+            ansible_lint: "ansible-lint"
+            python: "3.13"
             hetznercloud: True
 
 
     steps:
 
       - name: Check out the codebase.
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: "${{ github.repository }}"
 
 
-      - name: Set up Python 3.
-        uses: actions/setup-python@v5
+      - name: Set up Python3.
+        uses: actions/setup-python@v6
         with:
-          python-version: '3.13'
+          python-version: "${{ matrix.python }}"
 
+
+      - name: Configure deployment key
+        run: |
+          [[ ! -d ~/.ssh ]] && mkdir -m 700 ~/.ssh
+          echo "$DEPLOYMENT_KEY" | base64 -d > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+        env:
+          DEPLOYMENT_KEY: ${{ secrets.DEPLOYMENT_KEY }}
 
       - name: Show runner info
         run: |
@@ -337,18 +399,49 @@ jobs:
           fi
 
           pip3 install "requests<2.29" "urllib3<2"
-
           pip3 list
         env:
           MOLECULE_DRIVER: ${{ vars.MOLECULE_DRIVER }}
 
       - name: Retrieve & install wrapper scripts
         run: |
-          set -e
-          sudo apt install curl
-          curl -s -o /tmp/install.sh \
-            https://raw.githubusercontent.com/de-it-krachten/ansible-role-molecule/dev/files/install.sh
-          bash /tmp/install.sh
+
+          cicd_version=${{ vars.cicd_version }}
+
+          # Install requirements
+          echo "== Installing dependencies"
+          sudo apt install curl jq -y
+
+          # If no package version was given, get the latest
+          if [[ -z $cicd_version ]]
+          then
+            echo "== Retrieving cicd_tools version"
+
+            # API uri to query
+            api_url=https://api.github.com/repos/de-it-krachten/cicd-tools/releases/latest
+
+            # Get latest release download URL for .deb asset
+            cicd_version=$(curl -s $api_url | jq -r '.tag_name' | sed "s/^v//")
+
+          fi
+
+          # If still no version found, fall back onto a default
+          if [[ -z $cicd_version ]]
+          then
+            echo "== Fallback to default version '1.6.0'"
+            cicd_version=1.6.0
+          fi
+
+          # Construct url
+          release_url=https://github.com/de-it-krachten/cicd-tools/releases/download/v${cicd_version}/cicd-tools_${cicd_version}.deb
+
+          # Download package
+          echo "== Downloading package '$release_url'"
+          file=$(basename $release_url)
+          curl -s -L -o $file -s $release_url || exit 1
+
+          echo "== Installing package '$file'"
+          sudo dpkg -i $file || exit 1
 
       - name: Install required galaxy collections
         run: |
@@ -380,6 +473,7 @@ jobs:
       - name: Show component versions
         run: |
           source ~/.venv/bin/activate
+          python3 --version
           ansible --version
           ansible-lint --version
           yamllint --version
@@ -388,7 +482,7 @@ jobs:
       - name: Run Molecule tests.
         run: |
           source ~/.venv/bin/activate
-          molecule-test.sh -A
+          /usr/local/bin/molecule-test.sh -A
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'

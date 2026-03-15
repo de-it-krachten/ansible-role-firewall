@@ -4,6 +4,7 @@
   hosts: all
   become: "yes"
   vars:
+    molecule_driver: "{{ lookup('env', 'MOLECULE_DRIVER_NAME') }}"
     firewall_ports: [{'name': 'SSH', 'port': '22', 'proto': 'tcp'}, {'name': 'DNS', 'port': '53', 'proto': 'udp'}]
   tasks:
     - name: Include role 'ansible-role-firewall'

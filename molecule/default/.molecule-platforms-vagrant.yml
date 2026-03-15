@@ -57,12 +57,12 @@
   box: generic/alma10
   interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
 - name: opensuse15
-  ci: true
-  box: generic/opensuse15
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
-- name: opensusetumbleweed15
   ci: false
   box: generic/opensuse15
+  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
+- name: opensuse16
+  ci: false
+  box: generic/opensuse16
   interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
 - name: debian10
   ci: false
@@ -113,12 +113,16 @@
   box: generic/fedora40
   interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
 - name: fedora41
-  ci: true
+  ci: false
   box: generic/fedora41
   interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
 - name: fedora42
   ci: true
-  box: generic/fedora41
+  box: generic/fedora42
+  interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
+- name: fedora43
+  ci: true
+  box: generic/fedora43
   interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
 - name: alpine3
   ci: false

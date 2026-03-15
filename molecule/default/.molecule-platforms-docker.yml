@@ -145,16 +145,16 @@
   volumes:
     - /sys/fs/cgroup:/sys/fs/cgroup:rw
 - name: opensuse15
-  ci: true
-  image: docker.io/geerlingguy/docker-opensuseleap15-ansible:latest
+  ci: false
+  image: docker.io/dropveter/opensuse15-ansible:latest
   privileged: true
   pre_build_image: true
   cgroupns_mode: host
   volumes:
     - /sys/fs/cgroup:/sys/fs/cgroup:rw
-- name: opensusetumbleweed15
+- name: opensuse16
   ci: false
-  image: robertdebock/opensuse
+  image: docker.io/dropveter/opensuse16-ansible:latest
   privileged: true
   pre_build_image: true
   cgroupns_mode: host
@@ -257,7 +257,7 @@
   volumes:
     - /sys/fs/cgroup:/sys/fs/cgroup:rw
 - name: fedora41
-  ci: true
+  ci: false
   image: docker.io/geerlingguy/docker-fedora41-ansible:latest
   privileged: true
   pre_build_image: true
@@ -267,6 +267,14 @@
 - name: fedora42
   ci: true
   image: docker.io/geerlingguy/docker-fedora42-ansible:latest
+  privileged: true
+  pre_build_image: true
+  cgroupns_mode: host
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:rw
+- name: fedora43
+  ci: true
+  image: docker.io/geerlingguy/docker-fedora43-ansible:latest
   privileged: true
   pre_build_image: true
   cgroupns_mode: host
@@ -284,7 +292,7 @@
   ci: false
   image: docker.io/dropveter/docker-dind-ansible:latest
   privileged: true
-  pre_build_image: false
+  pre_build_image: true
   cgroupns_mode: host
   environment:
     DOCKER_TLS_CERTDIR: /certs

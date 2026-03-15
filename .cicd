@@ -441,7 +441,99 @@ platforms:
   sles15:
     name: SUSE Linux Enterprise 15
     ci: false
-    supported: true
+    supported: false
+    galaxy:
+      name: SLES
+      version: all
+#    molecule:
+#      docker:
+#        image: "robertdebock/opensuse"
+#        pre_build_image: true
+#        privileged: true
+#        volumes:
+#          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+#        cgroupns_mode: host
+#      podman:
+#        image: "docker.io/robertdebock/opensuse"
+#      vagrant:
+#        box: "generic/opensuse15"
+#        interfaces:
+#          - network_name: private_network
+#            type: dhcp
+#            auto_config: true
+  sles16:
+    name: SUSE Linux Enterprise 16
+    ci: false
+    supported: false
+    galaxy:
+      name: SLES
+      version: all
+#    molecule:
+#      docker:
+#        image: "robertdebock/opensuse"
+#        pre_build_image: true
+#        privileged: true
+#        volumes:
+#          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+#        cgroupns_mode: host
+#      podman:
+#        image: "docker.io/robertdebock/opensuse"
+#      vagrant:
+#        box: "generic/opensuse16"
+#        interfaces:
+#          - network_name: private_network
+#            type: dhcp
+#            auto_config: true
+  opensuse15:
+    name: openSUSE Leap 15
+    ci: false
+    supported: false
+    galaxy:
+      name: opensuse
+      version: all
+    molecule:
+      docker:
+        image: "docker.io/dropveter/opensuse15-ansible:latest"
+        pre_build_image: true
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
+      podman:
+        image: "docker.io/dropveter/opensuse15-ansible:latest"
+      vagrant:
+        box: "generic/opensuse15"
+        interfaces:
+          - network_name: private_network
+            type: dhcp
+            auto_config: true
+  opensuse16:
+    name: openSUSE Leap 16
+    ci: false
+    supported: false
+    galaxy:
+      name: opensuse
+      version: all
+    molecule:
+      docker:
+        image: "docker.io/dropveter/opensuse16-ansible:latest"
+        pre_build_image: true
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
+      podman:
+        image: "docker.io/dropveter/opensuse16-ansible:latest"
+      vagrant:
+        box: "generic/opensuse16"
+        interfaces:
+          - network_name: private_network
+            type: dhcp
+            auto_config: true
+  opensusetumbleweed:
+    name: openSUSE Tumbleweed
+    ci: false
+    supported: false
     galaxy:
       name: opensuse
       version: all
@@ -461,52 +553,6 @@ platforms:
 #          - network_name: private_network
 #            type: dhcp
 #            auto_config: true
-  opensuse15:
-    name: openSUSE Leap 15
-    ci: true
-    supported: true
-    galaxy:
-      name: opensuse
-      version: all
-    molecule:
-      docker:
-        image: "docker.io/geerlingguy/docker-opensuseleap15-ansible:latest"
-        pre_build_image: true
-        privileged: true
-        volumes:
-          - /sys/fs/cgroup:/sys/fs/cgroup:rw
-        cgroupns_mode: host
-      podman:
-        image: "docker.io/dropveter/opensuse15-ansible:latest"
-      vagrant:
-        box: "generic/opensuse15"
-        interfaces:
-          - network_name: private_network
-            type: dhcp
-            auto_config: true
-  opensusetumbleweed15:
-    name: openSUSE Tumbleweed 15
-    ci: false
-    supported: false
-    galaxy:
-      name: opensuse
-      version: all
-    molecule:
-      docker:
-        image: "robertdebock/opensuse"
-        pre_build_image: true
-        privileged: true
-        volumes:
-          - /sys/fs/cgroup:/sys/fs/cgroup:rw
-        cgroupns_mode: host
-      podman:
-        image: "docker.io/robertdebock/opensuse"
-      vagrant:
-        box: "generic/opensuse15"
-        interfaces:
-          - network_name: private_network
-            type: dhcp
-            auto_config: true
   debian10:
     name: Debian 10 (Buster)
     ci: false
@@ -639,8 +685,8 @@ platforms:
         server_type: cx22
   ubuntu2004:
     name: Ubuntu 20.04 LTS
-    ci: true
-    supported: true
+    ci: false
+    supported: false
     galaxy:
       name: Ubuntu
       version: focal
@@ -723,7 +769,7 @@ platforms:
     supported: false
     galaxy:
       name: Fedora
-      version: all
+      version: 37
     molecule:
       docker:
         image: "docker.io/geerlingguy/docker-fedora37-ansible:latest"
@@ -748,7 +794,7 @@ platforms:
     supported: false
     galaxy:
       name: Fedora
-      version: all
+      version: 38
     molecule:
       docker:
         image: "docker.io/geerlingguy/docker-fedora38-ansible:latest"
@@ -773,7 +819,7 @@ platforms:
     supported: false
     galaxy:
       name: Fedora
-      version: all
+      version: 39
     molecule:
       docker:
         image: "docker.io/geerlingguy/docker-fedora39-ansible:latest"
@@ -798,7 +844,7 @@ platforms:
     supported: false
     galaxy:
       name: Fedora
-      version: all
+      version: 40
     molecule:
       docker:
         image: "docker.io/geerlingguy/docker-fedora40-ansible:latest"
@@ -819,11 +865,11 @@ platforms:
         server_type: cx22
   fedora41:
     name: Fedora 41
-    ci: true
-    supported: true
+    ci: false
+    supported: false
     galaxy:
       name: Fedora
-      version: all
+      version: 41
     molecule:
       docker:
         image: "docker.io/geerlingguy/docker-fedora41-ansible:latest"
@@ -848,7 +894,7 @@ platforms:
     supported: true
     galaxy:
       name: Fedora
-      version: all
+      version: 42
     molecule:
       docker:
         image: "docker.io/geerlingguy/docker-fedora42-ansible:latest"
@@ -860,12 +906,37 @@ platforms:
       podman:
         image: "docker.io/geerlingguy/docker-fedora42-ansible:latest"
       vagrant:
-        box: "generic/fedora41"
+        box: "generic/fedora42"
         interfaces:
           - network_name: private_network
             type: dhcp
       hetznercloud:
         image: fedora-42
+        server_type: cx22
+  fedora43:
+    name: Fedora 43
+    ci: true
+    supported: true
+    galaxy:
+      name: Fedora
+      version: 43
+    molecule:
+      docker:
+        image: "docker.io/geerlingguy/docker-fedora43-ansible:latest"
+        pre_build_image: true
+        privileged: true
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns_mode: host
+      podman:
+        image: "docker.io/geerlingguy/docker-fedora43-ansible:latest"
+      vagrant:
+        box: "generic/fedora43"
+        interfaces:
+          - network_name: private_network
+            type: dhcp
+      hetznercloud:
+        image: fedora-43
         server_type: cx22
   alpine3:
     name: Alpine 3
@@ -898,7 +969,7 @@ platforms:
       docker:
         image: "docker.io/dropveter/docker-dind-ansible:latest"
         cgroupns_mode: host
-        pre_build_image: false
+        pre_build_image: true
         privileged: true
         volumes:
           - /sys/fs/cgroup:/sys/fs/cgroup:rw
@@ -914,7 +985,7 @@ platforms:
     supported: false
     galaxy:
       name: Windows
-      version: all
+      version: 2012R2
     molecule:
       vagrant:
         box: jborean93/WindowsServer2012R2
@@ -929,7 +1000,7 @@ platforms:
     supported: false
     galaxy:
       name: Windows
-      version: all
+      version: 2016
     molecule:
       vagrant:
         box: jborean93/WindowsServer2016
@@ -944,7 +1015,7 @@ platforms:
     supported: false
     galaxy:
       name: Windows
-      version: all
+      version: 2019
     molecule:
       vagrant:
         box: jborean93/WindowsServer2019
@@ -959,7 +1030,7 @@ platforms:
     supported: false
     galaxy:
       name: Windows
-      version: all
+      version: 2022
     molecule:
       vagrant:
         box: jborean93/WindowsServer2022
@@ -974,7 +1045,7 @@ platforms:
     supported: false
     galaxy:
       name: Windows
-      version: all
+      version: 2025
     molecule:
       vagrant:
         box: jborean93/WindowsServer2025
@@ -1030,27 +1101,40 @@ github:
   repo: ansible-role-firewall
   # https://docs.ansible.com/ansible/latest/reference_appendices/release_and_maintenance.html
   image: ubuntu2204
-  python: '3.13'
   lint_matrix:
     - name: ansible_2.17
       ansible: "ansible>10,<11"
       ansible_core: "ansible-core>2.17,<2.18"
       ansible_lint: "ansible-lint"
+      python: "3.13"
     - name: ansible_2.18
       ansible: "ansible>11,<12"
       ansible_core: "ansible-core>2.18,<2.19"
       ansible_lint: "ansible-lint"
+      python: "3.13"
 
 # Gitlab
 gitlab:
   active: false
 
-# Axure DevOps
+# Azure DevOps
 ado:
   active: false
 
 # molecule
 molecule:
+#  scenario:
+#    test_sequence:
+#      - dependency     # Install requirements
+#      - custom         # custom phase
+#      - create         # Provision environment
+#      - prepare        # Configure environment
+#      - converge       # Apply automation
+#      - idempotence    # Verify idempotence
+#      - side_effect    # Test side effects
+#      - verify         # Functional verification
+#      - cleanup        # Clean temporary artifacts
+#      - destroy        # Remove all resources
   active: true
   dns_server: false
   drivers:
