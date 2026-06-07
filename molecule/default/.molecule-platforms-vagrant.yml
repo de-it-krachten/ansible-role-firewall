@@ -44,6 +44,8 @@
   ci: true
   box: generic/oracle10
   interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
+- name: olam8
+  ci: false
 - name: almalinux8
   ci: true
   box: generic/alma8
@@ -96,6 +98,10 @@
   ci: true
   box: generic/ubuntu2404
   interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
+- name: ubuntu2604
+  ci: true
+  box: generic/ubuntu2604
+  interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
 - name: fedora37
   ci: false
   box: generic/fedora37
@@ -117,12 +123,16 @@
   box: generic/fedora41
   interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
 - name: fedora42
-  ci: true
+  ci: false
   box: generic/fedora42
   interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
 - name: fedora43
   ci: true
   box: generic/fedora43
+  interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
+- name: fedora44
+  ci: false
+  box: generic/fedora44
   interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
 - name: alpine3
   ci: false

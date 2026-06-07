@@ -1,8 +1,10 @@
 ---
 
+
 - name: Prepare
   hosts: all
-  become: yes
+  gather_facts: no
+  become: true
   vars:
 
     proxy_use: "{{ True if ( https_proxy is defined and https_proxy|length > 0 ) else False }}"
@@ -47,30 +49,64 @@
 
     systemctl_alternative: False
     prepare_firewall: True
-  roles:
-    - { role: deitkrachten.facts, when: ansible_os_family != 'Windows' }
-    - deitkrachten.showinfo
-  tasks:
+
+  pre_tasks:
+
+    - name: Get facts
+      ansible.builtin.setup:
 
     - name: Create remote_tmp
       ansible.builtin.file:
         path: /root/.ansible/tmp
         state: directory
         mode: "0700"
-      when: ansible_os_family != 'Windows'
+      when: ansible_facts.os_family != 'Windows'
 
     - name: Define molecule distro  # noqa jinja[spacing]
       ansible.builtin.set_fact:
         molecule_distro: >-
-          {%- if ansible_distribution == 'Ubuntu' -%}
-          {{ (ansible_distribution | lower) + (ansible_distribution_version | regex_replace('\.')) }}
-          {%- elif ansible_distribution == 'openSUSE Leap' -%}
-          {{ 'opensuse' + ansible_distribution_major_version }}
-          {%- elif ansible_distribution == 'CentOS' and ansible_distribution_release == 'Stream' -%}
-          {{ (ansible_distribution | lower) + ansible_distribution_major_version + 's' }}
+          {%- if ansible_facts.distribution == 'Ubuntu' -%}
+          {{ (ansible_facts.distribution | lower) + (ansible_facts.distribution_version | regex_replace('\.')) }}
+          {%- elif ansible_facts.distribution == 'openSUSE Leap' -%}
+          {{ 'opensuse' + ansible_facts.distribution_major_version }}
+          {%- elif ansible_facts.distribution == 'CentOS' and ansible_facts.distribution_release == 'Stream' -%}
+          {{ (ansible_facts.distribution | lower) + ansible_facts.distribution_major_version + 's' }}
           {%- else -%}
-          {{ (ansible_distribution | lower) + ansible_distribution_major_version }}
+          {{ (ansible_facts.distribution | lower) + ansible_facts.distribution_major_version }}
           {%- endif -%}
+
+    # Switch to CentOS vault mirrors
+    - name: Get all repo files
+      ansible.builtin.find:
+        paths: /etc/yum.repos.d
+        patterns: 'CentOS-*'
+      register: _repo
+      when: molecule_distro is search('^centos(6|7|8)')
+
+    - name: Update repo files to point to CentOS vault mirror (1)
+      ansible.builtin.replace:
+        path: "{{ item.path }}"
+        regexp: "^mirrorlist"
+        replace: "#mirrorlist"
+      loop: "{{ _repo.files }}"
+      loop_control:
+        label: "{{ item.path }}"
+      when: molecule_distro is search('^centos(6|7|8)')
+
+    - name: Update repo files to point to CentOS vault mirror (2)
+      ansible.builtin.replace:
+        path: "{{ item.path }}"
+        regexp: "^#baseurl=http://mirror.centos.org"
+        replace: "baseurl=http://vault.centos.org"
+      loop: "{{ _repo.files }}"
+      loop_control:
+        label: "{{ item.path }}"
+      when: molecule_distro is search('^centos(6|7|8)')
+
+  roles:
+    - { role: deitkrachten.facts, when: ansible_facts.os_family != 'Windows' }
+    - deitkrachten.showinfo
+  tasks:
 
     - name: Show settings
       ansible.builtin.debug:
@@ -94,7 +130,7 @@
         - molecule_driver is search('^(hetznercloud|vagrant)$')
         - enable_root_access is defined and enable_root_access | bool
         - root_pubkey is defined and root_pubkey | length > 0
-        - ansible_os_family != 'Windows'
+        - ansible_facts.os_family != 'Windows'
       block:
 
         - name: Create /root/.ssh
@@ -113,11 +149,11 @@
 
     - name: Generic (Windows)
       when:
-        - ansible_os_family == 'Windows'
+        - ansible_facts.os_family == 'Windows'
       block:
 
         - name: Set autologin for vagrant
-          community.windows.win_auto_logon:
+          ansible.windows.win_auto_logon:
             username: vagrant
             password: vagrant
           register: _win_autologin
@@ -136,7 +172,7 @@
 
     - name: Generic (Linux)
       when:
-        - ansible_os_family != 'Windows'
+        - ansible_facts.os_family != 'Windows'
       block:
 
         - name: Show packages known to make CI fail
@@ -150,7 +186,7 @@
           when: packages_rm | default([]) | length > 0
 
     - name: Family Suse
-      when: ansible_os_family == 'Suse'
+      when: ansible_facts.os_family == 'Suse'
       block:
 
         - name: Configure to use proxy  # noqa template-instead-of-copy
@@ -195,7 +231,7 @@
             state: present
 
     - name: Family Debian
-      when: ansible_os_family == 'Debian'
+      when: ansible_facts.os_family == 'Debian'
       block:
 
         - name: Configure APT to use proxy  # noqa template-instead-of-copy
@@ -231,58 +267,10 @@
               - python3-apt
             state: present
 
-    - name: Family RedHat (generic)
-      when:
-        - ansible_os_family == 'RedHat'
-      block:
-
-        # Switch to CentOS vault mirrors
-        - name: Get all repo files
-          ansible.builtin.find:
-            paths: /etc/yum.repos.d
-            patterns: 'CentOS-*'
-          register: _repo
-          when: molecule_distro is search('^centos(6|8)$')
-
-        - name: Update repo files to point to CentOS vault mirror (1)
-          ansible.builtin.replace:
-            path: "{{ item.path }}"
-            regexp: "^mirrorlist"
-            replace: "#mirrorlist"
-          loop: "{{ _repo.files }}"
-          loop_control:
-            label: "{{ item.path }}"
-          when: molecule_distro is search('^centos(6|8)$')
-
-        - name: Update repo files to point to CentOS vault mirror (2)
-          ansible.builtin.replace:
-            path: "{{ item.path }}"
-            regexp: "^#baseurl=http://mirror.centos.org"
-            replace: "baseurl=http://vault.centos.org"
-          loop: "{{ _repo.files }}"
-          loop_control:
-            label: "{{ item.path }}"
-          when: molecule_distro is search('^centos(6|8)$')
-
-        # Switch to CentOS epel mirrors
-        - name: Switch to CentOS epel mirrors
-          ansible.builtin.replace:
-            path: "/etc/yum.repos.d/epel.repo"
-            regexp: "{{ item.regexp }}"
-            replace: "{{ item.replace }}"
-          loop:
-            - regexp: "^mirrorlist="
-              replace: "#mirrorlist="
-            - regexp: "^#baseurl=http://download.fedoraproject.org/pub/epel"
-              replace: "baseurl=https://archives.fedoraproject.org/pub/archive/epel"
-          loop_control:
-            label: /etc/yum.repos.d/epel.repo
-          when: molecule_distro is search('^centos6$')
-
     - name: Family RedHat < 8
       when:
-        - ansible_os_family == 'RedHat'
-        - ansible_distribution_major_version | int < 8
+        - ansible_facts.os_family == 'RedHat'
+        - ansible_facts.distribution_major_version | int < 8
       block:
 
         - name: Configure YUM to use proxy
@@ -325,7 +313,7 @@
             name:
               - hostname
             state: present
-          when: ansible_distribution_major_version | int == 7
+          when: ansible_facts.distribution_major_version | int == 7
 
         - name: Activate epel repository
           ansible.builtin.include_role:
@@ -335,18 +323,18 @@
 
     - name: Family RedHat 8+
       when:
-        - ansible_os_family == 'RedHat'
-        - ansible_distribution_major_version | int >= 8
+        - ansible_facts.os_family == 'RedHat'
+        - ansible_facts.distribution_major_version | int >= 8
       block:
 
         - name: Get RPM GPG key for Alma Linux
           ansible.builtin.shell: |
-            mv={{ ansible_distribution_major_version }}
+            mv={{ ansible_facts.distribution_major_version }}
             [[ $mv == 8 ]] && gpgkey=https://repo.almalinux.org/almalinux/$mv/BaseOS/x86_64/os/RPM-GPG-KEY-AlmaLinux
             [[ $mv -gt 8 ]] && gpgkey=https://repo.almalinux.org/almalinux/$mv/BaseOS/x86_64/os/RPM-GPG-KEY-AlmaLinux-$mv
             curl -o RPM-GPG-KEY-AlmaLinux $gpgkey
             rpm --import RPM-GPG-KEY-AlmaLinux
-          when: ansible_distribution == 'AlmaLinux'
+          when: ansible_facts.distribution == 'AlmaLinux'
 
         - name: Configure DNF to use proxy
           ansible.builtin.lineinfile:
@@ -383,7 +371,17 @@
               - iproute
               - glibc-langpack-en
               - gnupg2
+              - policycoreutils
+              - policycoreutils-python-utils
             state: present
+
+        - name: Install OS spcific packages
+          ansible.builtin.package:
+            name:
+              - python3-packaging
+          when:
+            - ansible_facts.distribution == 'RedHat'
+            - ansible_facts.distribution_major_version == '10'
 
         - name: Activate epel repository
           ansible.builtin.include_role:
@@ -391,7 +389,7 @@
           when:
             - activate_epel is defined
             - activate_epel | bool
-            - ansible_distribution != 'Fedora'
+            - ansible_facts.distribution != 'Fedora'
 
     - name: Show locales
       when: show_locales is defined and show_locales | bool
@@ -415,13 +413,13 @@
         python_package_install_optional: "{{ install_python_optional | default(True) }}"
       when:
         - install_python is defined and install_python | bool
-        - ansible_os_family != 'Windows'
+        - ansible_facts.os_family != 'Windows'
 
     - name: Firewall
       when:
         - prepare_firewall is defined and prepare_firewall | bool
         - inventory_hostname is not search('-dns$')
-        - ansible_os_family != 'Windows'
+        - ansible_facts.os_family != 'Windows'
       block:
 
         - name: Install iptables
@@ -444,14 +442,14 @@
         name: deitkrachten.docker
       when:
         - install_docker is defined and install_docker | bool
-        - ansible_os_family != 'Windows'
+        - ansible_facts.os_family != 'Windows'
 
     - name: Reboot the server
       ansible.builtin.include_role:
         name: deitkrachten.reboot
       when:
         - molecule_driver is search('^(vagrant|hetznercloud)$')
-        - ansible_os_family != 'Windows'
+        - ansible_facts.os_family != 'Windows'
 
     - name: Re-run setup
       ansible.builtin.setup:

@@ -55,6 +55,9 @@
 - name: oraclelinux10
   ci: true
   image: docker.io/dropveter/oraclelinux10-ansible
+- name: olam8
+  ci: false
+  image: docker.io/dropveter/olam:latest
 - name: almalinux8
   ci: true
   image: docker.io/dropveter/almalinux8-ansible
@@ -98,6 +101,9 @@
 - name: ubuntu2404
   ci: true
   image: docker.io/geerlingguy/docker-ubuntu2404-ansible:latest
+- name: ubuntu2604
+  ci: true
+  image: docker.io/geerlingguy/docker-ubuntu2604-ansible:latest
 - name: fedora37
   ci: false
   image: docker.io/geerlingguy/docker-fedora37-ansible:latest
@@ -114,11 +120,14 @@
   ci: false
   image: docker.io/geerlingguy/docker-fedora41-ansible:latest
 - name: fedora42
-  ci: true
+  ci: false
   image: docker.io/geerlingguy/docker-fedora42-ansible:latest
 - name: fedora43
   ci: true
   image: docker.io/geerlingguy/docker-fedora43-ansible:latest
+- name: fedora44
+  ci: false
+  image: docker.io/geerlingguy/docker-fedora44-ansible:latest
 - name: alpine3
   ci: false
   image: docker.io/dropveter/alpine-python3
