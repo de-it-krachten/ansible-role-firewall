@@ -18,6 +18,10 @@ defaults:
     working-directory: "de-it-krachten/ansible-role-firewall"
 
 
+# Create list of platform to perform CI on
+
+# Get intersect of CI platforms & default platforms for phase1
+
 jobs:
 
   lint:
@@ -202,6 +206,7 @@ jobs:
           yamllint .
           /usr/local/bin/ansible-lint.sh -f readable
 
+
   molecule1:
     name: "${{ matrix.name }}"
     runs-on: "${{ matrix.runs_on }}"
@@ -368,7 +373,7 @@ jobs:
         run: |
           ansible="${{ matrix.venv }}"
           source /usr/local/venv/$ansible/bin/activate
-          /usr/local/bin/molecule-test.sh -A
+          /usr/local/bin/molecule-test.sh -A -x -v
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
@@ -376,7 +381,6 @@ jobs:
           MOLECULE_PLAYBOOK: ${{ matrix.playbook }}
           HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
           MOLECULE_DRIVER: ${{ vars.MOLECULE_DRIVER }}
-
   molecule2:
     name: "${{ matrix.name }}"
     runs-on: "${{ matrix.runs_on }}"
@@ -673,7 +677,7 @@ jobs:
         run: |
           ansible="${{ matrix.venv }}"
           source /usr/local/venv/$ansible/bin/activate
-          /usr/local/bin/molecule-test.sh -A
+          /usr/local/bin/molecule-test.sh -A -x -v
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
