@@ -18,8 +18,6 @@ defaults:
     working-directory: "de-it-krachten/ansible-role-firewall"
 
 
-
-
 jobs:
 
   lint:
@@ -388,49 +386,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: rockylinux8
+          - name: almalinux10
             runs_on: ubuntu-22.04
-            distro: rockylinux8
-            playbook: converge.yml
-            venv: "ansiblecore216"
-            ansible: "ansible-core>2.16,<2.17"
-            ansible_lint: "ansible-lint>25,<25.11"
-            python: "3.12"
-            hetznercloud: False
-
-          - name: rockylinux9
-            runs_on: ubuntu-22.04
-            distro: rockylinux9
-            playbook: converge.yml
-            venv: "ansiblecore220"
-            ansible: "ansible-core>2.20,<2.21"
-            ansible_lint: "ansible-lint"
-            python: "3.13"
-            hetznercloud: False
-
-          - name: oraclelinux8
-            runs_on: ubuntu-22.04
-            distro: oraclelinux8
-            playbook: converge.yml
-            venv: "ansiblecore216"
-            ansible: "ansible-core>2.16,<2.17"
-            ansible_lint: "ansible-lint>25,<25.11"
-            python: "3.12"
-            hetznercloud: False
-
-          - name: oraclelinux9
-            runs_on: ubuntu-22.04
-            distro: oraclelinux9
-            playbook: converge.yml
-            venv: "ansiblecore220"
-            ansible: "ansible-core>2.20,<2.21"
-            ansible_lint: "ansible-lint"
-            python: "3.13"
-            hetznercloud: False
-
-          - name: oraclelinux10
-            runs_on: ubuntu-22.04
-            distro: oraclelinux10
+            distro: almalinux10
             playbook: converge.yml
             venv: "ansiblecore220"
             ansible: "ansible-core>2.20,<2.21"
@@ -451,16 +409,6 @@ jobs:
           - name: almalinux9
             runs_on: ubuntu-22.04
             distro: almalinux9
-            playbook: converge.yml
-            venv: "ansiblecore220"
-            ansible: "ansible-core>2.20,<2.21"
-            ansible_lint: "ansible-lint"
-            python: "3.13"
-            hetznercloud: False
-
-          - name: almalinux10
-            runs_on: ubuntu-22.04
-            distro: almalinux10
             playbook: converge.yml
             venv: "ansiblecore220"
             ansible: "ansible-core>2.20,<2.21"
@@ -498,6 +446,66 @@ jobs:
             python: "3.13"
             hetznercloud: False
 
+          - name: fedora43
+            runs_on: ubuntu-22.04
+            distro: fedora43
+            playbook: converge.yml
+            venv: "ansiblecore220"
+            ansible: "ansible-core>2.20,<2.21"
+            ansible_lint: "ansible-lint"
+            python: "3.13"
+            hetznercloud: False
+
+          - name: oraclelinux10
+            runs_on: ubuntu-22.04
+            distro: oraclelinux10
+            playbook: converge.yml
+            venv: "ansiblecore220"
+            ansible: "ansible-core>2.20,<2.21"
+            ansible_lint: "ansible-lint"
+            python: "3.13"
+            hetznercloud: False
+
+          - name: oraclelinux8
+            runs_on: ubuntu-22.04
+            distro: oraclelinux8
+            playbook: converge.yml
+            venv: "ansiblecore216"
+            ansible: "ansible-core>2.16,<2.17"
+            ansible_lint: "ansible-lint>25,<25.11"
+            python: "3.12"
+            hetznercloud: False
+
+          - name: oraclelinux9
+            runs_on: ubuntu-22.04
+            distro: oraclelinux9
+            playbook: converge.yml
+            venv: "ansiblecore220"
+            ansible: "ansible-core>2.20,<2.21"
+            ansible_lint: "ansible-lint"
+            python: "3.13"
+            hetznercloud: False
+
+          - name: rockylinux8
+            runs_on: ubuntu-22.04
+            distro: rockylinux8
+            playbook: converge.yml
+            venv: "ansiblecore216"
+            ansible: "ansible-core>2.16,<2.17"
+            ansible_lint: "ansible-lint>25,<25.11"
+            python: "3.12"
+            hetznercloud: False
+
+          - name: rockylinux9
+            runs_on: ubuntu-22.04
+            distro: rockylinux9
+            playbook: converge.yml
+            venv: "ansiblecore220"
+            ansible: "ansible-core>2.20,<2.21"
+            ansible_lint: "ansible-lint"
+            python: "3.13"
+            hetznercloud: False
+
           - name: ubuntu2004
             runs_on: ubuntu-22.04
             distro: ubuntu2004
@@ -521,16 +529,6 @@ jobs:
           - name: ubuntu2404
             runs_on: ubuntu-22.04
             distro: ubuntu2404
-            playbook: converge.yml
-            venv: "ansiblecore220"
-            ansible: "ansible-core>2.20,<2.21"
-            ansible_lint: "ansible-lint"
-            python: "3.13"
-            hetznercloud: False
-
-          - name: fedora43
-            runs_on: ubuntu-22.04
-            distro: fedora43
             playbook: converge.yml
             venv: "ansiblecore220"
             ansible: "ansible-core>2.20,<2.21"
