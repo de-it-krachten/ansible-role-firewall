@@ -202,10 +202,185 @@ jobs:
           yamllint .
           /usr/local/bin/ansible-lint.sh -f readable
 
-  molecule:
+  molecule1:
     name: "${{ matrix.name }}"
     runs-on: "${{ matrix.runs_on }}"
     needs: lint
+    # continue-on-error: ${{ matrix.continue_on_error }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: rockylinux10
+            runs_on: ubuntu-22.04
+            distro: rockylinux10
+            playbook: converge.yml
+            venv: "ansiblecore220"
+            ansible: "ansible-core>2.20,<2.21"
+            ansible_lint: "ansible-lint"
+            python: "3.13"
+            hetznercloud: True
+
+          - name: ubuntu2604
+            runs_on: ubuntu-22.04
+            distro: ubuntu2604
+            playbook: converge.yml
+            venv: "ansiblecore220"
+            ansible: "ansible-core>2.20,<2.21"
+            ansible_lint: "ansible-lint"
+            python: "3.13"
+            hetznercloud: True
+
+
+    steps:
+
+      - name: Check out the codebase.
+        uses: actions/checkout@v6
+        with:
+          path: "${{ github.repository }}"
+
+
+      - name: Set up Python3.
+        uses: actions/setup-python@v6
+        with:
+          python-version: "${{ matrix.python }}"
+
+
+      - name: Show runner info
+        run: |
+
+          hostname="$(hostname -f)"
+          eval os_name=$(awk -F= '/^NAME=/ {print $2}' /etc/os-release)
+          eval os_version=$(awk -F= '/^VERSION=/ {print $2}' /etc/os-release)
+          os="$os_name $os_version"
+          user="$(id -un)"
+          python=$(which python3)
+
+          echo "hostname : $hostname"
+          echo "user     : $user"
+          echo "os       : $os"
+          echo "python   : $python ($(python3 --version))"
+
+      - name: Configure deployment key
+        run: |
+          [[ ! -d ~/.ssh ]] && mkdir -m 700 ~/.ssh
+          echo "$DEPLOYMENT_KEY" | base64 -d > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+        env:
+          DEPLOYMENT_KEY: ${{ secrets.DEPLOYMENT_KEY }}
+        if: env.DEPLOYMENT_KEY != ''
+
+      - name: Fix known issues
+        run: |
+          sudo rm -f /usr/bin/yq
+          sudo modprobe ip6table_filter
+
+      - name: Disable specific apparmor profiles
+        run: |
+          sudo ln -s /etc/apparmor.d/usr.sbin.mysqld /etc/apparmor.d/disable/
+          sudo apparmor_parser -R /etc/apparmor.d/usr.sbin.mysqld
+
+      - name: Retrieve & install wrapper scripts
+        run: |
+
+          cicd_version=${{ vars.CICD_TOOLS_VERSION }}
+
+          # Install requirements
+          echo "== Installing dependencies"
+          sudo apt install curl jq -y
+
+          # If no package version was given, get the latest
+          if [[ -z $cicd_version ]]
+          then
+            echo "== Retrieving cicd_tools version"
+
+            # API uri to query
+            api_url=https://api.github.com/repos/de-it-krachten/cicd-tools/releases/latest
+
+            # Get latest release download URL for .deb asset
+            cicd_version=$(curl -s $api_url | jq -r '.tag_name' | sed "s/null//" | sed "s/^v//")
+
+          fi
+
+          # If still no version found, fall back onto a default
+          if [[ -z $cicd_version ]]
+          then
+            echo "== Fallback to default version '2.2.0'"
+            cicd_version=2.2.0
+          fi
+
+          # Construct url
+          release_url=https://github.com/de-it-krachten/cicd-tools/releases/download/v${cicd_version}/cicd-tools_${cicd_version}.deb
+
+          # Download package
+          echo "== Downloading package '$release_url'"
+          file=$(basename $release_url)
+          curl -s -L -o $file -s $release_url || exit 1
+
+          echo "== Installing package '$file'"
+          sudo dpkg -i $file || exit 1
+
+      - name: Update wrapper scripts
+        if: vars.CICD_TOOLS_UPDATE == 'yes'
+        run: |
+          set -e
+          prefix=/opt/cicd-tools
+          [[ $(id -un) != root ]] && sudo=sudo
+          $sudo apt install git rsync -y
+          git clone https://github.com/de-it-krachten/cicd-tools.git /tmp/cicd-tools
+          commit=$(git -C /tmp/cicd-tools rev-parse HEAD)
+          echo "commit: $commit"
+          $sudo rsync -cav /tmp/cicd-tools/scripts/* ${prefix}/ | grep -v "/$"
+          for f in /opt/cicd-tools/bin/*
+          do
+            $sudo ln -fs $f /usr/local/bin/$(basename $f)
+          done
+          $sudo chown -h -R root:root ${prefix}
+
+      - name: Install tools in their virtual environments
+        run: |
+          set -e
+          [[ $(id -un) != root ]] && sudo=sudo
+          ansible="${{ matrix.venv }}"
+          export VENV_LIST="yq e2j2 jinjanator $ansible"
+          /opt/cicd-tools/python/python-setup-venvs.sh --sudo /usr/local/venv
+
+      - name: Install required galaxy collections
+        run: |
+          ansible="${{ matrix.venv }}"
+          source /usr/local/venv/$ansible/bin/activate
+          /usr/local/bin/ansible-collections.sh
+
+      - name: Show component versions
+        run: |
+          ansible="${{ matrix.venv }}"
+          source /usr/local/venv/$ansible/bin/activate
+          set -vx
+          pip3 list
+          ansible-galaxy collection list
+          python3 --version
+          ansible --version
+          ansible-lint --version
+          yamllint --version
+          molecule --version
+
+      - name: Run Molecule tests.
+        run: |
+          ansible="${{ matrix.venv }}"
+          source /usr/local/venv/$ansible/bin/activate
+          /usr/local/bin/molecule-test.sh -A
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+          MOLECULE_DISTRO: ${{ matrix.distro }}
+          MOLECULE_PLAYBOOK: ${{ matrix.playbook }}
+          HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
+          MOLECULE_DRIVER: ${{ vars.MOLECULE_DRIVER }}
+
+  molecule2:
+    name: "${{ matrix.name }}"
+    runs-on: "${{ matrix.runs_on }}"
+    needs: molecule1
     # continue-on-error: ${{ matrix.continue_on_error }}
     strategy:
       fail-fast: false
@@ -224,16 +399,6 @@ jobs:
           - name: rockylinux9
             runs_on: ubuntu-22.04
             distro: rockylinux9
-            playbook: converge.yml
-            venv: "ansiblecore220"
-            ansible: "ansible-core>2.20,<2.21"
-            ansible_lint: "ansible-lint"
-            python: "3.13"
-            hetznercloud: True
-
-          - name: rockylinux10
-            runs_on: ubuntu-22.04
-            distro: rockylinux10
             playbook: converge.yml
             venv: "ansiblecore220"
             ansible: "ansible-core>2.20,<2.21"
@@ -354,16 +519,6 @@ jobs:
           - name: ubuntu2404
             runs_on: ubuntu-22.04
             distro: ubuntu2404
-            playbook: converge.yml
-            venv: "ansiblecore220"
-            ansible: "ansible-core>2.20,<2.21"
-            ansible_lint: "ansible-lint"
-            python: "3.13"
-            hetznercloud: True
-
-          - name: ubuntu2604
-            runs_on: ubuntu-22.04
-            distro: ubuntu2604
             playbook: converge.yml
             venv: "ansiblecore220"
             ansible: "ansible-core>2.20,<2.21"
@@ -526,3 +681,4 @@ jobs:
           MOLECULE_PLAYBOOK: ${{ matrix.playbook }}
           HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
           MOLECULE_DRIVER: ${{ vars.MOLECULE_DRIVER }}
+
