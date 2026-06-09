@@ -3,91 +3,185 @@
 - name: rhel7
   ci: false
   image: registry.access.redhat.com/ubi7/ubi-init:latest
+  privileged: false
   pre_build_image: false
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: rhel8
   ci: false
   image: registry.access.redhat.com/ubi8/ubi-init:latest
+  privileged: false
   pre_build_image: false
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: rhel9
   ci: false
   image: registry.access.redhat.com/ubi9/ubi-init:latest
+  privileged: false
   pre_build_image: false
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: rhel10
   ci: false
   image: registry.access.redhat.com/ubi10/ubi-init:latest
+  privileged: false
   pre_build_image: false
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: centos7
   ci: false
   image: docker.io/geerlingguy/docker-centos7-ansible:latest
   privileged: false
   pre_build_image: true
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: centos8
   ci: false
   image: docker.io/geerlingguy/docker-centos8-ansible:latest
+  privileged: false
+  pre_build_image: true
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: centos8s
   ci: false
   image: docker.io/dropveter/centos8s-ansible:latest
+  privileged: false
+  pre_build_image: true
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: centos9s
   ci: false
   image: docker.io/dropveter/centos9s-ansible:latest
+  privileged: false
+  pre_build_image: true
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: centos10s
   ci: false
   image: docker.io/dropveter/centos10s-ansible:latest
+  privileged: false
+  pre_build_image: true
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: rockylinux8
   ci: true
   image: docker.io/geerlingguy/docker-rockylinux8-ansible:latest
-  privileged: true
+  privileged: false
   pre_build_image: true
   volumes:
     - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: rockylinux9
   ci: true
   image: docker.io/geerlingguy/docker-rockylinux9-ansible:latest
+  privileged: false
+  pre_build_image: true
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: rockylinux10
   ci: true
   image: docker.io/geerlingguy/docker-rockylinux10-ansible:latest
+  privileged: false
+  pre_build_image: true
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: oraclelinux8
   ci: true
   image: docker.io/dropveter/oraclelinux8-ansible
+  privileged: false
+  pre_build_image: true
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: oraclelinux9
   ci: true
   image: docker.io/dropveter/oraclelinux9-ansible
+  privileged: false
+  pre_build_image: true
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: oraclelinux10
   ci: true
   image: docker.io/dropveter/oraclelinux10-ansible
+  privileged: false
+  pre_build_image: true
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: olam8
   ci: false
   image: docker.io/dropveter/olam:latest
+  privileged: false
+  pre_build_image: true
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: almalinux8
   ci: true
   image: docker.io/dropveter/almalinux8-ansible
+  privileged: false
+  pre_build_image: true
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: almalinux9
   ci: true
   image: docker.io/dropveter/almalinux9-ansible
+  privileged: false
+  pre_build_image: true
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: almalinux10
   ci: true
   image: docker.io/dropveter/almalinux10-ansible
+  privileged: false
+  pre_build_image: true
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: opensuse15
   ci: false
   image: docker.io/dropveter/opensuse15-ansible:latest
+  privileged: false
+  pre_build_image: true
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: opensuse16
   ci: false
   image: docker.io/dropveter/opensuse16-ansible:latest
+  privileged: false
+  pre_build_image: true
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: debian10
   ci: false
   image: docker.io/geerlingguy/docker-debian10-ansible:latest
+  privileged: false
+  pre_build_image: true
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: debian11
   ci: true
   image: docker.io/geerlingguy/docker-debian11-ansible:latest
+  privileged: false
+  pre_build_image: true
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: debian12
   ci: true
   image: docker.io/geerlingguy/docker-debian12-ansible:latest
+  privileged: false
+  pre_build_image: true
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: debian13
   ci: true
   image: docker.io/geerlingguy/docker-debian13-ansible:latest
+  privileged: false
+  pre_build_image: true
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: ubuntu1804
   ci: false
   image: docker.io/geerlingguy/docker-ubuntu1804-ansible:latest
+  privileged: false
+  pre_build_image: true
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: ubuntu2004
   ci: true
   image: docker.io/geerlingguy/docker-ubuntu2004-ansible:latest
@@ -98,37 +192,84 @@
 - name: ubuntu2204
   ci: true
   image: docker.io/geerlingguy/docker-ubuntu2204-ansible:latest
+  privileged: false
+  pre_build_image: true
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: ubuntu2404
   ci: true
   image: docker.io/geerlingguy/docker-ubuntu2404-ansible:latest
+  privileged: false
+  pre_build_image: true
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: ubuntu2604
   ci: true
   image: docker.io/geerlingguy/docker-ubuntu2604-ansible:latest
+  privileged: false
+  pre_build_image: true
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: fedora37
   ci: false
   image: docker.io/geerlingguy/docker-fedora37-ansible:latest
+  privileged: false
+  pre_build_image: true
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: fedora38
   ci: false
   image: docker.io/geerlingguy/docker-fedora38-ansible:latest
+  privileged: false
+  pre_build_image: true
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: fedora39
   ci: false
   image: docker.io/geerlingguy/docker-fedora39-ansible:latest
+  privileged: false
+  pre_build_image: true
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: fedora40
   ci: false
   image: docker.io/geerlingguy/docker-fedora40-ansible:latest
+  privileged: false
+  pre_build_image: true
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: fedora41
   ci: false
   image: docker.io/geerlingguy/docker-fedora41-ansible:latest
+  privileged: false
+  pre_build_image: true
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: fedora42
   ci: false
   image: docker.io/geerlingguy/docker-fedora42-ansible:latest
+  privileged: false
+  pre_build_image: true
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: fedora43
   ci: true
   image: docker.io/geerlingguy/docker-fedora43-ansible:latest
+  privileged: false
+  pre_build_image: true
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: fedora44
   ci: false
   image: docker.io/geerlingguy/docker-fedora44-ansible:latest
+  privileged: false
+  pre_build_image: true
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: alpine3
   ci: false
   image: docker.io/dropveter/alpine-python3
+  privileged: false
   pre_build_image: false
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:ro
