@@ -11,7 +11,16 @@
     https_proxy: "{{ lookup('env', 'HTTPS_PROXY') | default('') }}"
     http_proxy: "{{ lookup('env', 'HTTP_PROXY') | default('') }}"
     no_proxy: "{{ lookup('env', 'NO_PROXY') | default('127.0.0.1,localhost') }}"
+
     molecule_driver: "{{ lookup('env', 'MOLECULE_DRIVER_NAME') }}"
+
+    __prepare_firewall: "{{ prepare_firewall | default(False) }}"
+    __register_hosts: "{{ register_hosts | default(False) }}"
+    __update_all: "{{ true if (activate_epel | default(false)) else (update_all | default(False)) }}"
+    __activate_epel: "{{ activate_epel | default(False) }}"
+    __install_python: "{{ install_python | default(False) }}"
+    __auto_logon: "{{ auto_logon | default(False) }}"
+    __set_hostname: "{{ set_hostname | default(False) }}"
 
     iptables_distros:
       - rhel7
@@ -117,13 +126,13 @@
           https_proxy: "{{ https_proxy }}"
           http_proxy: "{{ http_proxy }}"
           no_proxy: "{{ no_proxy }}"
-          prepare_firewall: "{{ prepare_firewall | default(False) }}"
-          register_hosts: "{{ register_hosts | default(False) }}"
-          update_all: "{{ update_all | default(False) }}"
-          activate_epel: "{{ activate_epel | default(False) }}"
-          install_python: "{{ install_python | default(False) }}"
-          auto_logon: "{{ auto_logon | default(False) }}"
-          set_hostname: "{{ set_hostname | default(False) }}"
+          prepare_firewall: "{{ __prepare_firewall }}"
+          register_hosts: "{{ __register_hosts }}"
+          update_all: "{{ __update_all }}"
+          activate_epel: "{{ __activate_epel }}"
+          install_python: "{{ __install_python }}"
+          auto_logon: "{{ __auto_logon }}"
+          set_hostname: "{{ __set_hostname }}"
 
     - name: Enable root access
       when:
@@ -157,12 +166,12 @@
             username: vagrant
             password: vagrant
           register: _win_autologin
-          when: auto_logon is defined and auto_logon | bool
+          when: __auto_logon | bool
 
         - name: Set the hostname
           ansible.windows.win_hostname:
             name: "{{ inventory_hostname }}"
-          when: set_hostname is defined and set_hostname | bool
+          when: __set_hostname | bool
           register: _win_hostname
 
         - name: Reboot
@@ -211,7 +220,7 @@
           community.general.zypper:
             name: '*'
             state: latest
-          when: update_all is defined and update_all | bool
+          when: __update_all | bool
 
         - name: Remove conflicting packages
           ansible.builtin.package:
@@ -255,7 +264,7 @@
           ansible.builtin.apt:
             force_apt_get: yes
             upgrade: yes
-          when: update_all is defined and update_all | bool
+          when: __update_all | bool
 
         - name: Install default packages
           ansible.builtin.package:
@@ -298,7 +307,7 @@
           ansible.builtin.yum:
             name: '*'
             state: latest
-          when: update_all is defined and update_all | bool
+          when: __update_all | bool
 
         - name: Install default packages
           ansible.builtin.package:
@@ -318,7 +327,7 @@
         - name: Activate epel repository
           ansible.builtin.include_role:
             name: deitkrachten.epel
-          when: activate_epel is defined and activate_epel | bool
+          when: __activate_epel | bool
 
 
     - name: Family RedHat 8+
@@ -351,7 +360,7 @@
           ansible.builtin.dnf:
             name: '*'
             state: latest
-          when: update_all is defined and update_all | bool
+          when: __update_all | bool
 
         - name: Replace minimal packages
           ansible.builtin.dnf:
@@ -387,8 +396,7 @@
           ansible.builtin.include_role:
             name: deitkrachten.epel
           when:
-            - activate_epel is defined
-            - activate_epel | bool
+            - __activate_epel | bool
             - ansible_facts.distribution != 'Fedora'
 
     - name: Show locales
@@ -412,12 +420,12 @@
         python38: "{{ install_python38 | default(False) }}"
         python_package_install_optional: "{{ install_python_optional | default(True) }}"
       when:
-        - install_python is defined and install_python | bool
+        - __install_python | bool
         - ansible_facts.os_family != 'Windows'
 
     - name: Firewall
       when:
-        - prepare_firewall is defined and prepare_firewall | bool
+        - __prepare_firewall | bool
         - inventory_hostname is not search('-dns$')
         - ansible_facts.os_family != 'Windows'
       block:
@@ -455,7 +463,7 @@
       ansible.builtin.setup:
 
     - name: Localhosts
-      when: register_hosts is defined and register_hosts | bool
+      when: __register_hosts | bool
       block:
 
         - name: Register all nodes in /etc/hosts
