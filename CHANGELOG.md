@@ -1,3 +1,13 @@
+# [1.11.0](https://github.com/de-it-krachten/ansible-role-firewall/compare/v1.10.0...v1.11.0) (2026-07-24)
+
+
+### Features
+
+* Add support for ansible-core 2.20+ ([cc4bd69](https://github.com/de-it-krachten/ansible-role-firewall/commit/cc4bd691ce6001ec05b33d4da3edacc0b2e24295))
+* Added support for Fedora 44 ([81ca228](https://github.com/de-it-krachten/ansible-role-firewall/commit/81ca22811e0f8867750ee9314893ee15d123b4eb))
+* Added support for Ubuntu 26.04 LTS ([9e6b3d5](https://github.com/de-it-krachten/ansible-role-firewall/commit/9e6b3d5734b6bad3b1a7128814fffb537f871523))
+* Drop support for Fedora 42 ([17341c3](https://github.com/de-it-krachten/ansible-role-firewall/commit/17341c35a71f456a42cd1d67ffd895844dce607e))
+
 # [1.10.0](https://github.com/de-it-krachten/ansible-role-firewall/compare/v1.9.0...v1.10.0) (2026-03-15)
 
 
