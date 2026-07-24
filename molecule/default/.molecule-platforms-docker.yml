@@ -120,6 +120,16 @@
   cgroupns_mode: host
   volumes:
     - /sys/fs/cgroup:/sys/fs/cgroup:rw
+- name: olam8
+  ci: false
+  image: docker.io/dropveter/olam:latest
+  privileged: true
+  pre_build_image: true
+  cgroupns_mode: host
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:rw
+  ports:
+    - 443:443
 - name: almalinux8
   ci: true
   image: docker.io/dropveter/almalinux8-ansible
@@ -224,6 +234,14 @@
   cgroupns_mode: host
   volumes:
     - /sys/fs/cgroup:/sys/fs/cgroup:rw
+- name: ubuntu2604
+  ci: true
+  image: docker.io/geerlingguy/docker-ubuntu2604-ansible:latest
+  privileged: true
+  pre_build_image: true
+  cgroupns_mode: host
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:rw
 - name: fedora37
   ci: false
   image: docker.io/geerlingguy/docker-fedora37-ansible:latest
@@ -265,7 +283,7 @@
   volumes:
     - /sys/fs/cgroup:/sys/fs/cgroup:rw
 - name: fedora42
-  ci: true
+  ci: false
   image: docker.io/geerlingguy/docker-fedora42-ansible:latest
   privileged: true
   pre_build_image: true
@@ -275,6 +293,14 @@
 - name: fedora43
   ci: true
   image: docker.io/geerlingguy/docker-fedora43-ansible:latest
+  privileged: true
+  pre_build_image: true
+  cgroupns_mode: host
+  volumes:
+    - /sys/fs/cgroup:/sys/fs/cgroup:rw
+- name: fedora44
+  ci: false
+  image: docker.io/geerlingguy/docker-fedora44-ansible:latest
   privileged: true
   pre_build_image: true
   cgroupns_mode: host

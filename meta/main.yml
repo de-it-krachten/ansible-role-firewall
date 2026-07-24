@@ -25,8 +25,7 @@ galaxy_info:
         - jammy
     - name: Fedora
       versions:
-        - '42'
-        - '43'
+        - all
     - name: Windows
       versions:
         - 2012R2

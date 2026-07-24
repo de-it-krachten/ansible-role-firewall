@@ -1,7 +1,7 @@
 ---
 
 - name: Linux
-  when: ansible_os_family != 'Windows'
+  when: ansible_facts.os_family != 'Windows'
   block:
 
     - name: Get all linux services
@@ -53,7 +53,7 @@
             - _iptables_list.rc == 0
 
 - name: Windows
-  when: ansible_os_family == 'Windows'
+  when: ansible_facts.os_family == 'Windows'
   block:
 
     - name: Get all windows services
