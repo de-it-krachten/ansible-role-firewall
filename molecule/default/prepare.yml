@@ -7,20 +7,12 @@
   become: true
   vars:
 
-    proxy_use: "{{ True if ( https_proxy is defined and https_proxy|length > 0 ) else False }}"
+    proxy_use: "{{ True if (https_proxy | default('') | length > 0) else False }}"
     https_proxy: "{{ lookup('env', 'HTTPS_PROXY') | default('') }}"
     http_proxy: "{{ lookup('env', 'HTTP_PROXY') | default('') }}"
     no_proxy: "{{ lookup('env', 'NO_PROXY') | default('127.0.0.1,localhost') }}"
 
     molecule_driver: "{{ lookup('env', 'MOLECULE_DRIVER_NAME') }}"
-
-    __prepare_firewall: "{{ prepare_firewall | default(False) }}"
-    __register_hosts: "{{ register_hosts | default(False) }}"
-    __update_all: "{{ true if (activate_epel | default(false)) else (update_all | default(False)) }}"
-    __activate_epel: "{{ activate_epel | default(False) }}"
-    __install_python: "{{ install_python | default(False) }}"
-    __auto_logon: "{{ auto_logon | default(False) }}"
-    __set_hostname: "{{ set_hostname | default(False) }}"
 
     iptables_distros:
       - rhel7
@@ -61,6 +53,16 @@
 
   pre_tasks:
 
+    - name: Set variables w/ fallback to defaults
+      ansible.builtin.set_fact:
+        __prepare_firewall: "{{ prepare_firewall | default(False) | bool }}"
+        __register_hosts: "{{ register_hosts | default(False) | bool }}"
+        __update_all: "{{ (true if (activate_epel | default(false)) else (update_all | default(False))) | bool }}"
+        __activate_epel: "{{ activate_epel | default(False) | bool }}"
+        __install_python: "{{ install_python | default(False) | bool }}"
+        __auto_logon: "{{ auto_logon | default(False) | bool }}"
+        __set_hostname: "{{ set_hostname | default(False) | bool }}"
+
     - name: Get facts
       ansible.builtin.setup:
 
@@ -83,6 +85,23 @@
           {%- else -%}
           {{ (ansible_facts.distribution | lower) + ansible_facts.distribution_major_version }}
           {%- endif -%}
+
+    - name: Show settings
+      ansible.builtin.debug:
+        msg:
+          molecule_distro: "{{ molecule_distro }}"
+          molecule_driver: "{{ molecule_driver }}"
+          proxy_use: "{{ proxy_use }}"
+          https_proxy: "{{ https_proxy }}"
+          http_proxy: "{{ http_proxy }}"
+          no_proxy: "{{ no_proxy }}"
+          prepare_firewall: "{{ __prepare_firewall }}"
+          register_hosts: "{{ __register_hosts }}"
+          update_all: "{{ __update_all }}"
+          activate_epel: "{{ __activate_epel }}"
+          install_python: "{{ __install_python }}"
+          auto_logon: "{{ __auto_logon }}"
+          set_hostname: "{{ __set_hostname }}"
 
     # Switch to CentOS vault mirrors
     - name: Get all repo files
@@ -116,23 +135,6 @@
     - { role: deitkrachten.facts, when: ansible_facts.os_family != 'Windows' }
     - deitkrachten.showinfo
   tasks:
-
-    - name: Show settings
-      ansible.builtin.debug:
-        msg:
-          molecule_distro: "{{ molecule_distro }}"
-          molecule_driver: "{{ molecule_driver }}"
-          proxy_use: "{{ proxy_use }}"
-          https_proxy: "{{ https_proxy }}"
-          http_proxy: "{{ http_proxy }}"
-          no_proxy: "{{ no_proxy }}"
-          prepare_firewall: "{{ __prepare_firewall }}"
-          register_hosts: "{{ __register_hosts }}"
-          update_all: "{{ __update_all }}"
-          activate_epel: "{{ __activate_epel }}"
-          install_python: "{{ __install_python }}"
-          auto_logon: "{{ __auto_logon }}"
-          set_hostname: "{{ __set_hostname }}"
 
     - name: Enable root access
       when:
