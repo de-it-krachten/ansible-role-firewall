@@ -155,7 +155,7 @@
   volumes:
     - /sys/fs/cgroup:/sys/fs/cgroup:ro
 - name: debian11
-  ci: true
+  ci: false
   image: docker.io/geerlingguy/docker-debian11-ansible:latest
   privileged: false
   pre_build_image: true

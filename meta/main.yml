@@ -1,5 +1,4 @@
 ---
-
 galaxy_info:
   role_name: firewall
   namespace: de_it_krachten
@@ -16,7 +15,6 @@ galaxy_info:
         - '10'
     - name: Debian
       versions:
-        - bullseye
         - bookworm
         - trixie
     - name: Ubuntu
