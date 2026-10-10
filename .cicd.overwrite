@@ -23,8 +23,54 @@ platforms:
     supported: true
     ci: false
 
+# Supported platforms - overwrite
+platforms_overwrite:
+  debian12:
+    molecule:
+      podman:
+        privileged: false
+        capabilities:
+          - NET_ADMIN
+          - NET_RAW
+  debian13:
+    molecule:
+      podman:
+        privileged: false
+        capabilities:
+          - NET_ADMIN
+          - NET_RAW
+  ubuntu2004:
+    molecule:
+      podman:
+        privileged: false
+        capabilities:
+          - NET_ADMIN
+          - NET_RAW
+  ubuntu2204:
+    molecule:
+      podman:
+        privileged: false
+        capabilities:
+          - NET_ADMIN
+          - NET_RAW
+  ubuntu2404:
+    molecule:
+      podman:
+        privileged: false
+        capabilities:
+          - NET_ADMIN
+          - NET_RAW
+  ubuntu2604:
+    molecule:
+      podman:
+        privileged: false
+        capabilities:
+          - NET_ADMIN
+          - NET_RAW
+
 # Molecule
 molecule:
+  driver: podman
   prepare:
     vars:
       prepare_firewall: true

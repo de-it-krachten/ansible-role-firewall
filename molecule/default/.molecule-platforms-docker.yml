@@ -1,5 +1,4 @@
 ---
-
 - name: rhel7
   ci: false
   image: registry.access.redhat.com/ubi7/ubi-init:latest
