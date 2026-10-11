@@ -1,3 +1,10 @@
+# [1.12.0](https://github.com/de-it-krachten/ansible-role-firewall/compare/v1.11.0...v1.12.0) (2026-10-11)
+
+
+### Features
+
+* Drop support for Debian 11 (Bullseye) ([1a48e63](https://github.com/de-it-krachten/ansible-role-firewall/commit/1a48e63a1a3e91baa633c0df0f9f005e8afdbb26))
+
 # [1.11.0](https://github.com/de-it-krachten/ansible-role-firewall/compare/v1.10.0...v1.11.0) (2026-07-24)
 
 
