@@ -31,6 +31,8 @@ platforms:
         privileged: false
         volumes:
           - /sys/fs/cgroup:/sys/fs/cgroup:ro
+        extra_opts:
+          - "--no-hosts"
   rhel7:
     name: Red Hat Enterprise Linux 7
     ci: false
