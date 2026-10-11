@@ -48,6 +48,8 @@ platforms:
     cgroupns_mode: {{ platform.cgroupns_mode }}
 {% endif %}
     privileged: {{ platform.privileged | default(True) }}
+    capabilities: {{ platform.capabilities | default([]) }}
+    extra_opts: {{ platform.extra_opts | default([]) }}
     pre_build_image: {{ platform.pre_build_image | default(True) }}
     dockerfile: Dockerfile.{{ platform.name }}.j2
 {% endfor %}

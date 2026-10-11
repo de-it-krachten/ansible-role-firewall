@@ -1,165 +1,125 @@
 ---
-
 - name: centos7
   ci: false
-  box: generic/centos7
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
+  box: cloud-image/centos-7
 - name: centos8
   ci: false
-  box: generic/centos8
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
+  box: cloud-image/centos-8
 - name: centos8s
   ci: false
-  box: generic/centos8s
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
+  box: cloud-image/centos-8-stream
 - name: centos9s
   ci: false
-  box: generic/centos9s
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
+  box: cloud-image/centos-9-stream
 - name: centos10s
   ci: false
-  box: generic/centos10s
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
+  box: cloud-image/centos-10-stream
 - name: rockylinux8
   ci: true
-  box: generic/rocky8
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
+  box: cloud-image/rocky-8
 - name: rockylinux9
   ci: true
-  box: generic/rocky9
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
+  box: cloud-image/rocky-9
 - name: rockylinux10
   ci: true
-  box: generic/rocky10
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
+  box: cloud-image/rocky-10
 - name: oraclelinux8
   ci: true
-  box: generic/oracle8
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
+  box: cloud-image/oracle-linux-8
 - name: oraclelinux9
   ci: true
-  box: generic/oracle9
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
+  box: cloud-image/oracle-linux-9
 - name: oraclelinux10
   ci: true
-  box: generic/oracle10
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
+  box: cloud-image/oracle-linux-10
 - name: olam8
   ci: false
 - name: almalinux8
   ci: true
-  box: generic/alma8
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
+  box: cloud-image/almalinux-8
 - name: almalinux9
   ci: true
-  box: generic/alma9
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
+  box: cloud-image/almalinux-9
 - name: almalinux10
   ci: true
-  box: generic/alma10
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
+  box: cloud-image/almalinux-10
 - name: opensuse15
   ci: false
   box: generic/opensuse15
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
 - name: opensuse16
   ci: false
   box: generic/opensuse16
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
 - name: debian10
   ci: false
-  box: generic/debian10
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
+  box: cloud-image/debian-10
 - name: debian11
-  ci: true
-  box: generic/debian11
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
+  ci: false
+  box: cloud-image/debian-11
 - name: debian12
   ci: true
-  box: debian/bookworm64
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
+  box: cloud-image/debian-12
 - name: debian13
   ci: true
-  box: debian/trixie64
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
+  box: cloud-image/debian-13
 - name: ubuntu1804
   ci: false
-  box: generic/ubuntu1804
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
+  box: cloud-image/ubuntu-18.04
 - name: ubuntu2004
   ci: true
-  box: generic/ubuntu2004
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp', 'auto_config': True}]
+  box: cloud-image/ubuntu-20.04
 - name: ubuntu2204
   ci: true
-  box: generic/ubuntu2204
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
+  box: cloud-image/ubuntu-22.04
 - name: ubuntu2404
   ci: true
-  box: generic/ubuntu2404
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
+  box: cloud-image/ubuntu-24.04
 - name: ubuntu2604
   ci: true
-  box: generic/ubuntu2604
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
+  box: cloud-image/ubuntu-26.04
 - name: fedora37
   ci: false
   box: generic/fedora37
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
 - name: fedora38
   ci: false
-  box: generic/fedora38
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
+  box: cloud-image/fedora-38
 - name: fedora39
   ci: false
-  box: generic/fedora39
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
+  box: cloud-image/fedora-39
 - name: fedora40
   ci: false
-  box: generic/fedora40
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
+  box: cloud-image/fedora-40
 - name: fedora41
   ci: false
-  box: generic/fedora41
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
+  box: cloud-image/fedora-41
 - name: fedora42
   ci: false
-  box: generic/fedora42
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
+  box: cloud-image/fedora-42
 - name: fedora43
   ci: true
-  box: generic/fedora43
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
+  box: cloud-image/fedora-43
 - name: fedora44
   ci: false
-  box: generic/fedora44
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
+  box: cloud-image/fedora-44
 - name: alpine3
   ci: false
-  box: generic/alpine312
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
+  box: cloud-image/alpine-3.24
 - name: win2012r2
   ci: false
   box: jborean93/WindowsServer2012R2
   groups: ['windows']
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
 - name: win2016
   ci: false
   box: jborean93/WindowsServer2016
   groups: ['windows']
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
 - name: win2019
   ci: false
   box: jborean93/WindowsServer2019
   groups: ['windows']
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
 - name: win2022
   ci: false
   box: jborean93/WindowsServer2022
   groups: ['windows']
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]
 - name: win2025
   ci: false
   box: jborean93/WindowsServer2025
   groups: ['windows']
-  interfaces: [{'network_name': 'private_network', 'type': 'dhcp'}]

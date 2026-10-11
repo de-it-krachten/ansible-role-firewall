@@ -1,5 +1,4 @@
 ---
-
 - name: centos7
   ci: false
   server_type: cx23
@@ -33,7 +32,7 @@
   server_type: cx23
   image: debian-10
 - name: debian11
-  ci: true
+  ci: false
   server_type: cx23
   image: debian-11
 - name: debian12

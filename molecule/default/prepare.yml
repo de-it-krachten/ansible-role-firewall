@@ -24,25 +24,32 @@
       - debian10
       - debian11
       - debian12
+      - debian13
       - ubuntu1804
       - ubuntu2004
       - ubuntu2204
+      - ubuntu2404
+      - ubuntu2604
 
     firewalld_distros:
       - rhel8
       - rhel9
-      - fedora36
-      - fedora37
-      - fedora38
+      - rhel10
+      - fedora43
+      - fedora44
       - centos8
       - centos8s
       - centos9s
+      - centos10s
       - oraclelinux8
       - oraclelinux9
+      - oraclelinux10
       - rocky8
       - rocky9
+      - rocky10
       - almalinux8
       - almalinux9
+      - almalinux10
       - sles15
       - sles16
       - opensuse15
@@ -57,7 +64,8 @@
       ansible.builtin.set_fact:
         __prepare_firewall: "{{ prepare_firewall | default(False) | bool }}"
         __register_hosts: "{{ register_hosts | default(False) | bool }}"
-        __update_all: "{{ (true if (activate_epel | default(false)) else (update_all | default(False))) | bool }}"
+        __update_all: >-
+          {{ true if (activate_epel | default(false) or molecule_driver == 'vagrant') else update_all | default(False) | bool }}
         __activate_epel: "{{ activate_epel | default(False) | bool }}"
         __install_python: "{{ install_python | default(False) | bool }}"
         __auto_logon: "{{ auto_logon | default(False) | bool }}"
@@ -66,9 +74,13 @@
     - name: Get facts
       ansible.builtin.setup:
 
+    - name: Show remote_tmp
+      ansible.builtin.debug:
+        msg: "{{ lookup('env', 'ANSIBLE_REMOTE_TMP') | default('/root/.ansible/tmp', true) }}"
+
     - name: Create remote_tmp
       ansible.builtin.file:
-        path: /root/.ansible/tmp
+        path: "{{ lookup('env', 'ANSIBLE_REMOTE_TMP') | default('/root/.ansible/tmp', true) }}"
         state: directory
         mode: "0700"
       when: ansible_facts.os_family != 'Windows'
@@ -135,6 +147,28 @@
     - { role: deitkrachten.facts, when: ansible_facts.os_family != 'Windows' }
     - deitkrachten.showinfo
   tasks:
+
+    - name: Reset vagrant passwords
+      when:
+        - molecule_driver == 'vagrant'
+        - ansible_facts.os_family != 'Windows'
+      block:
+
+        - name: Reset root password
+          ansible.builtin.user:
+            name: root
+            state: present
+            shell: /bin/bash
+            password: "{{ 'root' | password_hash('sha512', 65534 | random(seed=inventory_hostname) | string) }}"
+            update_password: always
+
+        - name: Reset vagrant password
+          ansible.builtin.user:
+            name: vagrant
+            state: present
+            shell: /bin/bash
+            password: "{{ 'vagrant' | password_hash('sha512', 65534 | random(seed=inventory_hostname) | string) }}"
+            update_password: always
 
     - name: Enable root access
       when:
@@ -259,13 +293,13 @@
 
         - name: Update APT cache
           ansible.builtin.apt:
-            update_cache: yes
+            update_cache: true
             cache_valid_time: 0
 
         - name: Upgrade APT packages
           ansible.builtin.apt:
-            force_apt_get: yes
-            upgrade: yes
+            force_apt_get: true
+            upgrade: true
           when: __update_all | bool
 
         - name: Install default packages
@@ -276,6 +310,7 @@
               - gnupg
               - ssh
               - python3-apt
+              - python3-packaging
             state: present
 
     - name: Family RedHat < 8
@@ -356,7 +391,7 @@
 
         - name: Update DNF cache
           ansible.builtin.dnf:
-            update_cache: yes
+            update_cache: true
 
         - name: Upgrade DNF packages  # noqa package-latest
           ansible.builtin.dnf:
@@ -386,13 +421,20 @@
               - policycoreutils-python-utils
             state: present
 
-        - name: Install OS spcific packages
+        - name: Install OS specific packages (RHEL)
           ansible.builtin.package:
             name:
               - python3-packaging
           when:
             - ansible_facts.distribution == 'RedHat'
-            - ansible_facts.distribution_major_version == '10'
+            - ansible_facts.distribution_major_version | int >= 9
+
+        - name: Install OS specific packages (Fedora)
+          ansible.builtin.package:
+            name:
+              - procps-ng
+          when:
+            - ansible_facts.distribution == 'Fedora'
 
         - name: Activate epel repository
           ansible.builtin.include_role:
