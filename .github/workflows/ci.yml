@@ -48,7 +48,8 @@ jobs:
             python: "3.12"
             venv: "ansiblecore221"
 
-
+    env:
+      APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
     steps:
 
       - name: Check out the codebase.
@@ -60,6 +61,19 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: "${{ matrix.python }}"
+
+      - name: Generate installation token
+        if: env.APP_PRIVATE_KEY != ''
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ env.APP_PRIVATE_KEY }}
+
+      - name: Export token for all subsequent steps
+        if: env.APP_PRIVATE_KEY != ''
+        run: |
+          echo "GH_TOKEN=${{ steps.app-token.outputs.token }}" >> "$GITHUB_ENV"
 
 
       - name: Show runner info
