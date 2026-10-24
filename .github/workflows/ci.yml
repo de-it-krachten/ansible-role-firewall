@@ -67,13 +67,14 @@ jobs:
         id: app-token
         uses: actions/create-github-app-token@v3
         with:
-          app-id: ${{ vars.APP_ID }}
+          client-id: ${{ vars.APP_CLIENT_ID }}
           private-key: ${{ env.APP_PRIVATE_KEY }}
 
       - name: Export token for all subsequent steps
         if: env.APP_PRIVATE_KEY != ''
         run: |
           echo "GH_TOKEN=${{ steps.app-token.outputs.token }}" >> "$GITHUB_ENV"
+
 
 
       - name: Show runner info
@@ -202,7 +203,6 @@ jobs:
           source /usr/local/venv/$ansible/bin/activate
           yamllint .
           /usr/local/bin/ansible-lint.sh -f readable
-
 
   molecule1:
     name: "${{ matrix.name }}"
@@ -677,3 +677,26 @@ jobs:
           MOLECULE_PLAYBOOK: ${{ matrix.playbook }}
           HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
 
+  # Gate job: reports a single check named "CI" for branch protection.
+  ci:
+    name: CI
+    if: always()
+
+    needs: [lint, molecule1, molecule2]
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: .
+    steps:
+
+      - name: Check lint matrix result.
+        if: ${{ needs.lint.result != 'success' }}
+        run: |
+          echo "Lint matrix result: ${{ needs.lint.result }}"
+          exit 1
+
+      - name: Check molecule matrix result.
+        if: ${{ needs.molecule.result != 'success' }}
+        run: |
+          echo "Molecule matrix result: ${{ needs.molecule.result }}"
+          exit 1

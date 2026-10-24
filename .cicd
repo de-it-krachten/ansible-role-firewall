@@ -810,6 +810,7 @@ galaxy:
 # Github
 github:
   active: true
+  authenticate: true
   molecule: true
   self_hosted: false
   fail_fast: false
@@ -872,7 +873,7 @@ molecule:
     - vagrant
     - hetznercloud
     - podman
-  driver: podman
+  driver: docker
   rootless: true
   ansible:
    verbosity: 0
