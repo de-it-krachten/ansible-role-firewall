@@ -28,7 +28,7 @@ platforms:
         cgroupns_mode: host
       podman:
         pre_build_image: true
-        privileged: false
+        privileged: true
         volumes:
           - /sys/fs/cgroup:/sys/fs/cgroup:ro
         extra_opts:
@@ -810,6 +810,7 @@ galaxy:
 # Github
 github:
   active: true
+  authenticate: true
   molecule: true
   self_hosted: false
   fail_fast: false
@@ -872,7 +873,8 @@ molecule:
     - vagrant
     - hetznercloud
     - podman
-  driver: podman
+  driver: docker
+  rootless: true
   ansible:
    verbosity: 0
   converge:
