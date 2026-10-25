@@ -484,6 +484,12 @@
             name: deitkrachten.ufw
           when: molecule_distro in ufw_distros
 
+        - name: Start dbus
+          ansible.builtin.systemd_service:
+            name: dbus
+            state: started
+          when: molecule_distro in firewalld_distros
+
         - name: Install firewalld
           ansible.builtin.include_role:
             name: deitkrachten.firewalld
